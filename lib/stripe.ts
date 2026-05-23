@@ -1,8 +1,13 @@
 import Stripe from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-04-22.dahlia",
-});
+export const getStripe = () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not set");
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2024-06-20" as any,
+  });
+};
 
 export const PLANS = {
   free: {
@@ -18,7 +23,7 @@ export const PLANS = {
     price_monthly: 23,
     price_yearly: 13,
     videos_limit: 60,
-    duration_limit: 60,
+    duration_limit: 120,
     watermark: false,
     stripe_monthly: process.env.STRIPE_STARTER_MONTHLY!,
     stripe_yearly: process.env.STRIPE_STARTER_YEARLY!,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, PLANS, PlanId } from "@/lib/stripe";
+import type Stripe from "stripe";
+import { getStripe, PLANS, PlanId } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -12,9 +13,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Signature manquante" }, { status: 400 });
   }
 
-  let event: ReturnType<typeof stripe.webhooks.constructEvent>;
+  let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
         const subId = typeof rawSub === "string" ? rawSub : rawSub?.id;
         if (!subId) break;
 
-        const stripeSub = await stripe.subscriptions.retrieve(subId);
+        const stripeSub = await getStripe().subscriptions.retrieve(subId);
         const userId = stripeSub.metadata?.userId;
         if (!userId) break;
 

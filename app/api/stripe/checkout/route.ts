@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { stripe, PLANS, PlanId, getStripePriceId } from "@/lib/stripe";
+import { getStripe, PLANS, PlanId, getStripePriceId } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     let customerId = sub?.stripe_customer_id;
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         metadata: { userId },
       });
       customerId = customer.id;
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       billing === "yearly" ? "yearly" : "monthly"
     );
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],

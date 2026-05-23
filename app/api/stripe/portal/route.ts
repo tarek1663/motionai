@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase";
 
 export async function POST() {
@@ -18,7 +18,7 @@ export async function POST() {
       return NextResponse.json({ error: "Pas de subscription" }, { status: 400 });
     }
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: sub.stripe_customer_id,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/account`,
     });
