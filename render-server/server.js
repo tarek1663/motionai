@@ -1,3 +1,6 @@
+console.log("📁 Current directory:", __dirname);
+console.log("📁 Files:", require("fs").readdirSync(__dirname));
+
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
