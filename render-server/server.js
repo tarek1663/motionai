@@ -200,9 +200,11 @@ app.post("/render", async (req, res) => {
   };
   const { width, height } = getDimensions(format || "9:16");
 
+  const rootPath = path.join(__dirname, "..", "remotion", "Root.tsx");
+
   const cmd = [
     "npx remotion render",
-    "../remotion/Root.tsx",
+    `"${rootPath}"`,
     "MotionVideo",
     `"${outPath}"`,
     `--props="${propsPath}"`,
@@ -217,9 +219,14 @@ app.post("/render", async (req, res) => {
     {
       cwd: path.join(__dirname, ".."),
       maxBuffer: 1024 * 1024 * 500,
+      env: {
+        ...process.env,
+        NODE_ENV: "production",
+      },
     },
     (err) => {
       if (err) {
+        console.error("Render error:", err.message);
         fs.writeFileSync(path.join(RENDERS_DIR, `${jobId}.error`), err.message);
       }
     }
