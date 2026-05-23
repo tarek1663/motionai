@@ -1,0 +1,26 @@
+[phases.setup]
+nixPkgs = [
+  "chromium",
+  "nss",
+  "nspr",
+  "atk",
+  "cups",
+  "libdrm",
+  "dbus",
+  "libxkbcommon",
+  "xorg.libXcomposite",
+  "xorg.libXdamage",
+  "xorg.libXfixes",
+  "xorg.libXrandr",
+  "xorg.libxcb",
+  "mesa",
+  "pango",
+  "cairo",
+  "alsa-lib",
+]
+
+[phases.build]
+cmds = ["cd render-server && npm install"]
+
+[phases.start]
+cmd = "cd render-server && node server.js"

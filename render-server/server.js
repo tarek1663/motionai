@@ -212,6 +212,7 @@ app.post("/render", async (req, res) => {
     `--height=${height}`,
     "--codec=h264",
     "--crf=18",
+    "--browser-executable=$(which chromium)",
   ].join(" ");
 
   exec(
