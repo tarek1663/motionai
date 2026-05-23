@@ -20,7 +20,7 @@ nixPkgs = [
 ]
 
 [phases.build]
-cmds = ["cd render-server && npm install"]
+cmds = ["npm install"]
 
 [phases.start]
-cmd = "cd render-server && node server.js"
+cmd = "node server.js"
