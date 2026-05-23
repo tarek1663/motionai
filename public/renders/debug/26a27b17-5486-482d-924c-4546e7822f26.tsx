@@ -1,0 +1,712 @@
+import { registerRoot, Composition, AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig, Easing, Audio, staticFile, Sequence } from "remotion";
+import { loadFont } from "@remotion/google-fonts/PlusJakartaSans";
+import { linearTiming, TransitionSeries } from "@remotion/transitions";
+import { fade } from "@remotion/transitions/fade";
+import React from "react";
+
+// ── EASING CONSTANTS ──────────────────────────────────────
+const E_OUT = Easing.bezier(0.16, 1, 0.3, 1);
+const E_IN  = Easing.bezier(0.7, 0, 0.84, 0);
+const E_IO  = Easing.bezier(0.76, 0, 0.24, 1);
+
+// ── FONT ──────────────────────────────────────────────────
+const { fontFamily } = loadFont("normal", {
+  weights: ["200", "300", "400", "700", "800"],
+  subsets: ["latin"],
+});
+
+export const metadata = {
+  voiceoverText: "Depuis 1976, Apple révolutionne la technologie. Plus de 2 milliards d'appareils actifs. Innovation constante. Design intemporel. Écosystème intégré parfaitement. L'avenir commence aujourd'hui. Think Different.",
+  accentColor: "#2997ff",
+};
+
+const Grain: React.FC = () => (
+  <div style={{
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    opacity: 0.03,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+    mixBlendMode: 'overlay'
+  }}/>
+);
+
+const Vignette: React.FC = () => (
+  <div style={{
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%)'
+  }}/>
+);
+
+const useDrift = (speed = 0.3) => {
+  const frame = useCurrentFrame();
+  return {
+    x: Math.sin(frame * 0.008) * 12,
+    y: Math.cos(frame * 0.012) * 8,
+    rotation: Math.sin(frame * 0.006) * 0.5
+  };
+};
+
+const Scene1: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const words = ["Depuis", "1976,", "Apple", "révolutionne", "la", "technologie"];
+  
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: 80,
+        top: '22%',
+        width: '70%'
+      }}>
+        {words.map((word, i) => {
+          const wordSpring = spring({
+            frame: frame - i * 6,
+            fps: 60,
+            config: { damping: 28, stiffness: 200 },
+            from: 0,
+            to: 1
+          });
+          
+          const isApple = word === "Apple";
+          
+          return (
+            <span
+              key={i}
+              style={{
+                display: 'inline-block',
+                fontSize: isApple ? 72 : 64,
+                fontWeight: isApple ? 800 : 300,
+                color: isApple ? accent : '#ffffff',
+                letterSpacing: '-0.045em',
+                marginRight: word.endsWith(',') ? '0.3em' : '0.4em',
+                opacity: wordSpring,
+                transform: `translateY(${(1 - wordSpring) * 40}px)`,
+                filter: isApple ? `drop-shadow(0 0 20px ${accent}44)` : 'none',
+                fontFamily
+              }}
+            >
+              {word}
+            </span>
+          );
+        })}
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene2: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const maskProgress = spring({
+    frame,
+    fps: 60,
+    config: { damping: 32, stiffness: 180 },
+    from: 0,
+    to: 1
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(145deg, #000000 0%, #111111 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          fontSize: 200,
+          fontWeight: 800,
+          color: '#ffffff',
+          letterSpacing: '-0.055em',
+          lineHeight: 1.0,
+          fontFamily,
+          clipPath: `inset(${100 - maskProgress * 100}% 0 0 0)`,
+          background: `linear-gradient(135deg, #ffffff 0%, ${accent} 100%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          filter: `drop-shadow(0 4px 40px ${accent}33)`
+        }}>
+          INNOVATION
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene3: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const cardSpring = spring({
+    frame: frame - 8,
+    fps: 60,
+    config: { damping: 30, stiffness: 160 },
+    from: 0,
+    to: 1
+  });
+
+  const countValue = interpolate(frame, [20, 80], [0, 2000000000], {
+    easing: E_OUT,
+    extrapolateRight: "clamp"
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #0f0f0f 0%, #050505 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        right: 80,
+        top: '25%',
+        opacity: cardSpring,
+        transform: `translateY(${(1 - cardSpring) * 60}px) perspective(1200px) rotateX(${Math.sin(frame*0.016)*2}deg) rotateY(${Math.sin(frame*0.012)*-3}deg) translateY(${Math.sin(frame*0.025)*8}px)`
+      }}>
+        <div style={{
+          width: 680,
+          borderRadius: 24,
+          padding: '36px 44px',
+          background: 'linear-gradient(145deg, rgba(22,22,22,0.98), rgba(14,14,14,0.98))',
+          border: '1px solid rgba(255,255,255,0.06)',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.35), 0 60px 120px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)'
+        }}>
+          <div style={{
+            fontSize: 120,
+            fontWeight: 800,
+            color: accent,
+            letterSpacing: '-0.045em',
+            marginBottom: 16,
+            fontFamily,
+            filter: `drop-shadow(0 0 20px ${accent}44)`
+          }}>
+            {Math.floor(countValue / 1000000)}M
+          </div>
+          <div style={{
+            fontSize: 48,
+            fontWeight: 200,
+            color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '-0.02em',
+            fontFamily
+          }}>
+            d'appareils actifs
+          </div>
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene4: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const pathLength = 800;
+  const revealed = interpolate(frame, [10, 90], [0, pathLength], {
+    easing: E_OUT,
+    extrapolateRight: "clamp"
+  });
+
+  const points = [
+    { x: 100, y: 350, value: "2010" },
+    { x: 300, y: 280, value: "2015" },
+    { x: 500, y: 200, value: "2020" },
+    { x: 700, y: 120, value: "2024" }
+  ];
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #000000 0%, #0a0a0a 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 800,
+        height: 400
+      }}>
+        <svg width="800" height="400" viewBox="0 0 800 400">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={accent} stopOpacity="0.2" />
+              <stop offset="100%" stopColor={accent} stopOpacity="1" />
+            </linearGradient>
+          </defs>
+          
+          <path
+            d="M 100 350 Q 200 320 300 280 Q 400 240 500 200 Q 600 160 700 120"
+            stroke="url(#lineGradient)"
+            strokeWidth={3}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={pathLength}
+            strokeDashoffset={pathLength - revealed}
+            style={{filter: `drop-shadow(0 0 12px ${accent}66)`}}
+          />
+          
+          {points.map((point, i) => {
+            const pointProgress = interpolate(revealed, [i * 200, (i + 1) * 200], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp"
+            });
+            
+            return (
+              <g key={i} style={{ opacity: pointProgress }}>
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill={accent}
+                  style={{filter: `drop-shadow(0 0 8px ${accent}88)`}}
+                />
+                <text
+                  x={point.x}
+                  y={point.y - 20}
+                  textAnchor="middle"
+                  fill="#ffffff"
+                  fontSize="32"
+                  fontWeight="600"
+                  fontFamily={fontFamily}
+                >
+                  {point.value}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene5: React.FC = () => {
+  const frame = useCurrentFrame();
+  const accent = "#2997ff";
+  
+  const rotation = frame * 0.4;
+  const breathe = Math.sin(frame * 0.08) * 0.1 + 1;
+
+  return (
+    <AbsoluteFill style={{ background: '#000000' }}>
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)'
+      }}>
+        <svg width="400" height="400" viewBox="0 0 400 400">
+          <g transform={`translate(200,200) rotate(${rotation}) scale(${breathe})`}>
+            {Array.from({ length: 8 }, (_, i) => (
+              <ellipse
+                key={i}
+                cx="0"
+                cy="-80"
+                rx="20"
+                ry="60"
+                fill={accent}
+                opacity="0.8"
+                transform={`rotate(${i * 45})`}
+                style={{filter: `drop-shadow(0 0 20px ${accent}66)`}}
+              />
+            ))}
+          </g>
+        </svg>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const Scene6: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+
+  const line1Spring = spring({
+    frame: frame - 5,
+    fps: 60,
+    config: { damping: 28, stiffness: 200 },
+    from: 0,
+    to: 1
+  });
+
+  const line2Spring = spring({
+    frame: frame - 25,
+    fps: 60,
+    config: { damping: 28, stiffness: 200 },
+    from: 0,
+    to: 1
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        right: 80,
+        top: '30%',
+        textAlign: 'right',
+        opacity: line1Spring,
+        transform: `translateX(${(1 - line1Spring) * 100}px)`
+      }}>
+        <div style={{
+          fontSize: 140,
+          fontWeight: 800,
+          color: '#ffffff',
+          letterSpacing: '-0.05em',
+          lineHeight: 1.0,
+          fontFamily
+        }}>
+          DESIGN
+        </div>
+      </div>
+
+      <div style={{
+        position: 'absolute',
+        left: 80,
+        bottom: '30%',
+        textAlign: 'left',
+        opacity: line2Spring,
+        transform: `translateX(${(1 - line2Spring) * -100}px)`
+      }}>
+        <div style={{
+          fontSize: 140,
+          fontWeight: 200,
+          color: 'rgba(255,255,255,0.7)',
+          letterSpacing: '-0.05em',
+          lineHeight: 1.0,
+          fontFamily
+        }}>
+          intemporel
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene7: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const phoneSpring = spring({
+    frame: frame - 10,
+    fps: 60,
+    config: { damping: 25, stiffness: 150 },
+    from: 0,
+    to: 1
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #111111 0%, #000000 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: `translate(-50%, -50%) translateY(${Math.sin(frame*0.02)*12}px) rotateY(${Math.sin(frame*0.015)*5}deg)`,
+        opacity: phoneSpring
+      }}>
+        <div style={{
+          width: 300,
+          height: 600,
+          borderRadius: 40,
+          background: 'linear-gradient(145deg, #1a1a1a, #0f0f0f)',
+          border: '2px solid rgba(255,255,255,0.1)',
+          padding: 20,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
+          position: 'relative'
+        }}>
+          <div style={{
+            width: '100%',
+            height: '100%',
+            borderRadius: 30,
+            background: '#000000',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 40
+          }}>
+            <div style={{
+              width: 80,
+              height: 80,
+              borderRadius: 20,
+              background: accent,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              filter: `drop-shadow(0 0 20px ${accent}66)`
+            }}>
+              <div style={{
+                width: 40,
+                height: 40,
+                background: '#ffffff',
+                borderRadius: 8,
+                opacity: 0.9
+              }}/>
+            </div>
+            
+            <div style={{
+              fontSize: 32,
+              fontWeight: 600,
+              color: '#ffffff',
+              fontFamily
+            }}>
+              Écosystème
+            </div>
+          </div>
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene8: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const textSpring = spring({
+    frame,
+    fps: 60,
+    config: { damping: 30, stiffness: 180 },
+    from: 0,
+    to: 1
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(145deg, #000000 0%, #111111 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        textAlign: 'center',
+        opacity: textSpring,
+        transform: `translate(-50%, -50%) scale(${textSpring})`
+      }}>
+        <div style={{
+          fontSize: 180,
+          fontWeight: 800,
+          background: `linear-gradient(135deg, ${accent} 0%, #ffffff 100%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          letterSpacing: '-0.055em',
+          lineHeight: 1.0,
+          fontFamily,
+          filter: `drop-shadow(0 4px 40px ${accent}44)`
+        }}>
+          L'AVENIR
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+const Scene9: React.FC = () => {
+  const frame = useCurrentFrame();
+  const drift = useDrift();
+  const accent = "#2997ff";
+
+  const textSpring = spring({
+    frame: frame - 5,
+    fps: 60,
+    config: { damping: 28, stiffness: 200 },
+    from: 0,
+    to: 1
+  });
+
+  const buttonSpring = spring({
+    frame: frame - 30,
+    fps: 60,
+    config: { damping: 28, stiffness: 200 },
+    from: 0,
+    to: 1
+  });
+
+  return (
+    <AbsoluteFill style={{ 
+      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+      transform: `translate(${drift.x}px, ${drift.y}px) rotate(${drift.rotation}deg)`
+    }}>
+      <div style={{
+        position: 'absolute',
+        left: 80,
+        bottom: '35%'
+      }}>
+        <div style={{
+          fontSize: 64,
+          fontWeight: 300,
+          color: '#ffffff',
+          letterSpacing: '-0.03em',
+          marginBottom: 40,
+          opacity: textSpring,
+          transform: `translateY(${(1 - textSpring) * 40}px)`,
+          fontFamily
+        }}>
+          Think <span style={{ color: accent, fontWeight: 800 }}>Different</span>
+        </div>
+
+        <div style={{
+          opacity: buttonSpring,
+          transform: `translateY(${(1 - buttonSpring) * 30}px)`
+        }}>
+          <div style={{
+            display: 'inline-block',
+            padding: '16px 32px',
+            borderRadius: 12,
+            background: accent,
+            color: '#ffffff',
+            fontSize: 24,
+            fontWeight: 600,
+            fontFamily,
+            boxShadow: `0 8px 32px ${accent}44, 0 0 0 1px rgba(255,255,255,0.1)`,
+            cursor: 'pointer'
+          }}>
+            apple.com
+          </div>
+        </div>
+      </div>
+      <Grain />
+      <Vignette />
+    </AbsoluteFill>
+  );
+};
+
+export const GeneratedVideo: React.FC = () => {
+  const { fps } = useVideoConfig();
+  
+  return (
+    <AbsoluteFill>
+      <TransitionSeries>
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene1 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene2 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene3 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene4 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene5 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene6 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene7 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={200}>
+          <Scene8 />
+        </TransitionSeries.Sequence>
+
+        <TransitionSeries.Transition
+          presentation={fade()}
+          timing={{ durationInFrames: 22 }}
+        />
+
+        <TransitionSeries.Sequence durationInFrames={222}>
+          <Scene9 />
+        </TransitionSeries.Sequence>
+      </TransitionSeries>
+    </AbsoluteFill>
+  );
+};
+
+
+const RemotionRoot = () => (
+  <Composition
+    id="GeneratedVideo"
+    component={GeneratedVideo}
+    durationInFrames={1800}
+    fps={60}
+    width={1080}
+    height={1920}
+    defaultProps={{}}
+  />
+);
+registerRoot(RemotionRoot);

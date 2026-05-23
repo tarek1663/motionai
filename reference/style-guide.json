@@ -1,0 +1,53 @@
+{
+  "description": "Style minimaliste et épuré combinant des éléments d'interface utilisateur stylisés avec une typographie bold sur fonds unis. Alternance entre des compositions légères sur fond blanc et des écrans textuels sur fond vert profond.",
+  "rhythm": {
+    "energy": "medium",
+    "cutStyle": "soft"
+  },
+  "typography": {
+    "dominantSize": "large",
+    "weight": "bold",
+    "position": "center",
+    "casing": "lowercase",
+    "animationStyle": "fadeIn"
+  },
+  "colors": {
+    "backgrounds": [
+      "#FFFFFF",
+      "#0D5A1E",
+      "#F5F5F0"
+    ],
+    "textColors": [
+      "#000000",
+      "#A0A0A0",
+      "#FFFFFF"
+    ],
+    "accentColors": [
+      "#1A6B2C"
+    ],
+    "mood": "light"
+  },
+  "transitions": {
+    "type": "fade",
+    "speed": "medium",
+    "style": "smooth"
+  },
+  "composition": {
+    "layout": "centered",
+    "useImages": false,
+    "useStats": false,
+    "usePhone": false
+  },
+  "effects": {
+    "motionBlur": false,
+    "glitch": false,
+    "particles": false,
+    "lightLeaks": false,
+    "zoom": false
+  },
+  "sceneTypes": [
+    "badge",
+    "statement"
+  ],
+  "overallStyle": "Motion design minimaliste et élégant avec icônes stylisées et typographie centrée, alternant entre fond blanc épuré et vert forêt profond"
+}

@@ -1,0 +1,50 @@
+Command failed: npx remotion render remotion/Root.tsx MotionVideo "C:\Users\tarek\motionai\public\renders\4eadaac2-ac07-49a7-ad6e-fd7b4dc435ac.mp4" --props="C:\Users\tarek\motionai\public\renders\4eadaac2-ac07-49a7-ad6e-fd7b4dc435ac.json" --frames=0-1800 --log=verbose
+[33m-------------[39m
+[33mVersion mismatch:[39m
+[33m- On version: 4.0.459[39m
+[33m  - @remotion/bundler [90mnode_modules\@remotion\bundler\package.json[39m[33m[39m
+[33m  - @remotion/cli [90mnode_modules\@remotion\cli\package.json[39m[33m[39m
+[33m  - @remotion/compositor-win32-x64-msvc [90mnode_modules\@remotion\compositor-win32-x64-msvc\package.json[39m[33m[39m
+[33m  - remotion [90mnode_modules\remotion\package.json[39m[33m[39m
+[33m  - @remotion/licensing [90mnode_modules\@remotion\licensing\package.json[39m[33m[39m
+[33m  - @remotion/lottie [90mnode_modules\@remotion\lottie\package.json[39m[33m[39m
+[33m  - @remotion/media-utils [90mnode_modules\@remotion\media-utils\package.json[39m[33m[39m
+[33m  - @remotion/paths [90mnode_modules\@remotion\paths\package.json[39m[33m[39m
+[33m  - @remotion/player [90mnode_modules\@remotion\player\package.json[39m[33m[39m
+[33m  - @remotion/renderer [90mnode_modules\@remotion\renderer\package.json[39m[33m[39m
+[33m  - @remotion/shapes [90mnode_modules\@remotion\shapes\package.json[39m[33m[39m
+[33m  - @remotion/streaming [90mnode_modules\@remotion\streaming\package.json[39m[33m[39m
+[33m  - @remotion/studio-server [90mnode_modules\@remotion\studio-server\package.json[39m[33m[39m
+[33m  - @remotion/studio-shared [90mnode_modules\@remotion\studio-shared\package.json[39m[33m[39m
+[33m  - @remotion/studio [90mnode_modules\@remotion\studio\package.json[39m[33m[39m
+[33m  - @remotion/three [90mnode_modules\@remotion\three\package.json[39m[33m[39m
+[33m  - @remotion/transitions [90mnode_modules\@remotion\transitions\package.json[39m[33m[39m
+[33m  - @remotion/media-parser [90mnode_modules\@remotion\media-parser\package.json[39m[33m[39m
+[33m  - @remotion/zod-types [90mnode_modules\@remotion\zod-types\package.json[39m[33m[39m
+[33m  - @remotion/captions [90mnode_modules\@remotion\captions\package.json[39m[33m[39m
+[33m  - @remotion/web-renderer [90mnode_modules\@remotion\web-renderer\package.json[39m[33m[39m
+[33m- On version: 4.0.460[39m
+[33m  - @remotion/google-fonts [90mnode_modules\@remotion\google-fonts\package.json[39m[33m[39m
+[33mYou may experience breakages such as:[39m
+[33m- React context and hooks not working[39m
+[33m- Type errors and feature incompatibilities[39m
+[33m- Failed renders and unclear errors[39m
+[33mTo resolve:[39m
+[33m- Make sure your package.json has all Remotion packages pointing to the same version.[39m
+[33m- Remove the `^` character in front of a version to pin a package.[39m
+[33m- Run `npx remotion versions --log=verbose` to see the path of the modules resolved.[39m
+[33m-------------[39m
+[40m chrome [49m [31m[0513/131754.001:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Loading root component - See https://remotion.dev/docs/troubleshooting/loading-root-component if you experience a timeout" handle was cleared after 1ms", source: http://localhost:3001/bundle.js (4275)[39m
+[40m chrome [49m [31m[0513/131754.121:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Fetching Plus Jakarta Sans font {"style":"normal","weight":"700","subset":"latin"}" handle was cleared after 121ms", source: http://localhost:3001/bundle.js (4275)[39m
+[31m[0513/131754.121:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Fetching Plus Jakarta Sans font {"style":"normal","weight":"300","subset":"latin"}" handle was cleared after 122ms", source: http://localhost:3001/bundle.js (4275)[39m
+[31m[0513/131754.121:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Fetching Plus Jakarta Sans font {"style":"normal","weight":"600","subset":"latin"}" handle was cleared after 121ms", source: http://localhost:3001/bundle.js (4275)[39m
+[31m[0513/131754.121:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Fetching Plus Jakarta Sans font {"style":"normal","weight":"800","subset":"latin"}" handle was cleared after 121ms", source: http://localhost:3001/bundle.js (4275)[39m
+[31m[0513/131754.121:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Fetching Plus Jakarta Sans font {"style":"normal","weight":"400","subset":"latin"}" handle was cleared after 121ms", source: http://localhost:3001/bundle.js (4275)[39m
+[40m chrome [49m [31m[0513/131754.132:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Waiting for root component to load - See https://remotion.dev/docs/troubleshooting/loading-root-component if you experience a timeout" handle was cleared after 9ms", source: http://localhost:3001/bundle.js (4275)[39m
+[40m chrome [49m [31m[0513/131754.134:INFO:CONSOLE:4275] "Symbol(__remotion_tag_delayRender()) Symbol(__remotion_level_verbose) "Running the calculateMetadata() function for composition MotionVideo" handle was cleared after 0ms", source: http://localhost:3001/bundle.js (4275)[39m
+[31mError: The "durationInFrames" of the <Composition /> was evaluated to be 1800, but frame range 0-1800 is not inbetween 0-1799[39m
+[31m    at Object.getRealFrameRange (C:\Users\tarek\motionai\node_modules\@remotion\renderer\dist\get-frame-to-render.js:21:15)[39m
+[31m    at renderVideoFlow (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render-flows\render.js:329:55)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+[31m    at async render (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render.js:169:5)[39m
+[31m    at async cli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\index.js:98:13)[39m

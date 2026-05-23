@@ -1,0 +1,7 @@
+Command failed: npx remotion render remotion/Root.tsx MotionVideo "C:\Users\tarek\motionai\public\renders\5489b7d9-ac01-43a5-9b1b-b6a9b208e74b.mp4" --props="C:\Users\tarek\motionai\public\renders\5489b7d9-ac01-43a5-9b1b-b6a9b208e74b.json" --frames=0-1883
+[31mError: The "durationInFrames" of the <Composition /> was evaluated to be 1800, but frame range 0-1883 is not inbetween 0-1799[39m
+[31m    at Object.getRealFrameRange (C:\Users\tarek\motionai\node_modules\@remotion\renderer\dist\get-frame-to-render.js:21:15)[39m
+[31m    at renderVideoFlow (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render-flows\render.js:329:55)[39m
+[31m    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+[31m    at async render (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render.js:169:5)[39m
+[31m    at async cli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\index.js:98:13)[39m

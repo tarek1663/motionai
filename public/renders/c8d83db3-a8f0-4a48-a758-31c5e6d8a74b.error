@@ -1,0 +1,22 @@
+Command failed: npx remotion render remotion/Gen_c8d83db3-a8f0-4a48-a758-31c5e6d8a74b.tsx GeneratedVideo "C:\Users\tarek\motionai\public\renders\c8d83db3-a8f0-4a48-a758-31c5e6d8a74b.mp4" --props="C:\Users\tarek\motionai\public\renders\c8d83db3-a8f0-4a48-a758-31c5e6d8a74b.json"
+[31mError: Module build failed (from ./node_modules/@remotion/bundler/dist/esbuild-loader/index.js):[39m
+[31mError: Transform failed with 1 error:[39m
+[31mC:\Users\tarek\motionai\remotion\Gen_c8d83db3-a8f0-4a48-a758-31c5e6d8a74b.tsx:739:21: ERROR: Expected "{" but found "("[39m
+[31m    at failureErrorWithLog (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:1477:15)[39m
+[31m    at C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:756:50[39m
+[31m    at responseCallbacks.<computed> (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:623:9)[39m
+[31m    at handleIncomingPacket (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:678:12)[39m
+[31m    at Socket.readFromStdout (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:601:7)[39m
+[31m    at Socket.emit (node:events:508:28)[39m
+[31m    at addChunk (node:internal/streams/readable:563:12)[39m
+[31m    at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)[39m
+[31m    at Readable.push (node:internal/streams/readable:394:5)[39m
+[31m    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m
+[31mundefined[39m
+[31m    at runWebpack (C:\Users\tarek\motionai\node_modules\@remotion\bundler\dist\bundle.js:226:23)[39m
+[31m    at async Object.internalBundle (C:\Users\tarek\motionai\node_modules\@remotion\bundler\dist\bundle.js:230:13)[39m
+[31m    at async bundleOnCli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\setup-cache.js:151:21)[39m
+[31m    at async bundleOnCliOrTakeServeUrl (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\setup-cache.js:35:21)[39m
+[31m    at async renderVideoFlow (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render-flows\render.js:168:53)[39m
+[31m    at async render (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render.js:169:5)[39m
+[31m    at async cli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\index.js:98:13)[39m

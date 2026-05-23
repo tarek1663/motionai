@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900">
+  <defs>
+    <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d2d2d"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3a3a3a"/>
+      <stop offset="100%" style="stop-color:#2a2a2a"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a"/>
+      <stop offset="100%" style="stop-color:#000"/>
+    </linearGradient>
+    <filter id="macShadow">
+      <feDropShadow dx="0" dy="30" stdDeviation="40" flood-color="rgba(0,0,0,0.7)"/>
+    </filter>
+    <clipPath id="screenClip">
+      <rect x="120" y="40" width="1200" height="750" rx="8" ry="8"/>
+    </clipPath>
+  </defs>
+
+  <!-- Écran lid -->
+  <rect x="60" y="20" width="1320" height="820" rx="16" ry="16" fill="url(#lidGrad)" filter="url(#macShadow)"/>
+
+  <!-- Bezel -->
+  <rect x="80" y="36" width="1280" height="788" rx="10" ry="10" fill="#111"/>
+
+  <!-- Écran -->
+  <rect x="120" y="40" width="1200" height="750" rx="6" ry="6" fill="#000"/>
+
+  <!-- Highlight lid haut -->
+  <rect x="60" y="20" width="1320" height="2" rx="2" fill="rgba(255,255,255,0.15)"/>
+
+  <!-- Logo Apple centré -->
+  <circle cx="720" cy="808" r="12" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Base / keyboard area -->
+  <rect x="0" y="840" width="1440" height="60" rx="6" ry="6" fill="url(#baseGrad)"/>
+
+  <!-- Trackpad -->
+  <rect x="560" y="850" width="320" height="38" rx="6" ry="6" fill="#333" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+
+  <!-- Highlight base -->
+  <rect x="0" y="840" width="1440" height="1" fill="rgba(255,255,255,0.1)"/>
+</svg>

@@ -1,0 +1,2 @@
+Command failed: npx remotion render remotion/Gen_a99fcf39-6e30-4e08-81bc-7bb2dcc3299b.tsx GeneratedVideo "C:\Users\tarek\motionai\public\renders\a99fcf39-6e30-4e08-81bc-7bb2dcc3299b.mp4" --props="C:\Users\tarek\motionai\public\renders\a99fcf39-6e30-4e08-81bc-7bb2dcc3299b.json"
+[31m[41m[37m ReferenceError [39m[31m[49m[39m [31mEasing is not defined[39m

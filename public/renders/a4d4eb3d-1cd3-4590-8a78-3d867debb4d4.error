@@ -1,0 +1,57 @@
+Command failed: npx remotion render remotion/Generated_a4d4eb3d-1cd3-4590-8a78-3d867debb4d4.tsx GeneratedVideo "C:\Users\tarek\motionai\public\renders\a4d4eb3d-1cd3-4590-8a78-3d867debb4d4.mp4" --frames=0-3599
+[33m-------------[39m
+[33mVersion mismatch:[39m
+[33m- On version: 4.0.459[39m
+[33m  - @remotion/bundler [90mnode_modules\@remotion\bundler\package.json[39m[33m[39m
+[33m  - @remotion/cli [90mnode_modules\@remotion\cli\package.json[39m[33m[39m
+[33m  - @remotion/compositor-win32-x64-msvc [90mnode_modules\@remotion\compositor-win32-x64-msvc\package.json[39m[33m[39m
+[33m  - remotion [90mnode_modules\remotion\package.json[39m[33m[39m
+[33m  - @remotion/google-fonts [90mnode_modules\@remotion\google-fonts\package.json[39m[33m[39m
+[33m  - @remotion/licensing [90mnode_modules\@remotion\licensing\package.json[39m[33m[39m
+[33m  - @remotion/media-utils [90mnode_modules\@remotion\media-utils\package.json[39m[33m[39m
+[33m  - @remotion/paths [90mnode_modules\@remotion\paths\package.json[39m[33m[39m
+[33m  - @remotion/player [90mnode_modules\@remotion\player\package.json[39m[33m[39m
+[33m  - @remotion/renderer [90mnode_modules\@remotion\renderer\package.json[39m[33m[39m
+[33m  - @remotion/shapes [90mnode_modules\@remotion\shapes\package.json[39m[33m[39m
+[33m  - @remotion/streaming [90mnode_modules\@remotion\streaming\package.json[39m[33m[39m
+[33m  - @remotion/studio-server [90mnode_modules\@remotion\studio-server\package.json[39m[33m[39m
+[33m  - @remotion/studio-shared [90mnode_modules\@remotion\studio-shared\package.json[39m[33m[39m
+[33m  - @remotion/studio [90mnode_modules\@remotion\studio\package.json[39m[33m[39m
+[33m  - @remotion/three [90mnode_modules\@remotion\three\package.json[39m[33m[39m
+[33m  - @remotion/transitions [90mnode_modules\@remotion\transitions\package.json[39m[33m[39m
+[33m  - @remotion/media-parser [90mnode_modules\@remotion\media-parser\package.json[39m[33m[39m
+[33m  - @remotion/zod-types [90mnode_modules\@remotion\zod-types\package.json[39m[33m[39m
+[33m  - @remotion/captions [90mnode_modules\@remotion\captions\package.json[39m[33m[39m
+[33m  - @remotion/web-renderer [90mnode_modules\@remotion\web-renderer\package.json[39m[33m[39m
+[33m- On version: 4.0.461[39m
+[33m  - @remotion/lottie [90mnode_modules\@remotion\lottie\package.json[39m[33m[39m
+[33mYou may experience breakages such as:[39m
+[33m- React context and hooks not working[39m
+[33m- Type errors and feature incompatibilities[39m
+[33m- Failed renders and unclear errors[39m
+[33mTo resolve:[39m
+[33m- Make sure your package.json has all Remotion packages pointing to the same version.[39m
+[33m- Remove the `^` character in front of a version to pin a package.[39m
+[33m- Run `npx remotion versions --log=verbose` to see the path of the modules resolved.[39m
+[33m-------------[39m
+[31mError: Module build failed (from ./node_modules/@remotion/bundler/dist/esbuild-loader/index.js):[39m
+[31mError: Transform failed with 1 error:[39m
+[31mC:\Users\tarek\motionai\remotion\Generated_a4d4eb3d-1cd3-4590-8a78-3d867debb4d4.tsx:564:0: ERROR: Unterminated string literal[39m
+[31m    at failureErrorWithLog (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:1477:15)[39m
+[31m    at C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:756:50[39m
+[31m    at responseCallbacks.<computed> (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:623:9)[39m
+[31m    at handleIncomingPacket (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:678:12)[39m
+[31m    at Socket.readFromStdout (C:\Users\tarek\motionai\node_modules\esbuild\lib\main.js:601:7)[39m
+[31m    at Socket.emit (node:events:508:28)[39m
+[31m    at addChunk (node:internal/streams/readable:563:12)[39m
+[31m    at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)[39m
+[31m    at Readable.push (node:internal/streams/readable:394:5)[39m
+[31m    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m
+[31mundefined[39m
+[31m    at runWebpack (C:\Users\tarek\motionai\node_modules\@remotion\bundler\dist\bundle.js:226:23)[39m
+[31m    at async Object.internalBundle (C:\Users\tarek\motionai\node_modules\@remotion\bundler\dist\bundle.js:230:13)[39m
+[31m    at async bundleOnCli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\setup-cache.js:151:21)[39m
+[31m    at async bundleOnCliOrTakeServeUrl (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\setup-cache.js:35:21)[39m
+[31m    at async renderVideoFlow (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render-flows\render.js:168:53)[39m
+[31m    at async render (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\render.js:169:5)[39m
+[31m    at async cli (C:\Users\tarek\motionai\node_modules\@remotion\cli\dist\index.js:98:13)[39m
