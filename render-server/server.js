@@ -1,3 +1,6 @@
+// Ajouter le chemin des modules
+require("module").globalPaths.push("/app/render-server/node_modules");
+
 console.log("📁 Current directory:", __dirname);
 console.log("📁 Files:", require("fs").readdirSync(__dirname));
 
