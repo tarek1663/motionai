@@ -1,36 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
-import { v4 as uuidv4 } from "uuid";
-import { getErrorMessage } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, filename } = await req.json();
-    if (!url) return NextResponse.json({ error: "URL requise" }, { status: 400 });
+    const body = await req.json();
+    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
 
-    const res = await fetch(url);
-    if (!res.ok) return NextResponse.json({ error: "Téléchargement échoué" }, { status: 400 });
+    const res = await fetch(`${RENDER_URL}/photos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-    const buffer = Buffer.from(await res.arrayBuffer());
-    const ext = url.includes(".png") ? "png" : "jpg";
-    const name = filename || `${uuidv4()}.${ext}`;
-    const contentType = ext === "png" ? "image/png" : "image/jpeg";
-
-    const { error: uploadError } = await supabase.storage
-      .from("photos")
-      .upload(name, buffer, {
-        contentType,
-        upsert: false,
-      });
-
-    if (uploadError) throw uploadError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("photos")
-      .getPublicUrl(name);
-
-    return NextResponse.json({ photoUrl: publicUrl });
+    const data = await res.json();
+    return NextResponse.json(data);
   } catch (err: unknown) {
-    return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : "Erreur photos";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

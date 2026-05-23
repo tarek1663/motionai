@@ -10,14 +10,145 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 
 const RENDERS_DIR = path.join(__dirname, "renders");
-fs.mkdirSync(RENDERS_DIR, { recursive: true });
+const AUDIO_DIR = path.join(__dirname, "audio");
+const PHOTOS_DIR = path.join(__dirname, "photos");
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+fs.mkdirSync(RENDERS_DIR, { recursive: true });
+fs.mkdirSync(AUDIO_DIR, { recursive: true });
+fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+
+// ── Health check ──────────────────────────────────────
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// ── Voix ElevenLabs ───────────────────────────────────
+app.post("/voice", async (req, res) => {
+  try {
+    const { text, voiceId } = req.body;
+    const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": ELEVENLABS_API_KEY,
+        },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.text();
+      return res.status(500).json({ error: `ElevenLabs error: ${err}` });
+    }
+
+    const data = await response.json();
+
+    const audioBuffer = Buffer.from(data.audio_base64, "base64");
+    const audioFileName = `${uuidv4()}.mp3`;
+    const audioPath = path.join(AUDIO_DIR, audioFileName);
+    fs.writeFileSync(audioPath, audioBuffer);
+
+    const audioUrl = `${process.env.RENDER_SERVER_URL}/audio/${audioFileName}`;
+
+    const fps = 60;
+    const charTimes = data.alignment?.character_start_times_seconds || [];
+    const charEndTimes = data.alignment?.character_end_times_seconds || [];
+
+    const fullText = text;
+    const sentences = fullText.split(/(?<=[.!?\n])\s*/).filter((s) => s.trim().length > 0);
+    let charIndex = 0;
+    const phraseTimestamps = sentences.map((sentence) => {
+      const startTime = charTimes[charIndex] || 0;
+      const endIndex = Math.min(charIndex + sentence.length - 1, charTimes.length - 1);
+      const endTime = charEndTimes[endIndex] || startTime + 2;
+      charIndex += sentence.length + 1;
+      return {
+        phrase: sentence.trim(),
+        startFrame: Math.round(startTime * fps),
+        endFrame: Math.round(endTime * fps),
+        durationFrames: Math.round((endTime - startTime) * fps),
+      };
+    });
+
+    const durationSeconds = charEndTimes[charEndTimes.length - 1] || 30;
+
+    res.json({ audioUrl, durationSeconds, phraseTimestamps });
+  } catch (err) {
+    console.error("Voice error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Lancer un rendu
+// ── Musique locale ────────────────────────────────────
+app.post("/music", async (req, res) => {
+  try {
+    const { formatId } = req.body;
+    const musicMap = {
+      corporate: "corporate.mp3",
+      tech: "tech.mp3",
+      ambient: "ambient.mp3",
+      energetic: "energetic.mp3",
+      cinematic: "cinematic.mp3",
+      elegant: "elegant.mp3",
+      emotional: "emotional.mp3",
+      adventure: "adventure.mp3",
+    };
+
+    const moodMap = {
+      pub: "energetic",
+      motivation: "energetic",
+      educatif: "ambient",
+      storytelling: "cinematic",
+      luxe: "elegant",
+      corporate: "corporate",
+      tech: "tech",
+    };
+
+    const mood = moodMap[formatId] || "ambient";
+    const file = musicMap[mood] || "ambient.mp3";
+    const musicUrl = `${process.env.RENDER_SERVER_URL}/music/${file}`;
+
+    res.json({ musicUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Photos Pexels ─────────────────────────────────────
+app.post("/photos", async (req, res) => {
+  try {
+    const { query } = req.body;
+    const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
+
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=portrait`,
+      { headers: { Authorization: PEXELS_API_KEY } }
+    );
+
+    const data = await response.json();
+    const photo = data.photos?.[0];
+    if (!photo) return res.json({ photoUrl: null });
+
+    const photoResponse = await fetch(photo.src.large);
+    const photoBuffer = Buffer.from(await photoResponse.arrayBuffer());
+    const photoFileName = `${uuidv4()}.jpg`;
+    const photoPath = path.join(PHOTOS_DIR, photoFileName);
+    fs.writeFileSync(photoPath, photoBuffer);
+
+    const photoUrl = `${process.env.RENDER_SERVER_URL}/photos/${photoFileName}`;
+    res.json({ photoUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── Lancer un rendu ───────────────────────────────────
 app.post("/render", async (req, res) => {
   const jobId = uuidv4();
   const {
@@ -36,9 +167,8 @@ app.post("/render", async (req, res) => {
 
   const outPath = path.join(RENDERS_DIR, `${jobId}.mp4`);
   const metaPath = path.join(RENDERS_DIR, `${jobId}.meta.json`);
-  const errPath = path.join(RENDERS_DIR, `${jobId}.error`);
+  const propsPath = path.join(RENDERS_DIR, `${jobId}.props.json`);
 
-  // Sauvegarder les metadata
   fs.writeFileSync(
     metaPath,
     JSON.stringify({
@@ -50,8 +180,6 @@ app.post("/render", async (req, res) => {
     })
   );
 
-  // Sauvegarder les props
-  const propsPath = path.join(RENDERS_DIR, `${jobId}.props.json`);
   fs.writeFileSync(
     propsPath,
     JSON.stringify({
@@ -84,7 +212,6 @@ app.post("/render", async (req, res) => {
     "--crf=18",
   ].join(" ");
 
-  // Lancer le rendu en arrière-plan
   exec(
     cmd,
     {
@@ -93,7 +220,7 @@ app.post("/render", async (req, res) => {
     },
     (err) => {
       if (err) {
-        fs.writeFileSync(errPath, err.message);
+        fs.writeFileSync(path.join(RENDERS_DIR, `${jobId}.error`), err.message);
       }
     }
   );
@@ -101,7 +228,7 @@ app.post("/render", async (req, res) => {
   res.json({ jobId });
 });
 
-// Status du rendu
+// ── Status rendu ──────────────────────────────────────
 app.get("/render/:jobId", (req, res) => {
   const { jobId } = req.params;
   const outPath = path.join(RENDERS_DIR, `${jobId}.mp4`);
@@ -110,16 +237,16 @@ app.get("/render/:jobId", (req, res) => {
   if (fs.existsSync(errPath)) {
     return res.json({ status: "error", error: fs.readFileSync(errPath, "utf-8") });
   }
-
   if (fs.existsSync(outPath)) {
-    const videoUrl = `${process.env.RENDER_SERVER_URL}/video/${jobId}.mp4`;
-    return res.json({ status: "done", videoUrl });
+    return res.json({
+      status: "done",
+      videoUrl: `${process.env.RENDER_SERVER_URL}/video/${jobId}.mp4`,
+    });
   }
-
   res.json({ status: "rendering" });
 });
 
-// Récupérer les metadata
+// ── Metadata ──────────────────────────────────────────
 app.get("/meta/:jobId", (req, res) => {
   const metaPath = path.join(RENDERS_DIR, `${req.params.jobId}.meta.json`);
   if (fs.existsSync(metaPath)) {
@@ -128,10 +255,11 @@ app.get("/meta/:jobId", (req, res) => {
   res.json({});
 });
 
-// Servir les vidéos
+// ── Fichiers statiques ────────────────────────────────
 app.use("/video", express.static(RENDERS_DIR));
+app.use("/audio", express.static(AUDIO_DIR));
+app.use("/photos", express.static(PHOTOS_DIR));
+app.use("/music", express.static(path.join(__dirname, "..", "public", "music")));
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🎬 Render server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🎬 Render server on port ${PORT}`));
