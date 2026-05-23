@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateScenesFromVoice } from "@/lib/claude";
-import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getErrorMessage } from "@/lib/utils";
 
 type GeneratedScene = {
@@ -27,26 +26,19 @@ export async function POST(req: NextRequest) {
         if (scene.type === "photo" && scene.photoQuery) {
           try {
             console.log("🖼️ Téléchargement photo pour:", scene.photoQuery);
-            const photoUrl = await fetchPexelsPhoto(scene.photoQuery);
-            console.log("🖼️ URL trouvée:", photoUrl);
-
-            if (photoUrl) {
-              const downloadRes = await fetch(`${baseUrl}/api/photos`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: photoUrl }),
-              });
-              if (downloadRes.ok) {
-                const { photoUrl: localUrl } = await downloadRes.json();
-                console.log("🖼️ Photo locale:", localUrl);
-                if (localUrl) {
-                  return { ...scene, photoUrl: localUrl };
-                }
-              } else {
-                console.error("🖼️ Échec /api/photos:", downloadRes.status, await downloadRes.text());
+            const downloadRes = await fetch(`${baseUrl}/api/photos`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ query: scene.photoQuery }),
+            });
+            if (downloadRes.ok) {
+              const { photoUrl: hostedUrl } = await downloadRes.json();
+              console.log("🖼️ Photo hébergée:", hostedUrl);
+              if (hostedUrl) {
+                return { ...scene, photoUrl: hostedUrl };
               }
             } else {
-              console.warn("🖼️ Aucune photo Pexels pour:", scene.photoQuery);
+              console.error("🖼️ Échec /api/photos:", downloadRes.status, await downloadRes.text());
             }
           } catch (err) {
             console.error("🖼️ Erreur Pexels:", scene.photoQuery, err);
