@@ -95,12 +95,13 @@ function buildPhrasesFromScriptLines(
 
 export async function generateVoice(
   text: string,
-  outputPath: string,
+  outputPath?: string,
   voiceId: string = "21m00Tcm4TlvDq8ikWAM",
 ): Promise<{
   duration: number;
   wordTimestamps: WordTimestamp[];
   phraseTimestamps: PhraseTimestamp[];
+  audioBuffer: Buffer;
 }> {
   console.log("🎙️ Génération avec voiceId:", voiceId);
   const response = await fetch(
@@ -133,13 +134,15 @@ export async function generateVoice(
   const data = await response.json();
 
   const audioBuffer = Buffer.from(data.audio_base64, "base64");
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, audioBuffer);
+  if (outputPath) {
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, audioBuffer);
+  }
 
   const alignment = data.alignment || data.normalized_alignment;
   if (!alignment) {
     const duration = audioBuffer.length / 24000;
-    return { duration, wordTimestamps: [], phraseTimestamps: [] };
+    return { duration, wordTimestamps: [], phraseTimestamps: [], audioBuffer };
   }
 
   const chars: string[] = alignment.characters || alignment.chars || [];
@@ -187,5 +190,5 @@ export async function generateVoice(
     phraseTimestamps.slice(0, 3).map((p) => p.phrase),
   );
 
-  return { duration, wordTimestamps, phraseTimestamps };
+  return { duration, wordTimestamps, phraseTimestamps, audioBuffer };
 }

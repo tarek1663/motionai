@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateVoice } from "@/lib/elevenlabs";
-import path from "path";
+import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
 import { getErrorMessage } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -11,13 +10,25 @@ export async function POST(req: NextRequest) {
     console.log("🎙️ VoiceId reçu:", voiceId);
     if (!text?.trim()) return NextResponse.json({ error: "Texte requis" }, { status: 400 });
 
-    const audioId = uuidv4();
-    const audioDir = path.join(process.cwd(), "public", "audio");
-    const audioPath = path.join(audioDir, `${audioId}.mp3`);
-    fs.mkdirSync(audioDir, { recursive: true });
-
-    const result = await generateVoice(text, audioPath, voiceId);
+    const result = await generateVoice(text, undefined, voiceId);
     const fps = 60;
+
+    const audioFileName = `${uuidv4()}.mp3`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("audio")
+      .upload(audioFileName, result.audioBuffer, {
+        contentType: "audio/mpeg",
+        upsert: false,
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from("audio")
+      .getPublicUrl(audioFileName);
+
+    const audioUrl = publicUrl;
 
     const phraseTimestamps = result.phraseTimestamps.map((t) => ({
       phrase: t.phrase || "",
@@ -30,8 +41,8 @@ export async function POST(req: NextRequest) {
     }));
 
     return NextResponse.json({
-      audioId,
-      audioUrl: `/audio/${audioId}.mp3`,
+      audioId: audioFileName.replace(".mp3", ""),
+      audioUrl,
       duration: result.duration,
       durationSeconds: result.duration,
       phraseTimestamps,
