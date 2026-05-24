@@ -10,18 +10,28 @@ export async function GET(
     const { jobId } = params;
     const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
 
-    const res = await fetch(`${RENDER_URL}/render/${jobId}`);
-    const data = await res.json();
+    console.log("🔍 Polling jobId:", jobId);
+    console.log("🔍 Render URL:", RENDER_URL);
 
-    // Sauvegarder dans Supabase quand done
-    if (data.status === "done") {
+    const res = await fetch(`${RENDER_URL}/render/${jobId}`, {
+      cache: "no-store",
+    });
+
+    console.log("🔍 Railway response status:", res.status);
+
+    const data = await res.json();
+    console.log("🔍 Railway response:", JSON.stringify(data));
+
+    if (data.status === "done" && data.videoUrl) {
       try {
         const { userId } = await auth();
         if (userId) {
-          const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`);
+          const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, {
+            cache: "no-store",
+          });
           const meta = metaRes.ok ? await metaRes.json() : {};
 
-          await supabase.from("videos").insert({
+          const { error } = await supabase.from("videos").insert({
             user_id: userId,
             prompt: meta.prompt || "Vidéo générée",
             format: meta.format || "9:16",
@@ -32,19 +42,19 @@ export async function GET(
             status: "done",
           });
 
-          // Incrémenter crédits
-          await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/credits`, {
-            method: "POST",
-          });
+          if (error) console.error("❌ Supabase error:", error);
+          else console.log("✅ Saved to Supabase");
         }
-      } catch (saveErr) {
-        console.error("Save error:", saveErr);
+      } catch (saveErr: unknown) {
+        const message = saveErr instanceof Error ? saveErr.message : "Erreur";
+        console.error("❌ Save error:", message);
       }
     }
 
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur";
+    console.error("❌ Polling error:", message);
     return NextResponse.json({ status: "error", error: message });
   }
 }
