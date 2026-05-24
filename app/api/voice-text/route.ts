@@ -8,7 +8,9 @@ export async function POST(req: NextRequest) {
   try {
     const { prompt, duration } = await req.json();
     if (!prompt?.trim()) return NextResponse.json({ error: "Prompt requis" }, { status: 400 });
-    const result = await generateVoiceText({ prompt, duration });
+    const durationSec = String(duration || "30");
+    console.log("🎙️ voice-text duration:", durationSec, "s — ~", Math.round(parseInt(durationSec) * 2.5), "mots");
+    const result = await generateVoiceText({ prompt, duration: durationSec });
     // NextResponse.json(result) — voiceoverText, accentColor, bgAccent, bgLight, formatId, formatName
     return NextResponse.json(result);
   } catch (err: unknown) {

@@ -910,7 +910,8 @@ export async function generateVoiceText(params: {
   formatName: string;
 }> {
   const { prompt, duration } = params;
-  const wordsCount = Math.round(parseInt(duration) * 2.0);
+  const durationSec = parseInt(String(duration), 10) || 30;
+  const wordsCount = Math.round(durationSec * 2.5);
   const format = detectVideoFormat(prompt);
 
   const response = await client.messages.create({
@@ -951,13 +952,14 @@ RÈGLES COULEUR — pense visuellement:
 RÈGLES VOIX:
 Format: ${format.name}
 Style: ${format.voiceStyle}
-- EXACTEMENT ${wordsCount} mots
+- Génère un script voix de exactement ${durationSec} secondes — soit environ ${wordsCount} mots. PAS PLUS COURT.
+- EXACTEMENT ${wordsCount} mots (minimum)
 - Chaque phrase sur une NOUVELLE LIGNE
 - Phrases très courtes (4-8 mots max)
 - En français`,
     messages: [{
       role: "user",
-      content: `Sujet: "${prompt}" — ${duration}s — ${wordsCount} mots`,
+      content: `Sujet: "${prompt}" — Génère un script voix de exactement ${durationSec} secondes — soit environ ${wordsCount} mots. PAS PLUS COURT.`,
     }],
   });
 

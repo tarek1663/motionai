@@ -71,6 +71,9 @@ export async function POST(req: NextRequest) {
       body.totalFrames = Math.round(duration * 60);
     }
 
+    const totalFrames = body.totalFrames;
+    console.log("📐 totalFrames:", totalFrames, "duration:", duration, "fps: 60");
+
     const res = await fetch(`${RENDER_URL}/render`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
