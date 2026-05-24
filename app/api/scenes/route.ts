@@ -19,26 +19,26 @@ export async function POST(req: NextRequest) {
       bgDark, bgLight, bgAccent, phraseTimestamps, formatId,
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(req.url).origin;
+    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
 
     const scenesWithPhotos = await Promise.all(
       (result.scenes as GeneratedScene[]).map(async (scene) => {
         if (scene.type === "photo" && scene.photoQuery) {
           try {
             console.log("🖼️ Téléchargement photo pour:", scene.photoQuery);
-            const downloadRes = await fetch(`${baseUrl}/api/photos`, {
+            const photoRes = await fetch(`${RENDER_URL}/photos`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ query: scene.photoQuery }),
             });
-            if (downloadRes.ok) {
-              const { photoUrl: hostedUrl } = await downloadRes.json();
+            if (photoRes.ok) {
+              const { photoUrl: hostedUrl } = await photoRes.json();
               console.log("🖼️ Photo hébergée:", hostedUrl);
               if (hostedUrl) {
                 return { ...scene, photoUrl: hostedUrl };
               }
             } else {
-              console.error("🖼️ Échec /api/photos:", downloadRes.status, await downloadRes.text());
+              console.error("🖼️ Échec /photos:", photoRes.status, await photoRes.text());
             }
           } catch (err) {
             console.error("🖼️ Erreur Pexels:", scene.photoQuery, err);
