@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY!;
-const FPS = 60;
+const FPS = 30;
 /** Pause entre mots (s) au-delà de laquelle on coupe une phrase */
 const PHRASE_PAUSE_GAP = 0.35;
 
