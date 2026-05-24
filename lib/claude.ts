@@ -1120,6 +1120,35 @@ NOUVEAUX TYPES DISPONIBLES:
 - "hologram": effet hologramme avec scan line
 - "moneyrain": pluie de billets
 - "titlecard": carte de titre style cinéma
+
+NOUVELLES SCÈNES BATCH 2:
+- "magnetic": mots qui arrivent depuis les côtés
+- "gradientslide": dégradé qui traverse le texte
+- "cascade": lettres qui tombent en décalé
+- "blurfocus": texte qui passe de flou à net
+- "particlerain": pluie de particules colorées
+- "fire": particules de feu (fonds sombres)
+- "snow": flocons de neige
+- "sunray": rayons de soleil depuis le centre
+- "funnel": entonnoir de conversion animé
+- "comparisonbars": barres avant/après
+- "roi": retour sur investissement animé
+- "achievement": badge achievement unlocked
+- "circuit": circuit imprimé animé
+- "glitchscreen": écran glitché avec scan lines
+- "pollresults": résultats de sondage
+- "commentthread": fil de commentaires qui arrivent
+- "endcredits": générique de fin qui scroll
+- "wipe": révélation par balayage
+- "dollyzoom": effet Hitchcock zoom/dezoom
+- "steps": étapes numérotées avec progression
+- "compare": comparaison sans/avec côte à côte
+- "quotereveal": citation avec auteur
+- "benefits": liste de bénéfices avec icônes
+- "moodboard": grille de couleurs/formes
+- "minimalist": design épuré fond blanc
+- "gradientbg": fond dégradé animé
+- "pricereveal": révélation de prix barré
 - "worldmap": carte du monde avec points lumineux — pour sujets mondiaux/géographiques
   text: "titre" text2: "sous-titre"
 - "waveform": onde sonore animée — pour musique/podcast/son
