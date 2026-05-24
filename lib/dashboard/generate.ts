@@ -250,6 +250,12 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     cb.setProgress(70);
     cb.setStatus("rendering");
 
+    console.log("📐 Voice duration:", voiceData.durationSeconds);
+    console.log(
+      "📐 totalFrames:",
+      Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60)
+    );
+
     const renderRes = await fetch("/api/render", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
