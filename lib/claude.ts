@@ -1095,6 +1095,31 @@ ACTION:
 - "cta": appel à l'action — TOUJOURS la dernière scène
 
 NOUVEAUX TYPES DISPONIBLES:
+- "typewriter": texte qui se tape lettre par lettre
+- "scramble": lettres mélangées avant révélation
+- "neonglow": texte néon qui pulse (fond sombre uniquement)
+- "stamp": texte tamponné avec bordure
+- "wavetext": mots qui ondulent
+- "outlinefill": texte contour qui se remplit
+- "odometer": compteur style tableau d'affichage
+- "progressring": cercle de progression avec %
+- "gauge": jauge avec aiguille
+- "bubblechart": graphique à bulles
+- "notification": pile de notifications animées
+- "successcheck": coche de succès animée
+- "featurehighlight": highlights sur screenshot
+- "likeexplosion": explosion de cœurs avec compteur
+- "followercounter": compteur d'abonnés
+- "starfield": champ d'étoiles avec texte
+- "aurora": effet aurore boréale
+- "matrix": pluie de caractères Matrix
+- "countdownring": compte à rebours circulaire
+- "xpbar": barre d'expérience gaming
+- "flightboard": tableau d'affichage aéroport
+- "stockchart": graphique boursier
+- "hologram": effet hologramme avec scan line
+- "moneyrain": pluie de billets
+- "titlecard": carte de titre style cinéma
 - "worldmap": carte du monde avec points lumineux — pour sujets mondiaux/géographiques
   text: "titre" text2: "sous-titre"
 - "waveform": onde sonore animée — pour musique/podcast/son
