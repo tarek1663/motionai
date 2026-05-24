@@ -26,24 +26,46 @@ export async function GET(
       try {
         const { userId } = await auth();
         if (userId) {
-          const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, {
-            cache: "no-store",
-          });
-          const meta = metaRes.ok ? await metaRes.json() : {};
+          const { data: existing } = await supabase
+            .from("videos")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("video_url", data.videoUrl)
+            .maybeSingle();
 
-          const { error } = await supabase.from("videos").insert({
-            user_id: userId,
-            prompt: meta.prompt || "Vidéo générée",
-            format: meta.format || "9:16",
-            duration: meta.duration || 30,
-            video_url: data.videoUrl,
-            accent_color: meta.accentColor || null,
-            format_name: meta.formatName || null,
-            status: "done",
-          });
+          if (!existing) {
+            const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, {
+              cache: "no-store",
+            });
+            const meta = metaRes.ok ? await metaRes.json() : {};
 
-          if (error) console.error("❌ Supabase error:", error);
-          else console.log("✅ Saved to Supabase");
+            const { error } = await supabase.from("videos").insert({
+              user_id: userId,
+              prompt: meta.prompt || "Vidéo générée",
+              format: meta.format || "9:16",
+              duration: meta.duration || 30,
+              video_url: data.videoUrl,
+              accent_color: meta.accentColor || null,
+              format_name: meta.formatName || null,
+              status: "done",
+            });
+
+            if (error) console.error("❌ Supabase error:", error);
+            else console.log("✅ Saved to Supabase");
+
+            const { data: currentSub } = await supabase
+              .from("subscriptions")
+              .select("videos_used")
+              .eq("user_id", userId)
+              .single();
+
+            if (currentSub) {
+              await supabase
+                .from("subscriptions")
+                .update({ videos_used: (currentSub.videos_used || 0) + 1 })
+                .eq("user_id", userId);
+            }
+          }
         }
       } catch (saveErr: unknown) {
         const message = saveErr instanceof Error ? saveErr.message : "Erreur";

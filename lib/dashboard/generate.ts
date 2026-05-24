@@ -13,7 +13,26 @@ type GenerationCallbacks = {
   setVideoUrl: (url: string) => void;
   onVideosRefresh: () => void;
   onCreditsRefresh?: () => void;
+  onUpgradeRequired?: (reason: string) => void;
 };
+
+function handleRenderError(
+  res: Response,
+  data: { error?: string; upgrade?: boolean },
+  cb: GenerationCallbacks
+): boolean {
+  if (res.status === 403 && data.upgrade) {
+    cb.onUpgradeRequired?.(data.error || "Limite atteinte");
+    cb.setScreen("input");
+    return true;
+  }
+  if (!res.ok) {
+    cb.setError(data.error || "Erreur de rendu");
+    cb.setScreen("input");
+    return true;
+  }
+  return false;
+}
 
 type PromptParams = GenerationCallbacks & {
   prompt: string;
@@ -152,11 +171,7 @@ export async function generateFromPrompt(params: PromptParams) {
       }),
     });
     const renderData = await renderRes.json();
-    if (!renderRes.ok) {
-      cb.setError(renderData.error);
-      cb.setScreen("input");
-      return;
-    }
+    if (handleRenderError(renderRes, renderData, cb)) return;
 
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
@@ -253,11 +268,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
       }),
     });
     const renderData = await renderRes.json();
-    if (!renderRes.ok) {
-      cb.setError(renderData.error);
-      cb.setScreen("input");
-      return;
-    }
+    if (handleRenderError(renderRes, renderData, cb)) return;
 
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {

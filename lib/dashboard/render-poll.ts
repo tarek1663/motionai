@@ -1,5 +1,4 @@
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
-import { incrementCreditsUsed } from "./credits";
 import type { DashboardScreen } from "./types";
 
 export function startRenderPoll(
@@ -22,7 +21,6 @@ export function startRenderPoll(
       setProgress(100);
       setVideoUrl(statusData.videoUrl);
       setScreen("done");
-      await incrementCreditsUsed();
       onCreditsRefresh?.();
       onDone?.();
     } else if (statusData.status === "error") {

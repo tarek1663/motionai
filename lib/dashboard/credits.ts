@@ -2,9 +2,11 @@ import type { DashboardScreen } from "./types";
 
 export type CreditsInfo = {
   plan: string;
+  planName?: string;
   videos_used: number;
   videos_limit: number;
   videos_remaining: number;
+  reset_date?: string;
   period_end?: string;
 };
 
@@ -34,10 +36,3 @@ export async function checkCreditsBeforeGenerate(
   return true;
 }
 
-export async function incrementCreditsUsed(): Promise<void> {
-  try {
-    await fetch("/api/credits", { method: "POST" });
-  } catch {
-    /* ignore */
-  }
-}

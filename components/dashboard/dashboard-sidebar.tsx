@@ -119,7 +119,7 @@ export function DashboardSidebar({
               }}
             >
               <span style={{ fontSize: 11, fontWeight: 700, color: "#555" }}>
-                {credits.plan === "free" ? "Plan Gratuit" : `Plan ${credits.plan}`}
+                {credits.planName || (credits.plan === "free" ? "Gratuit" : credits.plan)}
               </span>
               <a
                 href="/pricing"
@@ -153,7 +153,7 @@ export function DashboardSidebar({
               />
             </div>
             <div style={{ fontSize: 10, color: "#aaa" }}>
-              {credits.videos_used}/{credits.videos_limit} vidéos utilisées ce mois
+              {credits.videos_used}/{credits.videos_limit} vidéos · {credits.videos_remaining} restantes
             </div>
           </div>
         )}

@@ -51,6 +51,8 @@ export function useDashboard() {
   const [selectedVideo, setSelectedVideo] = useState<DashboardVideo | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [credits, setCredits] = useState<CreditsInfo | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState("");
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -80,6 +82,10 @@ export function useDashboard() {
     setVideoUrl,
     onVideosRefresh: loadVideos,
     onCreditsRefresh: loadCredits,
+    onUpgradeRequired: (reason: string) => {
+      setUpgradeReason(reason);
+      setShowUpgrade(true);
+    },
   };
 
   useEffect(() => {
@@ -304,6 +310,9 @@ export function useDashboard() {
     backFromQuestions,
     credits,
     loadCredits,
+    showUpgrade,
+    setShowUpgrade,
+    upgradeReason,
   };
 }
 
