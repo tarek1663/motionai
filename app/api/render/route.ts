@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!body.totalFrames) {
-      body.totalFrames = Math.round(duration * 30);
+      body.totalFrames = Math.round(duration * 60);
     }
 
     const res = await fetch(`${RENDER_URL}/render`, {

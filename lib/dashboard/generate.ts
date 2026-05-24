@@ -159,7 +159,7 @@ export async function generateFromPrompt(params: PromptParams) {
       body: JSON.stringify({
         scenes: scenesData.scenes,
         sceneDurations: scenesData.sceneDurations,
-        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 30),
+        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
@@ -256,7 +256,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
       body: JSON.stringify({
         scenes: scenesData.scenes,
         sceneDurations: scenesData.sceneDurations,
-        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 30),
+        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
