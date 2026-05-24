@@ -1149,6 +1149,29 @@ NOUVELLES SCÈNES BATCH 2:
 - "minimalist": design épuré fond blanc
 - "gradientbg": fond dégradé animé
 - "pricereveal": révélation de prix barré
+
+BATCH 3 — 20 nouvelles scènes:
+- "logoreveal": logo qui apparaît avec ripple
+- "brandintro": intro de marque avec ligne horizontale
+- "colorpalette": palette de couleurs animée
+- "property": présentation immobilier avec photo
+- "scoreboard": tableau de score sportif
+- "playerstat": stats d'un joueur avec barres
+- "menuitem": plat de restaurant avec photo
+- "heartbeat": ECG avec battement de cœur
+- "geometric": formes géométriques rotatives
+- "liquid": remplissage liquide animé
+- "morphshape": forme qui morphe cercle/carré
+- "dna": hélice ADN animée
+- "swipe": indicateur de glissement
+- "click": bouton avec ripple au clic
+- "loading": skeleton loading animé
+- "audiowaveform": visualiseur audio (barres animées)
+- "vinyl": disque vinyle qui tourne
+- "magazinecover": couverture magazine avec photo
+- "pullquote": citation avec ligne verticale
+- "infographic": grille infographique 2x2
+
 - "worldmap": carte du monde avec points lumineux — pour sujets mondiaux/géographiques
   text: "titre" text2: "sous-titre"
 - "waveform": onde sonore animée — pour musique/podcast/son
