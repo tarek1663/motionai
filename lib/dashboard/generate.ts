@@ -339,13 +339,16 @@ export async function generateFromScript(params: ScriptParams) {
       return;
     }
 
+    const scriptForVoice = scenesData.restructuredScript || finalScript;
+    console.log("📝 Script restructuré:", scriptForVoice);
+
     cb.setProgress(25);
     cb.setStatus("voice");
 
     const voiceRes = await fetch("/api/voice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: finalScript, voiceId: selectedVoiceId }),
+      body: JSON.stringify({ text: scriptForVoice, voiceId: selectedVoiceId }),
     });
     const voiceData = await voiceRes.json();
     if (!voiceRes.ok) {
@@ -363,7 +366,7 @@ export async function generateFromScript(params: ScriptParams) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              prompt: finalScript.split("\n")[0] || finalScript,
+              prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
               formatId: "pub",
             }),
           });
@@ -389,7 +392,7 @@ export async function generateFromScript(params: ScriptParams) {
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
         musicVolume: 0.07,
-        prompt: finalScript.split("\n")[0] || finalScript,
+        prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
         duration: parseInt(durationSeconds),
         accentColor,
         formatName: "Script personnalisé",

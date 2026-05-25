@@ -164,17 +164,17 @@ export function PromptComposer(props: Props) {
           ) : (
             <div className="dash-script-wrap">
               <div className="dash-script-guide">
-                <div className="dash-script-guide-title">✍️ Guide pour un beau script :</div>
-                <div>• Une phrase courte par ligne = une scène animée</div>
-                <div>• 4 à 12 lignes recommandées</div>
-                <div>• Commence fort, termine par un appel à l&apos;action</div>
+                <div className="dash-script-guide-title">✍️ Écris librement :</div>
+                <div>• Exprime ton message comme tu veux</div>
+                <div>• Claude restructure automatiquement pour le motion design</div>
+                <div>• Plus tu donnes de détails, plus la vidéo sera précise</div>
               </div>
 
               <textarea
                 className="dash-script-input"
                 value={customScript}
                 onChange={(e) => setCustomScript(e.target.value)}
-                placeholder={`Ex:\nLa solution qui change tout.\nPlus de 10 000 clients satisfaits.\nRapide. Simple. Puissant.\nEssaie maintenant gratuitement.`}
+                placeholder={`Écris librement ce que tu veux dire...\n\nEx: Je veux présenter mon application de fitness qui aide les gens à perdre du poids facilement avec des exercices de 10 minutes par jour et une nutrition personnalisée\n\nClaude restructurera ton texte automatiquement ✨`}
                 rows={7}
               />
 
