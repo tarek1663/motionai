@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabase";
 
+export const maxDuration = 60;
+
 function nextResetDate(): string {
   const d = new Date();
   d.setMonth(d.getMonth() + 1);
@@ -80,10 +82,16 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
+    if (!res.ok) {
+      const err = await res.text();
+      return NextResponse.json({ error: err }, { status: 500 });
+    }
+
     const data = await res.json();
     return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur render";
+    console.error("Render route error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
