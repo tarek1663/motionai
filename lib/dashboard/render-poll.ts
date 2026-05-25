@@ -13,23 +13,35 @@ export function startRenderPoll(
 ) {
   if (pollRef.current) clearInterval(pollRef.current);
   pollRef.current = setInterval(async () => {
-    const statusRes = await fetch(`/api/render/${jobId}`);
-    const statusData = await statusRes.json();
-    if (statusData.status === "done") {
-      if (pollRef.current) clearInterval(pollRef.current);
-      pollRef.current = null;
-      setProgress(100);
-      setVideoUrl(statusData.videoUrl);
-      setScreen("done");
-      onCreditsRefresh?.();
-      onDone?.();
-    } else if (statusData.status === "error") {
-      if (pollRef.current) clearInterval(pollRef.current);
-      pollRef.current = null;
-      setError(statusData.error || "Erreur de rendu");
-      setScreen("input");
-    } else {
-      setProgress((p) => Math.min(p + 1, 95));
+    try {
+      const statusRes = await fetch(`/api/render/${jobId}`, {
+        cache: "no-store",
+      });
+
+      if (!statusRes.ok) {
+        console.log("⚠️ Polling error status:", statusRes.status);
+        return;
+      }
+
+      const statusData = await statusRes.json();
+      if (statusData.status === "done") {
+        if (pollRef.current) clearInterval(pollRef.current);
+        pollRef.current = null;
+        setProgress(100);
+        setVideoUrl(statusData.videoUrl);
+        setScreen("done");
+        onCreditsRefresh?.();
+        onDone?.();
+      } else if (statusData.status === "error") {
+        if (pollRef.current) clearInterval(pollRef.current);
+        pollRef.current = null;
+        setError(statusData.error || "Erreur de rendu");
+        setScreen("input");
+      } else {
+        setProgress((p) => Math.min(p + 1, 95));
+      }
+    } catch (err) {
+      console.log("⚠️ Polling fetch error, retrying...", err);
     }
   }, 3000);
 }
