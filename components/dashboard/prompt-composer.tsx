@@ -19,6 +19,7 @@ import { copy } from "@/lib/dashboard/copy";
 import { DURATIONS, FORMAT_OPTIONS, VOICES } from "@/lib/dashboard/constants";
 import { DashboardIcon } from "@/components/dashboard/dashboard-icon";
 import { DashDropdown } from "@/components/dashboard/dash-dropdown";
+import { QualitySelector } from "@/components/dashboard/quality-selector";
 import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
@@ -36,6 +37,8 @@ type Props = Pick<
   | "setDuration"
   | "format"
   | "setFormat"
+  | "quality"
+  | "setQuality"
   | "selectedVoiceId"
   | "setSelectedVoiceId"
   | "musicEnabled"
@@ -70,6 +73,8 @@ export function PromptComposer(props: Props) {
     setDuration,
     format,
     setFormat,
+    quality,
+    setQuality,
     selectedVoiceId,
     setSelectedVoiceId,
     musicEnabled,
@@ -111,6 +116,8 @@ export function PromptComposer(props: Props) {
           />
           <p className="dash-field-hint">{copy.promptHelper}</p>
         </div>
+
+        <QualitySelector quality={quality} setQuality={setQuality} />
 
         <div className="dash-toolbar">
           <div ref={durationAnchorRef} data-menu className="dash-toolbar-item">

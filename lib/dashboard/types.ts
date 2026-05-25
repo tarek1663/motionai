@@ -12,3 +12,5 @@ export type DashboardVideo = {
 export type DashboardScreen = "input" | "questions" | "generating" | "done" | "viewing";
 
 export type InputTab = "prompt" | "screenshot";
+
+export type QualityMode = "fast" | "high";

@@ -2,7 +2,7 @@ import type { MutableRefObject } from "react";
 import { durationToSeconds } from "./constants";
 import { checkCreditsBeforeGenerate } from "./credits";
 import { startRenderPoll } from "./render-poll";
-import type { DashboardScreen } from "./types";
+import type { DashboardScreen, QualityMode } from "./types";
 
 type GenerationCallbacks = {
   setProgress: (n: number | ((p: number) => number)) => void;
@@ -38,6 +38,7 @@ type PromptParams = GenerationCallbacks & {
   prompt: string;
   duration: string;
   format: string;
+  quality: QualityMode;
   selectedVoiceId: string;
   musicEnabled: boolean;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
@@ -48,6 +49,7 @@ type ScreenshotParams = GenerationCallbacks & {
   intent: string;
   duration: string;
   format: string;
+  quality: QualityMode;
   selectedVoiceId: string;
   musicEnabled: boolean;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
@@ -55,13 +57,11 @@ type ScreenshotParams = GenerationCallbacks & {
 
 async function pollRender(
   jobId: string,
-  bucketName: string,
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
   cb: GenerationCallbacks
 ) {
   startRenderPoll(
     jobId,
-    bucketName,
     pollRef,
     cb.setProgress,
     cb.setVideoUrl,
@@ -73,7 +73,7 @@ async function pollRender(
 }
 
 export async function generateFromPrompt(params: PromptParams) {
-  const { prompt, duration, format, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
+  const { prompt, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
   const finalPrompt = prompt.trim();
   if (!finalPrompt) return;
 
@@ -169,6 +169,7 @@ export async function generateFromPrompt(params: PromptParams) {
         sceneDurations: scenesData.sceneDurations,
         totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
+        quality,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
         musicVolume: 0.07,
@@ -181,7 +182,7 @@ export async function generateFromPrompt(params: PromptParams) {
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
 
-    await pollRender(renderData.jobId, renderData.bucketName, pollRef, cb);
+    await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
     cb.setScreen("input");
@@ -189,7 +190,8 @@ export async function generateFromPrompt(params: PromptParams) {
 }
 
 export async function generateFromScreenshot(params: ScreenshotParams) {
-  const { file, intent, duration, format, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
+  const { file, intent, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } =
+    params;
 
   if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
 
@@ -272,6 +274,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
         sceneDurations: scenesData.sceneDurations,
         totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
+        quality,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
         musicVolume: 0.07,
@@ -284,7 +287,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
 
-    await pollRender(renderData.jobId, renderData.bucketName, pollRef, cb);
+    await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
     cb.setScreen("input");

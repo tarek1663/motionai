@@ -5,9 +5,9 @@ import { copy } from "@/lib/dashboard/copy";
 import { STATUS_LABELS } from "@/lib/dashboard/constants";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
-type Props = Pick<UseDashboardReturn, "progress" | "status" | "formatDetected">;
+type Props = Pick<UseDashboardReturn, "progress" | "status" | "formatDetected" | "quality">;
 
-export function DashboardGeneratingScreen({ progress, status, formatDetected }: Props) {
+export function DashboardGeneratingScreen({ progress, status, formatDetected, quality }: Props) {
   return (
     <div className="dash-state-card dash-state-card--minimal">
       <Film
@@ -17,6 +17,9 @@ export function DashboardGeneratingScreen({ progress, status, formatDetected }: 
         className="dash-state-icon dash-animate-pulse"
       />
       <h2 className="dash-state-title dash-state-title--sm">{copy.generatingTitle}</h2>
+      <p className="dash-state-sub dash-state-sub--tight">
+        {quality === "fast" ? "⚡ Mode rapide" : "✨ Haute qualité"}
+      </p>
       <p className="dash-state-status">
         {STATUS_LABELS[status] || "…"}
         {formatDetected && (

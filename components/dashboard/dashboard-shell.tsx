@@ -78,6 +78,7 @@ export function DashboardShell(state: UseDashboardReturn) {
             progress={state.progress}
             status={state.status}
             formatDetected={state.formatDetected}
+            quality={state.quality}
           />
         )}
 

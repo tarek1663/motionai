@@ -6,7 +6,6 @@ console.log("📁 Files:", require("fs").readdirSync(__dirname));
 
 const express = require("express");
 const cors = require("cors");
-const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
@@ -22,6 +21,28 @@ const PHOTOS_DIR = path.join(__dirname, "photos");
 fs.mkdirSync(RENDERS_DIR, { recursive: true });
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+
+const bundleCache = new Map();
+
+const getBundleLocation = async () => {
+  if (bundleCache.has("bundle")) {
+    return bundleCache.get("bundle");
+  }
+
+  const location = await require("@remotion/bundler").bundle({
+    entryPoint: path.join(__dirname, "..", "remotion", "Root.tsx"),
+    webpackOverride: (config) => config,
+  });
+
+  bundleCache.set("bundle", location);
+  return location;
+};
+
+const toAbsoluteAssetUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith("http")) return url;
+  return `${process.env.RENDER_SERVER_URL}${url}`;
+};
 
 // ── Health check ──────────────────────────────────────
 app.get("/health", (req, res) => res.json({ status: "ok" }));
@@ -169,11 +190,24 @@ app.post("/render", async (req, res) => {
     duration,
     accentColor,
     formatName,
+    quality = "fast",
   } = req.body;
 
   const outPath = path.join(RENDERS_DIR, `${jobId}.mp4`);
+  const errPath = path.join(RENDERS_DIR, `${jobId}.error`);
   const metaPath = path.join(RENDERS_DIR, `${jobId}.meta.json`);
-  const propsPath = path.join(RENDERS_DIR, `${jobId}.props.json`);
+  const progressPath = path.join(RENDERS_DIR, `${jobId}.progress`);
+
+  const qualitySettings = {
+    fast: { crf: 28, concurrency: 8, scale: 0.75 },
+    high: { crf: 18, concurrency: 4, scale: 1 },
+  };
+
+  const settings = qualitySettings[quality] || qualitySettings.fast;
+
+  if (fs.existsSync(errPath)) fs.unlinkSync(errPath);
+  if (fs.existsSync(progressPath)) fs.unlinkSync(progressPath);
+  fs.writeFileSync(progressPath, JSON.stringify({ progress: 0 }));
 
   fs.writeFileSync(
     metaPath,
@@ -183,63 +217,69 @@ app.post("/render", async (req, res) => {
       duration,
       accentColor,
       formatName,
+      quality,
     })
-  );
-
-  fs.writeFileSync(
-    propsPath,
-    JSON.stringify({
-      scenes,
-      sceneDurations,
-      totalFrames,
-      format: format || "9:16",
-      audioSrc: audioUrl || null,
-      musicSrc: musicUrl || null,
-      musicVolume: musicVolume || 0.07,
-    })
-  );
-
-  const getDimensions = (fmt) => {
-    if (fmt === "16:9") return { width: 1920, height: 1080 };
-    if (fmt === "1:1") return { width: 1080, height: 1080 };
-    return { width: 1080, height: 1920 };
-  };
-  const { width, height } = getDimensions(format || "9:16");
-
-  const rootPath = path.join(__dirname, "remotion", "Root.tsx");
-
-  const cmd = [
-    "npx remotion render",
-    `"${rootPath}"`,
-    "MotionVideo",
-    `"${outPath}"`,
-    `--props="${propsPath}"`,
-    `--width=${width}`,
-    `--height=${height}`,
-    "--codec=h264",
-    "--crf=18",
-    "--browser-executable=$(which chromium)",
-  ].join(" ");
-
-  exec(
-    cmd,
-    {
-      cwd: path.join(__dirname, ".."),
-      maxBuffer: 1024 * 1024 * 500,
-      env: {
-        ...process.env,
-        NODE_ENV: "production",
-      },
-    },
-    (err) => {
-      if (err) {
-        console.error("Render error:", err.message);
-        fs.writeFileSync(path.join(RENDERS_DIR, `${jobId}.error`), err.message);
-      }
-    }
   );
 
   res.json({ jobId });
+
+  const inputProps = {
+    scenes,
+    sceneDurations,
+    totalFrames,
+    format: format || "9:16",
+    audioSrc: audioUrl || null,
+    musicSrc: musicUrl || null,
+    musicVolume: musicVolume || 0.07,
+  };
+
+  (async () => {
+    try {
+      const { renderMedia, selectComposition } = require("@remotion/renderer");
+      const bundleLocation = await getBundleLocation();
+
+      const renderInputProps = {
+        ...inputProps,
+        audioSrc: toAbsoluteAssetUrl(inputProps.audioSrc),
+        musicSrc: toAbsoluteAssetUrl(inputProps.musicSrc),
+      };
+
+      const composition = await selectComposition({
+        serveUrl: bundleLocation,
+        id: "MotionVideo",
+        inputProps: renderInputProps,
+      });
+
+      await renderMedia({
+        composition,
+        serveUrl: bundleLocation,
+        codec: "h264",
+        outputLocation: outPath,
+        inputProps: renderInputProps,
+        browserExecutable: "/usr/bin/chromium",
+        chromiumOptions: {
+          disableWebSecurity: true,
+          ignoreCertificateErrors: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+        },
+        concurrency: settings.concurrency,
+        crf: settings.crf,
+        pixelFormat: "yuv420p",
+        // `scale` n'est pas supporté par renderMedia programmatique.
+        onProgress: ({ progress }) => {
+          const pct = Math.round(progress * 100);
+          fs.writeFileSync(progressPath, JSON.stringify({ progress: pct }));
+          console.log(`📊 Render progress: ${pct}%`);
+        },
+      });
+
+      fs.writeFileSync(progressPath, JSON.stringify({ progress: 100 }));
+    } catch (err) {
+      const message = err?.message || "Render failed";
+      console.error("Render error:", message);
+      fs.writeFileSync(errPath, message);
+    }
+  })();
 });
 
 // ── Status rendu ──────────────────────────────────────
@@ -247,17 +287,29 @@ app.get("/render/:jobId", (req, res) => {
   const { jobId } = req.params;
   const outPath = path.join(RENDERS_DIR, `${jobId}.mp4`);
   const errPath = path.join(RENDERS_DIR, `${jobId}.error`);
+  const progressPath = path.join(RENDERS_DIR, `${jobId}.progress`);
 
   if (fs.existsSync(errPath)) {
     return res.json({ status: "error", error: fs.readFileSync(errPath, "utf-8") });
   }
+
   if (fs.existsSync(outPath)) {
     return res.json({
       status: "done",
       videoUrl: `${process.env.RENDER_SERVER_URL}/video/${jobId}.mp4`,
+      progress: 100,
     });
   }
-  res.json({ status: "rendering" });
+
+  let progress = 0;
+  if (fs.existsSync(progressPath)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(progressPath, "utf-8"));
+      progress = data.progress || 0;
+    } catch {}
+  }
+
+  res.json({ status: "rendering", progress });
 });
 
 // ── Metadata ──────────────────────────────────────────

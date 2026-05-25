@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { Loader2, Sparkles, Upload, X } from "lucide-react";
+import { QualitySelector } from "@/components/dashboard/quality-selector";
 import { copy } from "@/lib/dashboard/copy";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
@@ -14,6 +15,8 @@ type Props = Pick<
   | "clearScreenshot"
   | "screenshotLoading"
   | "submitScreenshot"
+  | "quality"
+  | "setQuality"
 >;
 
 export function ScreenshotComposer({
@@ -24,6 +27,8 @@ export function ScreenshotComposer({
   clearScreenshot,
   screenshotLoading,
   submitScreenshot,
+  quality,
+  setQuality,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const canSubmit =
@@ -75,6 +80,7 @@ export function ScreenshotComposer({
             placeholder={copy.screenshotPlaceholder}
             rows={2}
           />
+          <QualitySelector quality={quality} setQuality={setQuality} />
           <button
             type="button"
             className="dash-btn-primary dash-btn-full"

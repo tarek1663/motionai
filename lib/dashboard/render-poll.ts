@@ -3,7 +3,6 @@ import type { DashboardScreen } from "./types";
 
 export function startRenderPoll(
   jobId: string,
-  bucketName: string,
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
   setProgress: Dispatch<SetStateAction<number>>,
   setVideoUrl: (url: string) => void,
@@ -15,12 +14,9 @@ export function startRenderPoll(
   if (pollRef.current) clearInterval(pollRef.current);
   pollRef.current = setInterval(async () => {
     try {
-      const statusRes = await fetch(
-        `/api/render/${jobId}?bucketName=${encodeURIComponent(bucketName)}`,
-        {
+      const statusRes = await fetch(`/api/render/${jobId}`, {
         cache: "no-store",
-        }
-      );
+      });
 
       if (!statusRes.ok) {
         console.log("⚠️ Polling error status:", statusRes.status);
@@ -28,6 +24,10 @@ export function startRenderPoll(
       }
 
       const statusData = await statusRes.json();
+      if (typeof statusData.progress === "number" && statusData.progress > 0) {
+        setProgress(statusData.progress);
+      }
+
       if (statusData.status === "done") {
         if (pollRef.current) clearInterval(pollRef.current);
         pollRef.current = null;
@@ -41,11 +41,9 @@ export function startRenderPoll(
         pollRef.current = null;
         setError(statusData.error || "Erreur de rendu");
         setScreen("input");
-      } else {
-        setProgress((p) => Math.min(p + 1, 95));
       }
     } catch (err) {
-      console.log("⚠️ Polling fetch error, retrying...", err);
+      console.log("⚠️ Polling retry...", err);
     }
-  }, 3000);
+  }, 2000);
 }

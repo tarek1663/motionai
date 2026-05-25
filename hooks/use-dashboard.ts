@@ -10,7 +10,7 @@ import {
 } from "@/lib/dashboard/questions";
 import { fetchCredits, type CreditsInfo } from "@/lib/dashboard/credits";
 import { generateFromPrompt, generateFromScreenshot } from "@/lib/dashboard/generate";
-import type { DashboardScreen, DashboardVideo, InputTab } from "@/lib/dashboard/types";
+import type { DashboardScreen, DashboardVideo, InputTab, QualityMode } from "@/lib/dashboard/types";
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
 
@@ -21,6 +21,7 @@ export function useDashboard() {
   const [prompt, setPrompt] = useState("");
   const [duration, setDuration] = useState("30s");
   const [format, setFormat] = useState("9:16");
+  const [quality, setQuality] = useState<QualityMode>("fast");
   const [selectedVoiceId, setSelectedVoiceId] = useState(DEFAULT_VOICE);
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [screen, setScreen] = useState<DashboardScreen>("input");
@@ -137,13 +138,14 @@ export function useDashboard() {
         prompt: finalPrompt,
         duration,
         format,
+        quality,
         selectedVoiceId,
         musicEnabled,
         pollRef,
         ...generationCallbacks,
       });
     },
-    [prompt, duration, format, selectedVoiceId, musicEnabled, loadVideos]
+    [prompt, duration, format, quality, selectedVoiceId, musicEnabled, loadVideos]
   );
 
   const fetchQuestions = useCallback(async () => {
@@ -193,6 +195,7 @@ export function useDashboard() {
         intent: screenshotIntent,
         duration,
         format,
+        quality,
         selectedVoiceId,
         musicEnabled,
         pollRef,
@@ -206,6 +209,7 @@ export function useDashboard() {
     screenshotIntent,
     duration,
     format,
+    quality,
     selectedVoiceId,
     musicEnabled,
     loadVideos,
@@ -262,6 +266,8 @@ export function useDashboard() {
     setDuration,
     format,
     setFormat,
+    quality,
+    setQuality,
     selectedVoiceId,
     setSelectedVoiceId,
     musicEnabled,
