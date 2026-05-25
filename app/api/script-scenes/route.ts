@@ -92,6 +92,10 @@ Réponds UNIQUEMENT en JSON valide sans markdown :
       durationFrames: 90,
     }));
 
+    console.log("📝 Script lines:", restructuredLines.length);
+    console.log("🎬 Scenes generated:", data.scenes?.length);
+    console.log("📜 Restructured:", restructuredScript);
+
     return NextResponse.json({
       scenes,
       sceneDurations,

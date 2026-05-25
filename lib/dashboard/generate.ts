@@ -340,7 +340,8 @@ export async function generateFromScript(params: ScriptParams) {
     }
 
     const scriptForVoice = scenesData.restructuredScript || finalScript;
-    console.log("📝 Script restructuré:", scriptForVoice);
+    console.log("🎬 Scenes:", scenesData.scenes?.length);
+    console.log("📝 Script for voice:", scriptForVoice);
 
     cb.setProgress(25);
     cb.setStatus("voice");
@@ -360,7 +361,10 @@ export async function generateFromScript(params: ScriptParams) {
     const voiceDurationSeconds = voiceData.durationSeconds || 30;
     const totalFrames = Math.round(voiceDurationSeconds * 60);
 
+    console.log("⏱️ Voice duration:", voiceData.durationSeconds);
+    console.log("🎞️ phraseTimestamps:", voiceData.phraseTimestamps?.length);
     console.log("📐 durationSeconds:", voiceDurationSeconds, "totalFrames:", totalFrames);
+    console.log("📐 totalFrames:", totalFrames);
 
     if (!Number.isFinite(totalFrames) || totalFrames <= 0) {
       throw new Error("Durée invalide");
@@ -394,7 +398,7 @@ export async function generateFromScript(params: ScriptParams) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scenes: scenesData.scenes,
-        sceneDurations: voiceData.phraseTimestamps || scenesData.sceneDurations || [],
+        sceneDurations: voiceData.phraseTimestamps,
         totalFrames,
         format,
         quality,
