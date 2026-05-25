@@ -50,9 +50,19 @@ export async function POST(req: NextRequest) {
       }),
     );
 
+    const sceneDurations =
+      Array.isArray(phraseTimestamps) && phraseTimestamps.length === scenesWithPhotos.length
+        ? phraseTimestamps.map((phrase: any) => ({
+            startFrame: Math.round(phrase.startFrame),
+            endFrame: Math.round(phrase.endFrame),
+            durationFrames: Math.round(phrase.durationFrames),
+          }))
+        : result.sceneDurations;
+
     return NextResponse.json({
       ...result,
       scenes: scenesWithPhotos,
+      sceneDurations,
     });
   } catch (err: unknown) {
     console.error("Scenes error:", err);
