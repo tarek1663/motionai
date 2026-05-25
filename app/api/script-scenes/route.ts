@@ -59,10 +59,43 @@ Réponds UNIQUEMENT en JSON valide sans markdown :
     const content = response.content[0].type === "text" ? response.content[0].text : "";
     const clean = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const data = JSON.parse(clean);
+    const restructuredScript =
+      typeof data.restructuredScript === "string" && data.restructuredScript.trim()
+        ? data.restructuredScript.trim()
+        : script;
+    const restructuredLines = restructuredScript
+      .split("\n")
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0);
+    const rawScenes = Array.isArray(data.scenes) ? data.scenes : [];
+    const sceneCount = Math.max(restructuredLines.length, rawScenes.length);
+
+    const scenes = Array.from({ length: sceneCount }, (_, index) => {
+      const source = rawScenes[index] ?? {};
+      const fallbackText = restructuredLines[index] || restructuredLines[restructuredLines.length - 1] || script;
+
+      return {
+        ...source,
+        type: typeof source.type === "string" && source.type.trim() ? source.type : "sentence",
+        text: typeof source.text === "string" && source.text.trim() ? source.text : fallbackText,
+        text2: typeof source.text2 === "string" ? source.text2 : undefined,
+        bg: typeof source.bg === "string" && source.bg.trim() ? source.bg : "#0a0a0a",
+        accentColor:
+          typeof source.accentColor === "string" && source.accentColor.trim()
+            ? source.accentColor
+            : accentColor,
+      };
+    });
+    const sceneDurations = scenes.map((_, index) => ({
+      startFrame: index * 90,
+      endFrame: (index + 1) * 90,
+      durationFrames: 90,
+    }));
 
     return NextResponse.json({
-      scenes: data.scenes,
-      restructuredScript: data.restructuredScript,
+      scenes,
+      sceneDurations,
+      restructuredScript,
       musicUrl: data.musicUrl || null,
     });
   } catch (err: any) {

@@ -319,7 +319,7 @@ export async function generateFromScript(params: ScriptParams) {
   cb.setFormatDetected("Script personnalisé");
 
   try {
-    const durationSeconds = durationToSeconds(duration);
+    const requestedDurationSeconds = durationToSeconds(duration);
     const accentColor = colors.accent;
 
     const scenesRes = await fetch("/api/script-scenes", {
@@ -357,6 +357,15 @@ export async function generateFromScript(params: ScriptParams) {
       return;
     }
 
+    const voiceDurationSeconds = voiceData.durationSeconds || 30;
+    const totalFrames = Math.round(voiceDurationSeconds * 60);
+
+    console.log("📐 durationSeconds:", voiceDurationSeconds, "totalFrames:", totalFrames);
+
+    if (!Number.isFinite(totalFrames) || totalFrames <= 0) {
+      throw new Error("Durée invalide");
+    }
+
     let musicSrc: string | null = null;
     if (musicEnabled) {
       musicSrc = scenesData.musicUrl || null;
@@ -386,14 +395,14 @@ export async function generateFromScript(params: ScriptParams) {
       body: JSON.stringify({
         scenes: scenesData.scenes,
         sceneDurations: voiceData.phraseTimestamps || scenesData.sceneDurations || [],
-        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
+        totalFrames,
         format,
         quality,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
         musicVolume: 0.07,
         prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
-        duration: parseInt(durationSeconds),
+        duration: parseInt(requestedDurationSeconds),
         accentColor,
         formatName: "Script personnalisé",
       }),
