@@ -333,6 +333,7 @@ export async function generateFromScript(params: ScriptParams) {
       }),
     });
     const scenesData = await scenesRes.json();
+    console.log("🎬 scenesData complet:", JSON.stringify(scenesData).slice(0, 500));
     if (!scenesRes.ok) {
       cb.setError(scenesData.error || "Erreur d'analyse du script");
       cb.setScreen("input");
@@ -355,6 +356,7 @@ export async function generateFromScript(params: ScriptParams) {
       body: JSON.stringify({ text: scriptForVoice, voiceId: selectedVoiceId }),
     });
     const voiceData = await voiceRes.json();
+    console.log("⏱️ voiceData complet:", JSON.stringify(voiceData).slice(0, 500));
     if (!voiceRes.ok) {
       cb.setError(voiceData.error || "Erreur de voix");
       cb.setScreen("input");
