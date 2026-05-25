@@ -55,11 +55,13 @@ type ScreenshotParams = GenerationCallbacks & {
 
 async function pollRender(
   jobId: string,
+  bucketName: string,
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
   cb: GenerationCallbacks
 ) {
   startRenderPoll(
     jobId,
+    bucketName,
     pollRef,
     cb.setProgress,
     cb.setVideoUrl,
@@ -179,7 +181,7 @@ export async function generateFromPrompt(params: PromptParams) {
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
 
-    await pollRender(renderData.jobId, pollRef, cb);
+    await pollRender(renderData.jobId, renderData.bucketName, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
     cb.setScreen("input");
@@ -282,7 +284,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
 
-    await pollRender(renderData.jobId, pollRef, cb);
+    await pollRender(renderData.jobId, renderData.bucketName, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
     cb.setScreen("input");

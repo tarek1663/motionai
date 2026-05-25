@@ -3,6 +3,7 @@ import type { DashboardScreen } from "./types";
 
 export function startRenderPoll(
   jobId: string,
+  bucketName: string,
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>,
   setProgress: Dispatch<SetStateAction<number>>,
   setVideoUrl: (url: string) => void,
@@ -14,9 +15,12 @@ export function startRenderPoll(
   if (pollRef.current) clearInterval(pollRef.current);
   pollRef.current = setInterval(async () => {
     try {
-      const statusRes = await fetch(`/api/render/${jobId}`, {
+      const statusRes = await fetch(
+        `/api/render/${jobId}?bucketName=${encodeURIComponent(bucketName)}`,
+        {
         cache: "no-store",
-      });
+        }
+      );
 
       if (!statusRes.ok) {
         console.log("⚠️ Polling error status:", statusRes.status);

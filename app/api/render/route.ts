@@ -2,96 +2,56 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabase";
 
-export const maxDuration = 60;
-
-function nextResetDate(): string {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString();
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
-
-    const durationSec =
-      body.durationSeconds ??
-      (typeof body.duration === "number" ? body.duration : parseInt(String(body.duration), 10)) ??
-      30;
-    const duration = Number.isFinite(durationSec) ? durationSec : 30;
-
     const { userId } = await auth();
+
     if (userId) {
-      let { data: sub } = await supabase
+      const { data: sub } = await supabase
         .from("subscriptions")
         .select("*")
         .eq("user_id", userId)
         .single();
 
-      if (sub) {
-        if (sub.reset_date && new Date(sub.reset_date) < new Date()) {
-          await supabase
-            .from("subscriptions")
-            .update({ videos_used: 0, reset_date: nextResetDate() })
-            .eq("user_id", userId);
-          sub.videos_used = 0;
-        }
-
-        if (sub.plan !== "business" && sub.videos_used >= sub.videos_limit) {
-          return NextResponse.json(
-            {
-              error: "Limite atteinte",
-              upgrade: true,
-              plan: sub.plan,
-              limit: sub.videos_limit,
-            },
-            { status: 403 }
-          );
-        }
-
-        const durationLimits: Record<string, number> = {
-          free: 30,
-          starter: 120,
-          pro: 120,
-          business: 120,
-        };
-        const maxDuration = durationLimits[sub.plan] || 30;
-        if (duration > maxDuration) {
-          return NextResponse.json(
-            {
-              error: `Durée maximale ${maxDuration}s pour le plan ${sub.plan}`,
-              upgrade: true,
-            },
-            { status: 403 }
-          );
-        }
+      if (sub && sub.plan !== "business" && sub.videos_used >= sub.videos_limit) {
+        return NextResponse.json(
+          {
+            error: "Limite atteinte",
+            upgrade: true,
+            plan: sub.plan,
+            limit: sub.videos_limit,
+          },
+          { status: 403 }
+        );
       }
     }
 
-    if (!body.totalFrames) {
-      body.totalFrames = Math.round(duration * 60);
-    }
+    const { renderMediaOnLambda } = await import("@remotion/lambda-client");
 
-    const totalFrames = body.totalFrames;
-    console.log("📐 totalFrames:", totalFrames, "duration:", duration, "fps: 60");
-
-    const res = await fetch(`${RENDER_URL}/render`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+    const result = await renderMediaOnLambda({
+      region: "eu-west-3",
+      functionName: process.env.REMOTION_LAMBDA_FUNCTION_NAME!,
+      serveUrl: process.env.REMOTION_SERVE_URL!,
+      composition: "MotionVideo",
+      inputProps: {
+        ...body,
+        audioSrc: body.audioUrl || null,
+        musicSrc: body.musicUrl || null,
+        musicVolume: body.musicVolume || 0.07,
+      },
+      codec: "h264",
+      imageFormat: "jpeg",
+      maxRetries: 1,
+      framesPerLambda: 20,
+      concurrencyPerLambda: 1,
+      crf: 18,
+      privacy: "public",
     });
 
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: err }, { status: 500 });
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Erreur render";
-    console.error("Render route error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ jobId: result.renderId, bucketName: result.bucketName });
+  } catch (err: any) {
+    console.error("Lambda render error:", err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
