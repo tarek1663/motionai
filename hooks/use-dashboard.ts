@@ -9,8 +9,14 @@ import {
   type ClarificationQuestion,
 } from "@/lib/dashboard/questions";
 import { fetchCredits, type CreditsInfo } from "@/lib/dashboard/credits";
-import { generateFromPrompt, generateFromScreenshot } from "@/lib/dashboard/generate";
-import type { DashboardScreen, DashboardVideo, InputTab, QualityMode } from "@/lib/dashboard/types";
+import { generateFromPrompt, generateFromScreenshot, generateFromScript } from "@/lib/dashboard/generate";
+import type {
+  DashboardScreen,
+  DashboardVideo,
+  InputTab,
+  QualityMode,
+  ScriptMode,
+} from "@/lib/dashboard/types";
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
 
@@ -19,6 +25,8 @@ export function useDashboard() {
   const router = useRouter();
 
   const [prompt, setPrompt] = useState("");
+  const [mode, setMode] = useState<ScriptMode>("ai");
+  const [customScript, setCustomScript] = useState("");
   const [duration, setDuration] = useState("30s");
   const [format, setFormat] = useState("9:16");
   const [quality, setQuality] = useState<QualityMode>("fast");
@@ -120,17 +128,20 @@ export function useDashboard() {
 
   const resetCreation = useCallback(() => {
     setScreen("input");
+    setMode("ai");
     setPrompt("");
+    setCustomScript("");
     setProgress(0);
     setVideoUrl("");
     setError("");
+    setFormatDetected("");
     setSelectedVideo(null);
     setQuestions([]);
     setAnswers({});
     setOtherDetails({});
   }, []);
 
-  const submit = useCallback(
+  const generatePrompt = useCallback(
     async (enrichedPrompt?: string) => {
       const finalPrompt = enrichedPrompt || prompt;
       if (!finalPrompt.trim()) return;
@@ -165,14 +176,46 @@ export function useDashboard() {
         setCurrentQ(0);
         setScreen("questions");
       } else {
-        await submit();
+        await generatePrompt();
       }
     } catch {
-      await submit();
+      await generatePrompt();
     } finally {
       setLoadingQ(false);
     }
-  }, [prompt, submit]);
+  }, [prompt, generatePrompt]);
+
+  const submit = useCallback(async () => {
+    if (mode === "ai") {
+      if (!prompt.trim()) return;
+      await fetchQuestions();
+      return;
+    }
+
+    if (!customScript.trim()) return;
+
+    await generateFromScript({
+      script: customScript,
+      duration,
+      format,
+      quality,
+      selectedVoiceId,
+      musicEnabled,
+      pollRef,
+      ...generationCallbacks,
+    });
+  }, [
+    mode,
+    prompt,
+    customScript,
+    duration,
+    format,
+    quality,
+    selectedVoiceId,
+    musicEnabled,
+    fetchQuestions,
+    loadVideos,
+  ]);
 
   const handleScreenshotFile = useCallback((file: File) => {
     setScreenshotFile(file);
@@ -220,14 +263,14 @@ export function useDashboard() {
     setPrompt(enriched);
     setScreen("input");
     setQuestions([]);
-    setTimeout(() => submit(enriched), 100);
-  }, [prompt, questions, answers, otherDetails, submit]);
+    setTimeout(() => generatePrompt(enriched), 100);
+  }, [prompt, questions, answers, otherDetails, generatePrompt]);
 
   const skipQuestions = useCallback(() => {
     setScreen("input");
     setQuestions([]);
-    setTimeout(() => submit(), 100);
-  }, [submit]);
+    setTimeout(() => generatePrompt(), 100);
+  }, [generatePrompt]);
 
   const selectAnswer = useCallback(
     (questionId: string, optionId: string, question?: ClarificationQuestion) => {
@@ -260,8 +303,12 @@ export function useDashboard() {
 
   return {
     user,
+    mode,
+    setMode,
     prompt,
     setPrompt,
+    customScript,
+    setCustomScript,
     duration,
     setDuration,
     format,

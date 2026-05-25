@@ -10,7 +10,7 @@ import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 type Props = UseDashboardReturn;
 
 export function DashboardInputScreen(props: Props) {
-  const { activeTab, setActiveTab, setPrompt, error } = props;
+  const { activeTab, setActiveTab, setPrompt, mode, error } = props;
 
   return (
     <div className="dash-content dash-content--compact">
@@ -39,22 +39,26 @@ export function DashboardInputScreen(props: Props) {
       {activeTab === "prompt" && (
         <>
           <PromptComposer {...props} />
-          <p className="dash-field-hint dash-field-hint--label dash-suggestions-label">
-            {copy.suggestionsLabel}
-          </p>
-          <div className="dash-chips">
-            {PROMPT_SUGGESTIONS.map((cat) => (
-              <button
-                key={cat.label}
-                type="button"
-                className="dash-chip"
-                onMouseDown={() => setPrompt(cat.label)}
-              >
-                <DashboardIcon icon={cat.Icon} size={14} />
-                {cat.label}
-              </button>
-            ))}
-          </div>
+          {mode === "ai" && (
+            <>
+              <p className="dash-field-hint dash-field-hint--label dash-suggestions-label">
+                {copy.suggestionsLabel}
+              </p>
+              <div className="dash-chips">
+                {PROMPT_SUGGESTIONS.map((cat) => (
+                  <button
+                    key={cat.label}
+                    type="button"
+                    className="dash-chip"
+                    onMouseDown={() => setPrompt(cat.label)}
+                  >
+                    <DashboardIcon icon={cat.Icon} size={14} />
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </>
       )}
       {activeTab === "screenshot" && <ScreenshotComposer {...props} />}

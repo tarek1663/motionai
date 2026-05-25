@@ -1,4 +1,5 @@
 import type { MutableRefObject } from "react";
+import { colors } from "@/lib/colors";
 import { durationToSeconds } from "./constants";
 import { checkCreditsBeforeGenerate } from "./credits";
 import { startRenderPoll } from "./render-poll";
@@ -47,6 +48,16 @@ type PromptParams = GenerationCallbacks & {
 type ScreenshotParams = GenerationCallbacks & {
   file: File;
   intent: string;
+  duration: string;
+  format: string;
+  quality: QualityMode;
+  selectedVoiceId: string;
+  musicEnabled: boolean;
+  pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
+};
+
+type ScriptParams = GenerationCallbacks & {
+  script: string;
   duration: string;
   format: string;
   quality: QualityMode;
@@ -282,6 +293,106 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
         duration: parseInt(durationSeconds),
         accentColor: analyzeData.accentColor,
         formatName: "UI Reconstruit",
+      }),
+    });
+    const renderData = await renderRes.json();
+    if (handleRenderError(renderRes, renderData, cb)) return;
+
+    await pollRender(renderData.jobId, pollRef, cb);
+  } catch (err: unknown) {
+    cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
+    cb.setScreen("input");
+  }
+}
+
+export async function generateFromScript(params: ScriptParams) {
+  const { script, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
+  const finalScript = script.trim();
+  if (!finalScript) return;
+
+  if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
+
+  cb.setScreen("generating");
+  cb.setError("");
+  cb.setProgress(5);
+  cb.setStatus("scripting");
+  cb.setFormatDetected("Script personnalisé");
+
+  try {
+    const durationSeconds = durationToSeconds(duration);
+    const accentColor = colors.accent;
+
+    const scenesRes = await fetch("/api/script-scenes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        script: finalScript,
+        format,
+        duration,
+        accentColor,
+      }),
+    });
+    const scenesData = await scenesRes.json();
+    if (!scenesRes.ok) {
+      cb.setError(scenesData.error || "Erreur d'analyse du script");
+      cb.setScreen("input");
+      return;
+    }
+
+    cb.setProgress(25);
+    cb.setStatus("voice");
+
+    const voiceRes = await fetch("/api/voice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: finalScript, voiceId: selectedVoiceId }),
+    });
+    const voiceData = await voiceRes.json();
+    if (!voiceRes.ok) {
+      cb.setError(voiceData.error || "Erreur de voix");
+      cb.setScreen("input");
+      return;
+    }
+
+    let musicSrc: string | null = null;
+    if (musicEnabled) {
+      musicSrc = scenesData.musicUrl || null;
+      if (!musicSrc) {
+        try {
+          const musicRes = await fetch("/api/music", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: finalScript.split("\n")[0] || finalScript,
+              formatId: "pub",
+            }),
+          });
+          musicSrc = (await musicRes.json()).musicUrl || null;
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+
+    cb.setProgress(55);
+    cb.setStatus("rendering");
+
+    const renderRes = await fetch("/api/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        scenes: scenesData.scenes,
+        sceneDurations: voiceData.phraseTimestamps || scenesData.sceneDurations || [],
+        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
+        format,
+        quality,
+        audioUrl: voiceData.audioUrl,
+        musicUrl: musicSrc,
+        musicVolume: 0.07,
+        prompt: finalScript.split("\n")[0] || finalScript,
+        duration: parseInt(durationSeconds),
+        accentColor,
+        formatName: "Script personnalisé",
       }),
     });
     const renderData = await renderRes.json();

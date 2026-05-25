@@ -14,3 +14,5 @@ export type DashboardScreen = "input" | "questions" | "generating" | "done" | "v
 export type InputTab = "prompt" | "screenshot";
 
 export type QualityMode = "fast" | "high";
+
+export type ScriptMode = "ai" | "script";

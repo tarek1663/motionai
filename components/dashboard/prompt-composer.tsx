@@ -22,6 +22,7 @@ import { DashDropdown } from "@/components/dashboard/dash-dropdown";
 import { QualitySelector } from "@/components/dashboard/quality-selector";
 import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
+import type { ScriptMode } from "@/lib/dashboard/types";
 
 const FORMAT_ICONS: Record<string, LucideIcon> = {
   "9:16": RectangleVertical,
@@ -29,10 +30,23 @@ const FORMAT_ICONS: Record<string, LucideIcon> = {
   "1:1": Square,
 };
 
+const MODE_OPTIONS: Array<{
+  id: ScriptMode;
+  label: string;
+  sub: string;
+}> = [
+  { id: "ai", label: "✨ Mode IA", sub: "Claude génère le script" },
+  { id: "script", label: "✍️ Mon script", sub: "J'écris moi-même" },
+];
+
 type Props = Pick<
   UseDashboardReturn,
+  | "mode"
+  | "setMode"
   | "prompt"
   | "setPrompt"
+  | "customScript"
+  | "setCustomScript"
   | "duration"
   | "setDuration"
   | "format"
@@ -50,7 +64,7 @@ type Props = Pick<
   | "showVoices"
   | "setShowVoices"
   | "loadingQ"
-  | "fetchQuestions"
+  | "submit"
 >;
 
 function closeAllMenus(
@@ -65,10 +79,20 @@ function closeAllMenus(
   setters.setShowVoices(false);
 }
 
+function countScriptScenes(script: string): number {
+  return script
+    .split("\n")
+    .filter((line) => line.trim().length > 0).length;
+}
+
 export function PromptComposer(props: Props) {
   const {
+    mode,
+    setMode,
     prompt,
     setPrompt,
+    customScript,
+    setCustomScript,
     duration,
     setDuration,
     format,
@@ -86,7 +110,7 @@ export function PromptComposer(props: Props) {
     showVoices,
     setShowVoices,
     loadingQ,
-    fetchQuestions,
+    submit,
   } = props;
 
   const durationAnchorRef = useRef<HTMLDivElement>(null);
@@ -95,26 +119,75 @@ export function PromptComposer(props: Props) {
 
   const menuSetters = { setShowDurationMenu, setShowFormatMenu, setShowVoices };
   const selectedVoice = VOICES.find((v) => v.id === selectedVoiceId);
+  const sceneCount = countScriptScenes(customScript);
+  const estimatedSeconds = customScript.trim()
+    ? Math.max(1, Math.round(customScript.split(/\s+/).filter(Boolean).length / 2.5))
+    : 0;
+  const canSubmit = mode === "ai" ? prompt.trim().length > 0 : customScript.trim().length > 0;
 
   return (
     <>
       <div className="dash-composer">
+        <div className="dash-mode-toggle">
+          {MODE_OPTIONS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              className={`dash-mode-card${mode === option.id ? " active" : ""}`}
+              onClick={() => setMode(option.id)}
+            >
+              <div className="dash-mode-title">{option.label}</div>
+              <div className="dash-mode-sub">{option.sub}</div>
+            </button>
+          ))}
+        </div>
+
         <div className="dash-composer-body">
-          <textarea
-            className="dash-composer-input"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && prompt.trim()) {
-                e.preventDefault();
-                closeAllMenus(menuSetters);
-                fetchQuestions();
-              }
-            }}
-            placeholder={copy.promptPlaceholder}
-            rows={3}
-          />
-          <p className="dash-field-hint">{copy.promptHelper}</p>
+          {mode === "ai" ? (
+            <>
+              <textarea
+                className="dash-composer-input"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey && prompt.trim()) {
+                    e.preventDefault();
+                    closeAllMenus(menuSetters);
+                    void submit();
+                  }
+                }}
+                placeholder={copy.promptPlaceholder}
+                rows={3}
+              />
+              <p className="dash-field-hint">{copy.promptHelper}</p>
+            </>
+          ) : (
+            <div className="dash-script-wrap">
+              <div className="dash-script-guide">
+                <div className="dash-script-guide-title">✍️ Guide pour un beau script :</div>
+                <div>• Une phrase courte par ligne = une scène animée</div>
+                <div>• 4 à 12 lignes recommandées</div>
+                <div>• Commence fort, termine par un appel à l&apos;action</div>
+              </div>
+
+              <textarea
+                className="dash-script-input"
+                value={customScript}
+                onChange={(e) => setCustomScript(e.target.value)}
+                placeholder={`Ex:\nLa solution qui change tout.\nPlus de 10 000 clients satisfaits.\nRapide. Simple. Puissant.\nEssaie maintenant gratuitement.`}
+                rows={7}
+              />
+
+              {customScript.trim() && (
+                <div className="dash-script-meta">
+                  <span>{sceneCount} scènes · ~{estimatedSeconds}s estimées</span>
+                  <span className={sceneCount > 12 ? "warn" : "ok"}>
+                    {sceneCount > 12 ? "⚠️ Trop de scènes" : "✓ Bon format"}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <QualitySelector quality={quality} setQuality={setQuality} />
@@ -273,9 +346,9 @@ export function PromptComposer(props: Props) {
             className="dash-submit"
             onClick={() => {
               closeAllMenus(menuSetters);
-              fetchQuestions();
+              void submit();
             }}
-            disabled={!prompt.trim() || loadingQ}
+            disabled={!canSubmit || loadingQ}
           >
             {loadingQ ? (
               <Loader2 size={16} strokeWidth={1.75} className="dash-animate-spin" />

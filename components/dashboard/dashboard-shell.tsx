@@ -15,6 +15,7 @@ export function DashboardShell(state: UseDashboardReturn) {
     selectedVideo,
     setScreen,
     setSelectedVideo,
+    setMode,
     setPrompt,
     questions,
     showUpgrade,
@@ -48,6 +49,7 @@ export function DashboardShell(state: UseDashboardReturn) {
               setSelectedVideo(null);
             }}
             onRegenerate={(p) => {
+              setMode("ai");
               setPrompt(p);
               setScreen("input");
               setSelectedVideo(null);
