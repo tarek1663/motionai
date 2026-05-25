@@ -8,43 +8,27 @@ export async function GET(
 ) {
   try {
     const { jobId } = params;
-    const bucketName = req.nextUrl.searchParams.get("bucketName") || "";
+    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
 
-    const { getRenderProgress } = await import("@remotion/lambda-client");
+    const res  = await fetch(`${RENDER_URL}/render/${jobId}`, { cache: "no-store" });
+    const data = await res.json();
 
-    const progress = await getRenderProgress({
-      renderId: jobId,
-      bucketName,
-      functionName: process.env.REMOTION_LAMBDA_FUNCTION_NAME!,
-      region: "eu-west-3",
-    });
-
-    if (progress.fatalErrorEncountered) {
-      return NextResponse.json({
-        status: "error",
-        error: progress.errors?.[0]?.message || "Erreur Lambda",
-      });
-    }
-
-    if (progress.done) {
-      const videoUrl = progress.outputFile;
-
+    if (data.status === "done" && data.videoUrl) {
       try {
         const { userId } = await auth();
-        if (userId && videoUrl) {
-          const RENDER_URL = process.env.RENDER_SERVER_URL || "";
-          const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`).catch(() => null);
-          const meta = metaRes?.ok ? await metaRes.json() : {};
+        if (userId) {
+          const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, { cache: "no-store" });
+          const meta    = metaRes.ok ? await metaRes.json() : {};
 
           await supabase.from("videos").insert({
-            user_id: userId,
-            prompt: meta.prompt || "Vidéo générée",
-            format: meta.format || "9:16",
-            duration: meta.duration || 30,
-            video_url: videoUrl,
+            user_id:      userId,
+            prompt:       meta.prompt      || "Vidéo générée",
+            format:       meta.format      || "9:16",
+            duration:     meta.duration    || 30,
+            video_url:    data.videoUrl,
             accent_color: meta.accentColor || null,
-            format_name: meta.formatName || null,
-            status: "done",
+            format_name:  meta.formatName  || null,
+            status:       "done",
           });
 
           const { data: currentSub } = await supabase
@@ -54,8 +38,7 @@ export async function GET(
             .single();
 
           if (currentSub) {
-            await supabase
-              .from("subscriptions")
+            await supabase.from("subscriptions")
               .update({ videos_used: (currentSub.videos_used || 0) + 1 })
               .eq("user_id", userId);
           }
@@ -63,16 +46,10 @@ export async function GET(
       } catch (saveErr: any) {
         console.error("Save error:", saveErr.message);
       }
-
-      return NextResponse.json({ status: "done", videoUrl });
     }
 
-    return NextResponse.json({
-      status: "rendering",
-      progress: Math.round((progress.overallProgress || 0) * 100),
-    });
+    return NextResponse.json(data);
   } catch (err: any) {
-    console.error("Progress error:", err.message);
     return NextResponse.json({ status: "error", error: err.message });
   }
 }
