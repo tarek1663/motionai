@@ -343,9 +343,10 @@ export async function generateFromScript(params: ScriptParams) {
     console.log("🎬 Scenes count:", scenesData.scenes?.length);
     console.log("🎬 First scene:", scenesData.scenes?.[0]);
 
-    const scriptForVoice = scenesData.restructuredScript || finalScript;
+    const scriptForVoice = String(scenesData.restructuredScript || finalScript).replace(/\r\n/g, "\n");
     console.log("🎬 Scenes:", scenesData.scenes?.length);
     console.log("📝 Script for voice:", scriptForVoice);
+    console.log("📝 Script for voice lines:", scriptForVoice.split("\n").length);
 
     cb.setProgress(25);
     cb.setStatus("voice");
@@ -353,7 +354,10 @@ export async function generateFromScript(params: ScriptParams) {
     const voiceRes = await fetch("/api/voice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: scriptForVoice, voiceId: selectedVoiceId }),
+      body: JSON.stringify({
+        text: scriptForVoice,
+        voiceId: selectedVoiceId,
+      }),
     });
     const voiceData = await voiceRes.json();
     console.log("⏱️ voiceData complet:", JSON.stringify(voiceData).slice(0, 500));

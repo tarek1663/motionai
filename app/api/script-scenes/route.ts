@@ -61,7 +61,7 @@ Réponds UNIQUEMENT en JSON valide sans markdown :
     const data = JSON.parse(clean);
     const restructuredScript =
       typeof data.restructuredScript === "string" && data.restructuredScript.trim()
-        ? data.restructuredScript.trim()
+        ? data.restructuredScript.replace(/\r\n/g, "\n").trim()
         : script;
     const restructuredLines = restructuredScript
       .split("\n")
@@ -95,6 +95,7 @@ Réponds UNIQUEMENT en JSON valide sans markdown :
     console.log("📝 Script lines:", restructuredLines.length);
     console.log("🎬 Scenes generated:", data.scenes?.length);
     console.log("📜 Restructured:", restructuredScript);
+    console.log("📝 restructuredScript lines:", data.restructuredScript?.split("\n").length);
 
     return NextResponse.json({
       scenes,
