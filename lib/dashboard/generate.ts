@@ -339,6 +339,9 @@ export async function generateFromScript(params: ScriptParams) {
       return;
     }
 
+    console.log("🎬 Scenes count:", scenesData.scenes?.length);
+    console.log("🎬 First scene:", scenesData.scenes?.[0]);
+
     const scriptForVoice = scenesData.restructuredScript || finalScript;
     console.log("🎬 Scenes:", scenesData.scenes?.length);
     console.log("📝 Script for voice:", scriptForVoice);
@@ -357,6 +360,9 @@ export async function generateFromScript(params: ScriptParams) {
       cb.setScreen("input");
       return;
     }
+
+    console.log("⏱️ phraseTimestamps count:", voiceData.phraseTimestamps?.length);
+    console.log("⏱️ First timestamp:", voiceData.phraseTimestamps?.[0]);
 
     const voiceDurationSeconds = voiceData.durationSeconds || 30;
     const totalFrames = Math.round(voiceDurationSeconds * 60);
