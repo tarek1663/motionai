@@ -4,6 +4,8 @@ import { type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { BackgroundComponents } from "@/components/ui/background-components";
+
 const accent = "#10B981";
 const accentLight = "#ffffff";
 
@@ -28,6 +30,12 @@ export default function LandingPage() {
       router.push("/signup");
     }
   };
+
+  const steps = [
+    { num: "01", title: "Décris ton message" },
+    { num: "02", title: "L'IA crée ta vidéo" },
+    { num: "03", title: "Télécharge et partage" },
+  ];
 
   const testimonials = [
     {
@@ -190,28 +198,6 @@ export default function LandingPage() {
     borderRadius: 24,
     border: "1.5px solid #e8e8e8",
     boxShadow: "0 18px 44px rgba(15,23,42,0.04)",
-  };
-
-  const featureCardStyle: CSSProperties = {
-    ...surfaceCardStyle,
-    borderRadius: 20,
-    padding: "34px",
-    border: "1px solid rgba(23,19,17,0.08)",
-    boxShadow: "0 14px 34px rgba(24,19,15,0.05)",
-  };
-
-  const featureIconStyle: CSSProperties = {
-    width: 42,
-    height: 42,
-    borderRadius: 11,
-    background: "rgba(16,185,129,0.08)",
-    border: "1px solid rgba(16,185,129,0.16)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 20,
-    marginBottom: 20,
-    boxShadow: "0 6px 16px rgba(16,185,129,0.08)",
   };
 
   return (
@@ -442,13 +428,13 @@ export default function LandingPage() {
                       icon: "🎬",
                       title: "72+ scènes",
                       desc: "Texte, data, cinéma, social media",
-                      href: "#features",
+                      href: "#how",
                     },
                     {
                       icon: "📱",
                       title: "Multi-format",
                       desc: "9:16 · 16:9 · 1:1",
-                      href: "#features",
+                      href: "#how",
                     },
                   ].map((item, i) => (
                     <a
@@ -520,13 +506,13 @@ export default function LandingPage() {
                       icon: "🎙️",
                       title: "Voix naturelle",
                       desc: "ElevenLabs · Multilingue",
-                      href: "#features",
+                      href: "#how",
                     },
                     {
                       icon: "⚡",
                       title: "Rendu rapide",
                       desc: "Vidéo 1080p en 2-5 minutes",
-                      href: "#features",
+                      href: "#how",
                     },
                   ].map((item, i) => (
                     <a
@@ -712,7 +698,10 @@ export default function LandingPage() {
                 textAlign: "center",
                 fontSize: 18,
                 lineHeight: 1.7,
-                color: "#6F6862",
+                color: "#000000",
+                textShadow: "none",
+                position: "relative",
+                zIndex: 4,
               }}
             >
               Décris ton idée. L&apos;IA génère le script, les animations et la voix. Ta
@@ -735,109 +724,137 @@ export default function LandingPage() {
                   width: "100%",
                   maxWidth: 700,
                   margin: "0 auto",
-                  background: "#ffffff",
-                  borderRadius: 18,
-                  border: "1px solid rgba(23,19,17,0.06)",
-                  boxShadow: "0 14px 34px rgba(24,19,15,0.08)",
-                  padding: "18px 20px 14px",
+                  position: "relative",
+                  isolation: "isolate",
+                  zIndex: 1,
                 }}
               >
-                <textarea
-                  className="prompt-input"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Crée une vidéo de lancement pour..."
-                  rows={1}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleGenerate();
-                    }
-                  }}
+                <BackgroundComponents
+                  glow="green"
+                  className="left-[-104px] right-[-104px] top-[-88px] bottom-[-52px]"
+                />
+                <div
+                  aria-hidden="true"
                   style={{
-                    width: "100%",
-                    background: "none",
-                    border: "none",
-                    outline: "none",
-                    fontSize: 15,
-                    color: "#625b55",
-                    fontFamily: "inherit",
-                    resize: "none",
-                    lineHeight: 1.5,
-                    minHeight: 46,
+                    position: "absolute",
+                    inset: -2,
+                    zIndex: 1,
+                    borderRadius: 20,
+                    border: "1.5px solid rgba(16,185,129,0.72)",
+                    boxShadow:
+                      "0 0 0 1px rgba(16,185,129,0.16), 0 0 24px rgba(16,185,129,0.34), 0 0 60px rgba(16,185,129,0.18)",
                   }}
                 />
                 <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginTop: 6,
-                    paddingTop: 4,
+                    position: "relative",
+                    zIndex: 2,
+                    width: "100%",
+                    background: "#ffffff",
+                    borderRadius: 18,
+                    border: "1px solid rgba(16,185,129,0.14)",
+                    boxShadow:
+                      "0 14px 34px rgba(24,19,15,0.08), 0 0 0 1px rgba(16,185,129,0.05) inset",
+                    padding: "18px 20px 14px",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-                    {[
-                      { label: "✦", value: "Launch video" },
-                      { label: "◷ 5s", value: "Vidéo 5s" },
-                      { label: "▯ 9:16", value: "Vidéo verticale 9:16" },
-                    ].map((control) => (
+                  <textarea
+                    className="prompt-input"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Crée une vidéo de lancement pour..."
+                    rows={1}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleGenerate();
+                      }
+                    }}
+                    style={{
+                      width: "100%",
+                      background: "none",
+                      border: "none",
+                      outline: "none",
+                      fontSize: 15,
+                      color: "#625b55",
+                      fontFamily: "inherit",
+                      resize: "none",
+                      lineHeight: 1.5,
+                      minHeight: 46,
+                    }}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginTop: 6,
+                      paddingTop: 4,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                      {[
+                        { label: "✦", value: "Launch video" },
+                        { label: "◷ 5s", value: "Vidéo 5s" },
+                        { label: "▯ 9:16", value: "Vidéo verticale 9:16" },
+                      ].map((control) => (
+                        <button
+                          key={control.label}
+                          onClick={() => setPrompt(control.value)}
+                          style={{
+                            padding: 0,
+                            background: "transparent",
+                            border: "none",
+                            fontSize: 12,
+                            color: "#4f4843",
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                          }}
+                        >
+                          {control.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                       <button
-                        key={control.label}
-                        onClick={() => setPrompt(control.value)}
+                        onClick={() => setPrompt("Plan de vidéo")}
                         style={{
                           padding: 0,
                           background: "transparent",
                           border: "none",
                           fontSize: 12,
-                          color: "#4f4843",
+                          color: "#6b645f",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                        }}
+                      >
+                        Plan
+                      </button>
+                      <button
+                        onClick={handleGenerate}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          background: accent,
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: 999,
+                          fontSize: 18,
+                          fontWeight: 700,
                           cursor: "pointer",
                           fontFamily: "inherit",
                           display: "flex",
                           alignItems: "center",
-                          gap: 6,
+                          justifyContent: "center",
+                          boxShadow: `0 6px 18px ${accent}44`,
                         }}
                       >
-                        {control.label}
+                        ↑
                       </button>
-                    ))}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                    <button
-                      onClick={() => setPrompt("Plan de vidéo")}
-                      style={{
-                        padding: 0,
-                        background: "transparent",
-                        border: "none",
-                        fontSize: 12,
-                        color: "#6b645f",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                      }}
-                    >
-                      Plan
-                    </button>
-                    <button
-                      onClick={handleGenerate}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        background: accent,
-                        color: "#ffffff",
-                        border: "none",
-                        borderRadius: 999,
-                        fontSize: 18,
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        boxShadow: `0 6px 18px ${accent}44`,
-                      }}
-                    >
-                      ↑
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -850,6 +867,8 @@ export default function LandingPage() {
                   gap: 12,
                   marginTop: 18,
                   flexWrap: "wrap",
+                  position: "relative",
+                  zIndex: 4,
                 }}
               >
                 <button
@@ -861,13 +880,14 @@ export default function LandingPage() {
                     padding: "12px 20px",
                     minWidth: 220,
                     borderRadius: 12,
-                    background: "#ffffff",
-                    color: "#0a0a0a",
+                    background: accent,
+                    color: "#ffffff",
                     border: "none",
                     fontSize: 14,
                     fontWeight: 700,
                     cursor: "pointer",
                     fontFamily: "inherit",
+                    boxShadow: "0 10px 24px rgba(16,185,129,0.28)",
                   }}
                 >
                   Créer ma première vidéo →
@@ -881,12 +901,15 @@ export default function LandingPage() {
                     padding: "12px 20px",
                     minWidth: 220,
                     borderRadius: 12,
-                    background: "rgba(23,19,17,0.04)",
-                    color: "#171311",
+                    background: "#171311",
+                    color: "#ffffff",
                     textDecoration: "none",
                     fontSize: 14,
                     fontWeight: 600,
-                    border: "1px solid rgba(23,19,17,0.08)",
+                    border: "1px solid rgba(23,19,17,0.92)",
+                    boxShadow: "0 8px 20px rgba(24,19,15,0.12)",
+                    position: "relative",
+                    zIndex: 5,
                   }}
                 >
                   Voir comment ça fonctionne
@@ -962,552 +985,418 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="how" style={{ padding: "120px 60px", background: "#ffffff" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 72 }}>
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#10B981",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                marginBottom: 16,
-              }}
-            >
-              Le problème
-            </div>
+      <div
+        style={{
+          background: "#0a0a0a",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "24px 0",
+          overflow: "hidden",
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 120,
+            background: "linear-gradient(90deg, #0a0a0a, transparent)",
+            zIndex: 2,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 120,
+            background: "linear-gradient(270deg, #0a0a0a, transparent)",
+            zIndex: 2,
+          }}
+        />
+
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: 11,
+            fontWeight: 500,
+            color: "rgba(255,255,255,0.2)",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            marginBottom: 20,
+          }}
+        >
+          Parfait pour tous vos réseaux
+        </div>
+
+        <style>{`
+          @keyframes social-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .social-scroll-track {
+            display: flex;
+            animation: social-scroll 20s linear infinite;
+            width: max-content;
+          }
+          .social-scroll-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        <div style={{ overflow: "hidden" }}>
+          <div className="social-scroll-track">
+            {[
+              { name: "Instagram", icon: "📸" },
+              { name: "TikTok", icon: "🎵" },
+              { name: "YouTube", icon: "▶️" },
+              { name: "LinkedIn", icon: "💼" },
+              { name: "Twitter / X", icon: "𝕏" },
+              { name: "Facebook", icon: "👥" },
+              { name: "Pinterest", icon: "📌" },
+              { name: "Snapchat", icon: "👻" },
+              { name: "Reels", icon: "🎬" },
+              { name: "Shorts", icon: "⚡" },
+              { name: "Instagram", icon: "📸" },
+              { name: "TikTok", icon: "🎵" },
+              { name: "YouTube", icon: "▶️" },
+              { name: "LinkedIn", icon: "💼" },
+              { name: "Twitter / X", icon: "𝕏" },
+              { name: "Facebook", icon: "👥" },
+              { name: "Pinterest", icon: "📌" },
+              { name: "Snapchat", icon: "👻" },
+              { name: "Reels", icon: "🎬" },
+              { name: "Shorts", icon: "⚡" },
+            ].map((item, i) => (
+              <div
+                key={`${item.name}-${i}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "8px 28px",
+                  borderRight: "1px solid rgba(255,255,255,0.06)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{item.icon}</span>
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: "rgba(255,255,255,0.35)",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <section id="how" style={{ padding: "52px 40px 72px", background: "#fff" }}>
+        <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ ...sectionTitleStyle, marginBottom: 36 }}>
+            3 étapes. C&apos;est tout.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
+            {steps.map((step) => (
+              <div key={step.num}>
+                <div
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: "transparent",
+                    WebkitTextStroke: `1.1px ${accent}`,
+                    marginBottom: 4,
+                    letterSpacing: "-0.04em",
+                  }}
+                >
+                  {step.num}
+                </div>
+                <h3
+                  style={{
+                    ...cardTitleStyle,
+                    fontSize: 13,
+                    lineHeight: 1.2,
+                    marginBottom: 0,
+                  }}
+                >
+                  {step.title}
+                </h3>
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              marginTop: 28,
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 22,
+              border: "1.5px dashed #d9d9d9",
+              background: "#fafafa",
+            }}
+          />
+        </div>
+      </section>
+
+      <section style={{ padding: "108px 60px 100px", background: "#ffffff" }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
             <h2
               style={{
-                fontSize: 52,
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
-                lineHeight: 1.05,
-                color: "#0a0a0a",
-                maxWidth: 600,
-                margin: "0 auto",
+                ...sectionTitleStyle,
+                fontSize: 48,
+                color: "#171311",
+                maxWidth: 640,
+                margin: "0 auto 14px",
               }}
             >
               La création vidéo, enfin accessible à tous.
             </h2>
+            <p
+              style={{
+                ...sectionBodyStyle,
+                maxWidth: 640,
+                margin: "0 auto",
+                color: "#6F6862",
+              }}
+            >
+              Compare le flux classique, lent et coûteux, avec une production pensée pour
+              aller de l&apos;idée à la vidéo publiable en quelques minutes.
+            </p>
           </div>
 
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 2,
-              borderRadius: 20,
+              position: "relative",
+              borderRadius: 28,
               overflow: "hidden",
-              border: "1px solid #f0f0f0",
+              border: "1px solid rgba(23,19,17,0.08)",
+              background: "#ffffff",
+              boxShadow: "0 24px 64px rgba(24,19,15,0.06)",
             }}
           >
-            <div style={{ padding: "48px 40px", background: "#fafaf8" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                alignItems: "stretch",
+              }}
+            >
               <div
                 style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#0a0a0a",
-                  marginBottom: 32,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
+                  padding: "40px 36px 36px",
+                  background: "#ffffff",
+                  borderRight: "1px solid rgba(23,19,17,0.06)",
                 }}
               >
-                <span
+                <div
                   style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    background: "#fee2e2",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 12,
+                    gap: 12,
+                    color: "#171311",
+                    fontSize: 16,
+                    fontWeight: 700,
+                    marginBottom: 28,
+                    letterSpacing: "-0.02em",
                   }}
                 >
-                  ✕
-                </span>
-                Sans Motionr
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                {[
-                  "Faire appel à une agence vidéo coûteux",
-                  "Attendre des jours pour un résultat",
-                  "Des allers-retours sans fin avec un prestataire",
-                  "Compétences techniques requises",
-                  "Un seul format à la fois",
-                  "Création vidéo réservée aux grandes entreprises",
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    style={{ display: "flex", alignItems: "flex-start", gap: 14 }}
+                  <span
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: "#ef4444",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 12,
+                      color: "#ffffff",
+                    }}
                   >
-                    <div
-                      style={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: "50%",
-                        background: "#fee2e2",
-                        flexShrink: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        color: "#ef4444",
-                        marginTop: 1,
-                      }}
-                    >
-                      ✕
-                    </div>
-                    <span style={{ fontSize: 15, color: "#888", lineHeight: 1.5 }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                    ✕
+                  </span>
+                  Sans Motionr
+                </div>
 
-            <div style={{ padding: "48px 40px", background: "#ffffff" }}>
-              <div
-                style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#0a0a0a",
-                  marginBottom: 32,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
-                <span
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    background: "rgba(16,185,129,0.12)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 12,
-                    color: "#10B981",
-                  }}
-                >
-                  ✓
-                </span>
-                Avec Motionr
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                {[
-                  {
-                    title: "Vidéo pro générée en quelques minutes",
-                    desc: "De l'idée à la vidéo publiable sans intermédiaire.",
-                  },
-                  {
-                    title: "Script, animations et voix automatiques",
-                    desc: "L'IA gère tout de A à Z pour toi.",
-                  },
-                  {
-                    title: "Résultat 1080p dès la première fois",
-                    desc: "Pas de retouches, pas d'allers-retours.",
-                  },
-                  {
-                    title: "Zéro compétence technique requise",
-                    desc: "Si tu peux écrire, tu peux créer.",
-                  },
-                  {
-                    title: "9:16 · 16:9 · 1:1 en un clic",
-                    desc: "Tous les formats pour tous les réseaux.",
-                  },
-                  {
-                    title: "Accessible dès 0€ pour tout le monde",
-                    desc: "Commence gratuitement, sans carte bancaire.",
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    style={{ display: "flex", alignItems: "flex-start", gap: 14 }}
-                  >
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    "Faire appel à une agence vidéo coûteuse",
+                    "Attendre des jours avant d'avoir un résultat",
+                    "Multiplier les allers-retours avec un prestataire",
+                    "Avoir besoin de compétences techniques",
+                    "Produire un seul format à la fois",
+                    "Réserver la vidéo aux plus gros budgets",
+                  ].map((item, i) => (
                     <div
+                      key={i}
                       style={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: "50%",
-                        background: "rgba(16,185,129,0.12)",
-                        flexShrink: 0,
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 11,
-                        color: "#10B981",
-                        marginTop: 1,
+                        alignItems: "flex-start",
+                        gap: 14,
+                        padding: "14px 0",
+                        borderBottom:
+                          i === 5 ? "none" : "1px solid rgba(23,19,17,0.06)",
                       }}
                     >
-                      ✓
-                    </div>
-                    <div>
-                      <span
+                      <div
                         style={{
-                          fontSize: 15,
-                          fontWeight: 600,
-                          color: "#0a0a0a",
-                          lineHeight: 1.5,
+                          width: 22,
+                          height: 22,
+                          borderRadius: "50%",
+                          background: "#ef4444",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 11,
+                          color: "#ffffff",
+                          marginTop: 1,
                         }}
                       >
-                        {item.title}
+                        ✕
+                      </div>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          color: "#8A837C",
+                          lineHeight: 1.55,
+                        }}
+                      >
+                        {item}
                       </span>
-                      <span style={{ fontSize: 14, color: "#aaa" }}> {" "}— {item.desc}</span>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div style={{ textAlign: "center", marginTop: 48 }}>
-            <button
-              onClick={() => router.push("/signup")}
-              style={{
-                background: "#0a0a0a",
-                color: "#fff",
-                border: "none",
-                borderRadius: 12,
-                padding: "14px 32px",
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "inherit",
-              }}
-            >
-              Essayer Motionr gratuitement →
-            </button>
-            <div style={{ fontSize: 12, color: "#ccc", marginTop: 10 }}>
-              Aucune carte requise · 3 vidéos offertes
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" style={{ padding: "104px 60px", background: "#fafaf8" }}>
-        <div style={{ maxWidth: 1180, margin: "0 auto" }}>
-          <div style={{ marginBottom: 56 }}>
-            <div style={sectionEyebrowStyle}>Fonctionnalités</div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "space-between",
-                gap: 32,
-              }}
-            >
-              <h2
-                style={{
-                  ...sectionTitleStyle,
-                  fontSize: 48,
-                  color: "#171311",
-                  maxWidth: 560,
-                }}
-              >
-                Tout ce qu&apos;il faut pour créer plus vite.
-              </h2>
-              <p
-                style={{
-                  ...sectionBodyStyle,
-                  fontSize: 15,
-                  color: "#6F6862",
-                  maxWidth: 340,
-                  marginBottom: 4,
-                }}
-              >
-                De l&apos;idée à la vidéo publiable, Motionr garde le process simple et
-                visuel.
-              </p>
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                ...featureCardStyle,
-                gridColumn: "span 2",
-                position: "relative",
-                overflow: "hidden",
-                background: "linear-gradient(180deg, #ffffff 0%, rgba(16,185,129,0.04) 100%)",
-              }}
-            >
               <div
                 style={{
-                  position: "absolute",
-                  top: -72,
-                  right: -72,
-                  width: 220,
-                  height: 220,
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(16,185,129,0.10), transparent 68%)",
-                }}
-              />
-              <div style={featureIconStyle}>✨</div>
-              <h3
-                style={{
-                  ...cardTitleStyle,
-                  fontSize: 22,
-                  color: "#171311",
-                  marginBottom: 10,
-                }}
-              >
-                Génération par IA
-              </h3>
-              <p
-                style={{
-                  ...cardBodyStyle,
-                  color: "#6F6862",
-                  maxWidth: 450,
-                }}
-              >
-                Claude analyse ton message, construit un script clair, sélectionne les
-                meilleures animations et synchronise la voix automatiquement.
-              </p>
-              <div
-                style={{
-                  marginTop: 26,
-                  padding: "14px 16px",
+                  padding: "40px 36px 36px",
                   background: "#ffffff",
-                  borderRadius: 14,
-                  border: "1px solid rgba(23,19,17,0.08)",
-                  boxShadow: "0 10px 24px rgba(24,19,15,0.05)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 16,
                 }}
               >
-                <span
+                <div
                   style={{
-                    fontSize: 13,
-                    color: "#7A726A",
-                    fontStyle: "italic",
-                  }}
-                >
-                  &quot;Présente mon application de fitness...&quot;
-                </span>
-                <span
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: 999,
-                    background: "rgba(16,185,129,0.10)",
-                    color: accent,
-                    fontSize: 12,
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Vidéo générée
-                </span>
-              </div>
-            </div>
-
-            <div style={featureCardStyle}>
-              <div style={featureIconStyle}>✍️</div>
-              <h3
-                style={{
-                  ...cardTitleStyle,
-                  fontSize: 22,
-                  color: "#171311",
-                  marginBottom: 10,
-                }}
-              >
-                Mode Script
-              </h3>
-              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
-                Écris ton texte librement. Motionr le découpe, le met en rythme et garde
-                exactement ton intention.
-              </p>
-            </div>
-
-            <div style={featureCardStyle}>
-              <div style={featureIconStyle}>🎬</div>
-              <h3
-                style={{
-                  ...cardTitleStyle,
-                  fontSize: 22,
-                  color: "#171311",
-                  marginBottom: 10,
-                }}
-              >
-                72+ animations
-              </h3>
-              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
-                Texte cinétique, data, social, cinéma: les scènes sont choisies selon ton
-                contenu, sans réglages lourds.
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 20 }}>
-                {["Kinetic", "Hologram", "Counter", "Matrix", "Aurora"].map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      padding: "5px 10px",
-                      background: "rgba(23,19,17,0.03)",
-                      border: "1px solid rgba(23,19,17,0.06)",
-                      borderRadius: 999,
-                      fontSize: 11,
-                      color: "#7A726A",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div
-              style={{
-                ...featureCardStyle,
-                gridColumn: "span 2",
-                display: "flex",
-                gap: 32,
-                alignItems: "center",
-                background: "linear-gradient(180deg, #ffffff 0%, rgba(23,19,17,0.02) 100%)",
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <div style={featureIconStyle}>🎙️</div>
-                <h3
-                  style={{
-                    ...cardTitleStyle,
-                    fontSize: 22,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
                     color: "#171311",
-                    marginBottom: 10,
+                    fontSize: 16,
+                    fontWeight: 700,
+                    marginBottom: 28,
+                    letterSpacing: "-0.02em",
                   }}
                 >
-                  Voix naturelle
-                </h3>
-                <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
-                  Une voix off fluide et réaliste, parfaitement calée sur le rythme des
-                  animations pour un rendu plus propre dès le premier export.
-                </p>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  height: 72,
-                  padding: "12px 14px",
-                  borderRadius: 16,
-                  background: "rgba(23,19,17,0.03)",
-                  border: "1px solid rgba(23,19,17,0.06)",
-                }}
-              >
-                {Array.from({ length: 24 }, (_, i) => (
-                  <div
-                    key={i}
+                  <span
                     style={{
-                      width: 3,
-                      borderRadius: 999,
-                      height: `${22 + Math.abs(Math.sin(i * 0.8)) * 36}px`,
-                      background:
-                        i % 3 === 0 ? "rgba(16,185,129,0.8)" : "rgba(23,19,17,0.10)",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div style={featureCardStyle}>
-              <div style={featureIconStyle}>📱</div>
-              <h3
-                style={{
-                  ...cardTitleStyle,
-                  fontSize: 22,
-                  color: "#171311",
-                  marginBottom: 10,
-                }}
-              >
-                Multi-format
-              </h3>
-              <p
-                style={{
-                  ...cardBodyStyle,
-                  color: "#6F6862",
-                  marginBottom: 20,
-                }}
-              >
-                Passe du Reel à YouTube ou LinkedIn sans refaire ton contenu.
-              </p>
-              <div style={{ display: "flex", gap: 10 }}>
-                {[
-                  { label: "9:16", w: 28, h: 50 },
-                  { label: "1:1", w: 40, h: 40 },
-                  { label: "16:9", w: 56, h: 32 },
-                ].map((fmt) => (
-                  <div
-                    key={fmt.label}
-                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: "#10B981",
                       display: "flex",
-                      flexDirection: "column",
                       alignItems: "center",
-                      gap: 6,
+                      justifyContent: "center",
+                      fontSize: 12,
+                      color: "#ffffff",
                     }}
                   >
-                    <div
-                      style={{
-                        width: fmt.w,
-                        height: fmt.h,
-                        border: "1.5px solid rgba(16,185,129,0.24)",
-                        borderRadius: 6,
-                        background: "rgba(16,185,129,0.06)",
-                      }}
-                    />
-                    <span style={{ fontSize: 9, color: "#8A837C" }}>{fmt.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                    ✓
+                  </span>
+                  Avec Motionr
+                </div>
 
-            <div style={featureCardStyle}>
-              <div style={featureIconStyle}>⚡</div>
-              <h3
-                style={{
-                  ...cardTitleStyle,
-                  fontSize: 22,
-                  color: "#171311",
-                  marginBottom: 10,
-                }}
-              >
-                Rendu rapide
-              </h3>
-              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
-                Ta vidéo 1080p est prête en quelques minutes, avec un rendu propre et
-                directement publiable.
-              </p>
-              <div style={{ display: "flex", gap: 22, marginTop: 22 }}>
-                {[
-                  { v: "2-5", u: "minutes" },
-                  { v: "1080p", u: "qualité" },
-                ].map((s) => (
-                  <div key={s.v}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    {
+                      title: "Vidéo pro générée en quelques minutes",
+                      desc: "De l'idée à la vidéo publiable sans intermédiaire.",
+                    },
+                    {
+                      title: "Script, animations et voix automatiques",
+                      desc: "L'IA gère tout de A à Z pour toi.",
+                    },
+                    {
+                      title: "Résultat 1080p dès la première génération",
+                      desc: "Moins d'ajustements, plus de vitesse.",
+                    },
+                    {
+                      title: "Zéro compétence technique requise",
+                      desc: "Si tu peux écrire, tu peux créer.",
+                    },
+                    {
+                      title: "9:16, 16:9 et 1:1 en un clic",
+                      desc: "Tous les formats pour tous les réseaux.",
+                    },
+                    {
+                      title: "Accessible dès 0€",
+                      desc: "Commence gratuitement, sans carte bancaire.",
+                    },
+                  ].map((item, i) => (
                     <div
+                      key={i}
                       style={{
-                        fontSize: 24,
-                        fontWeight: 800,
-                        color: accent,
-                        letterSpacing: "-0.04em",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 14,
+                        padding: "14px 16px",
+                        borderRadius: 18,
+                        background: "#ffffff",
+                        border: "1px solid rgba(23,19,17,0.06)",
                       }}
                     >
-                      {s.v}
+                      <div
+                        style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: "50%",
+                          background: "#10B981",
+                          flexShrink: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 11,
+                          color: "#ffffff",
+                          marginTop: 2,
+                        }}
+                      >
+                        ✓
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: "#171311",
+                            lineHeight: 1.45,
+                            marginBottom: 3,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: "#8A837C",
+                            lineHeight: 1.55,
+                          }}
+                        >
+                          {item.desc}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ fontSize: 11, color: "#8A837C" }}>{s.u}</div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
