@@ -91,7 +91,7 @@ export default function AdminPage() {
       style={{
         minHeight: "100vh",
         background: "#fafafa",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
+        fontFamily: "var(--font-geist), -apple-system, sans-serif",
       }}
     >
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>

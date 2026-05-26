@@ -60,7 +60,7 @@ export default function AccountPage() {
       style={{
         minHeight: "100vh",
         background: "#fafafa",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif",
+        fontFamily: "var(--font-geist), -apple-system, sans-serif",
         display: "flex",
       }}
     >

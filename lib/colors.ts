@@ -36,9 +36,9 @@ export const colors = {
 export type Colors = typeof colors;
 
 export const fonts = {
-  sans: "var(--font-geist-sans), -apple-system, sans-serif",
+  sans: "var(--font-geist), -apple-system, sans-serif",
   mono: "var(--font-geist-mono), 'JetBrains Mono', monospace",
-  display: "var(--font-geist-sans), -apple-system, sans-serif",
+  display: "var(--font-geist), -apple-system, sans-serif",
 } as const;
 
 export type Fonts = typeof fonts;

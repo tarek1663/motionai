@@ -99,7 +99,7 @@ export default function PricingPage() {
       style={{
         minHeight: "100vh",
         background: "#ffffff",
-        fontFamily: "var(--font-geist-sans), -apple-system, sans-serif",
+        fontFamily: "var(--font-geist), -apple-system, sans-serif",
         color: "#0a0a0a",
       }}
     >

@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: var(--font-geist-sans), -apple-system, sans-serif;
+  --font-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-geist), -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), "JetBrains Mono", "SF Mono", monospace;
 
   --font-size-xs: 11px;
@@ -52,7 +52,7 @@
 }
 
 body {
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-geist), -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--foreground);
   background: var(--background);
   -webkit-font-smoothing: antialiased;
@@ -1990,7 +1990,7 @@ video:-moz-full-screen {
   min-height: 100vh;
   background: #fafafa;
   color: #0a0a0a;
-  font-family: var(--font-geist-sans), -apple-system, sans-serif;
+  font-family: var(--font-geist), -apple-system, sans-serif;
 }
 
 .account-sidebar {

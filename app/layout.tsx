@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-import { colors, fonts } from "@/lib/colors";
+import { Geist, Geist_Mono } from "next/font/google";
+import { colors } from "@/lib/colors";
 import "./globals.css";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
   title: "MotionAI — Génère des vidéos motion design en secondes",
@@ -23,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           colorInputBackground: "#111111",
           colorInputText: "#ffffff",
           borderRadius: "12px",
-          fontFamily: fonts.sans,
+          fontFamily: "var(--font-geist), -apple-system, sans-serif",
         },
         elements: {
           card: "bg-[#111111] border border-white/10",
@@ -35,10 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         },
       }}
     >
-      <html lang="fr" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <html lang="fr" className={`${geist.variable} ${geistMono.variable}`}>
         <body
           style={{
-            fontFamily: fonts.sans,
+            fontFamily: "var(--font-geist), -apple-system, sans-serif",
             margin: 0,
             padding: 0,
             WebkitFontSmoothing: "antialiased",
