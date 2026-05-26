@@ -29,24 +29,6 @@ export default function LandingPage() {
     }
   };
 
-  const steps = [
-    {
-      num: "01",
-      title: "Décris ton message",
-      desc: "Tape ton prompt ou écris ton script librement. L'IA comprend tout.",
-    },
-    {
-      num: "02",
-      title: "L'IA crée ta vidéo",
-      desc: "Script, animations, voix, musique — tout est généré automatiquement.",
-    },
-    {
-      num: "03",
-      title: "Télécharge et partage",
-      desc: "Ta vidéo 1080p est prête en quelques minutes. Prêt à publier.",
-    },
-  ];
-
   const testimonials = [
     {
       name: "Marie L.",
@@ -208,6 +190,28 @@ export default function LandingPage() {
     borderRadius: 24,
     border: "1.5px solid #e8e8e8",
     boxShadow: "0 18px 44px rgba(15,23,42,0.04)",
+  };
+
+  const featureCardStyle: CSSProperties = {
+    ...surfaceCardStyle,
+    borderRadius: 20,
+    padding: "34px",
+    border: "1px solid rgba(23,19,17,0.08)",
+    boxShadow: "0 14px 34px rgba(24,19,15,0.05)",
+  };
+
+  const featureIconStyle: CSSProperties = {
+    width: 42,
+    height: 42,
+    borderRadius: 11,
+    background: "rgba(16,185,129,0.08)",
+    border: "1px solid rgba(16,185,129,0.16)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 20,
+    marginBottom: 20,
+    boxShadow: "0 6px 16px rgba(16,185,129,0.08)",
   };
 
   return (
@@ -958,9 +962,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="features" style={{ padding: "120px 60px", background: "#0f0f0f" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ marginBottom: 80 }}>
+      <section id="how" style={{ padding: "120px 60px", background: "#ffffff" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 72 }}>
             <div
               style={{
                 fontSize: 11,
@@ -971,86 +975,289 @@ export default function LandingPage() {
                 marginBottom: 16,
               }}
             >
-              Fonctionnalités
+              Le problème
             </div>
+            <h2
+              style={{
+                fontSize: 52,
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                lineHeight: 1.05,
+                color: "#0a0a0a",
+                maxWidth: 600,
+                margin: "0 auto",
+              }}
+            >
+              La création vidéo, enfin accessible à tous.
+            </h2>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 2,
+              borderRadius: 20,
+              overflow: "hidden",
+              border: "1px solid #f0f0f0",
+            }}
+          >
+            <div style={{ padding: "48px 40px", background: "#fafaf8" }}>
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "#0a0a0a",
+                  marginBottom: 32,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    background: "#fee2e2",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                  }}
+                >
+                  ✕
+                </span>
+                Sans Motionr
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {[
+                  "Faire appel à une agence vidéo coûteux",
+                  "Attendre des jours pour un résultat",
+                  "Des allers-retours sans fin avec un prestataire",
+                  "Compétences techniques requises",
+                  "Un seul format à la fois",
+                  "Création vidéo réservée aux grandes entreprises",
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    style={{ display: "flex", alignItems: "flex-start", gap: 14 }}
+                  >
+                    <div
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        background: "#fee2e2",
+                        flexShrink: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        color: "#ef4444",
+                        marginTop: 1,
+                      }}
+                    >
+                      ✕
+                    </div>
+                    <span style={{ fontSize: 15, color: "#888", lineHeight: 1.5 }}>
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ padding: "48px 40px", background: "#ffffff" }}>
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "#0a0a0a",
+                  marginBottom: 32,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    background: "rgba(16,185,129,0.12)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    color: "#10B981",
+                  }}
+                >
+                  ✓
+                </span>
+                Avec Motionr
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {[
+                  {
+                    title: "Vidéo pro générée en quelques minutes",
+                    desc: "De l'idée à la vidéo publiable sans intermédiaire.",
+                  },
+                  {
+                    title: "Script, animations et voix automatiques",
+                    desc: "L'IA gère tout de A à Z pour toi.",
+                  },
+                  {
+                    title: "Résultat 1080p dès la première fois",
+                    desc: "Pas de retouches, pas d'allers-retours.",
+                  },
+                  {
+                    title: "Zéro compétence technique requise",
+                    desc: "Si tu peux écrire, tu peux créer.",
+                  },
+                  {
+                    title: "9:16 · 16:9 · 1:1 en un clic",
+                    desc: "Tous les formats pour tous les réseaux.",
+                  },
+                  {
+                    title: "Accessible dès 0€ pour tout le monde",
+                    desc: "Commence gratuitement, sans carte bancaire.",
+                  },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    style={{ display: "flex", alignItems: "flex-start", gap: 14 }}
+                  >
+                    <div
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        background: "rgba(16,185,129,0.12)",
+                        flexShrink: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        color: "#10B981",
+                        marginTop: 1,
+                      }}
+                    >
+                      ✓
+                    </div>
+                    <div>
+                      <span
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: "#0a0a0a",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {item.title}
+                      </span>
+                      <span style={{ fontSize: 14, color: "#aaa" }}> {" "}— {item.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: 48 }}>
+            <button
+              onClick={() => router.push("/signup")}
+              style={{
+                background: "#0a0a0a",
+                color: "#fff",
+                border: "none",
+                borderRadius: 12,
+                padding: "14px 32px",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Essayer Motionr gratuitement →
+            </button>
+            <div style={{ fontSize: 12, color: "#ccc", marginTop: 10 }}>
+              Aucune carte requise · 3 vidéos offertes
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" style={{ padding: "104px 60px", background: "#fafaf8" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+          <div style={{ marginBottom: 56 }}>
+            <div style={sectionEyebrowStyle}>Fonctionnalités</div>
             <div
               style={{
                 display: "flex",
                 alignItems: "flex-end",
                 justifyContent: "space-between",
+                gap: 32,
               }}
             >
               <h2
                 style={{
-                  fontSize: 52,
-                  fontWeight: 900,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1.05,
-                  color: "#ffffff",
-                  maxWidth: 500,
+                  ...sectionTitleStyle,
+                  fontSize: 48,
+                  color: "#171311",
+                  maxWidth: 560,
                 }}
               >
-                Tout ce dont tu as besoin pour créer.
+                Tout ce qu&apos;il faut pour créer plus vite.
               </h2>
               <p
                 style={{
+                  ...sectionBodyStyle,
                   fontSize: 15,
-                  color: "rgba(255,255,255,0.4)",
-                  lineHeight: 1.7,
-                  maxWidth: 320,
+                  color: "#6F6862",
+                  maxWidth: 340,
                   marginBottom: 4,
                 }}
               >
-                De l&apos;idée à la vidéo publiable, Motionr gère tout automatiquement.
+                De l&apos;idée à la vidéo publiable, Motionr garde le process simple et
+                visuel.
               </p>
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: 16,
+            }}
+          >
             <div
               style={{
+                ...featureCardStyle,
                 gridColumn: "span 2",
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
                 position: "relative",
                 overflow: "hidden",
+                background: "linear-gradient(180deg, #ffffff 0%, rgba(16,185,129,0.04) 100%)",
               }}
             >
               <div
                 style={{
                   position: "absolute",
-                  top: -60,
-                  right: -60,
-                  width: 200,
-                  height: 200,
+                  top: -72,
+                  right: -72,
+                  width: 220,
+                  height: 220,
                   borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(16,185,129,0.08), transparent)",
+                  background: "radial-gradient(circle, rgba(16,185,129,0.10), transparent 68%)",
                 }}
               />
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 11,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 20,
-                }}
-              >
-                ✨
-              </div>
+              <div style={featureIconStyle}>✨</div>
               <h3
                 style={{
+                  ...cardTitleStyle,
                   fontSize: 22,
-                  fontWeight: 700,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  color: "#171311",
                   marginBottom: 10,
                 }}
               >
@@ -1058,132 +1265,98 @@ export default function LandingPage() {
               </h3>
               <p
                 style={{
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.4)",
-                  lineHeight: 1.7,
-                  maxWidth: 400,
+                  ...cardBodyStyle,
+                  color: "#6F6862",
+                  maxWidth: 450,
                 }}
               >
-                Claude analyse ton message et génère automatiquement un script
-                professionnel, choisit les meilleures animations et synchronise
-                parfaitement la voix. Zéro compétence requise.
+                Claude analyse ton message, construit un script clair, sélectionne les
+                meilleures animations et synchronise la voix automatiquement.
               </p>
               <div
                 style={{
-                  marginTop: 28,
+                  marginTop: 26,
                   padding: "14px 16px",
-                  background: "rgba(255,255,255,0.04)",
-                  borderRadius: 10,
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  fontSize: 13,
-                  color: "rgba(255,255,255,0.3)",
-                  fontStyle: "italic",
+                  background: "#ffffff",
+                  borderRadius: 14,
+                  border: "1px solid rgba(23,19,17,0.08)",
+                  boxShadow: "0 10px 24px rgba(24,19,15,0.05)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
                 }}
               >
-                &quot;Présente mon application de fitness...&quot;
                 <span
                   style={{
-                    color: "#10B981",
-                    marginLeft: 8,
-                    fontStyle: "normal",
+                    fontSize: 13,
+                    color: "#7A726A",
+                    fontStyle: "italic",
                   }}
                 >
-                  → Vidéo générée ✓
+                  &quot;Présente mon application de fitness...&quot;
+                </span>
+                <span
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: 999,
+                    background: "rgba(16,185,129,0.10)",
+                    color: accent,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Vidéo générée
                 </span>
               </div>
             </div>
 
-            <div
-              style={{
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 11,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 20,
-                }}
-              >
-                ✍️
-              </div>
+            <div style={featureCardStyle}>
+              <div style={featureIconStyle}>✍️</div>
               <h3
                 style={{
+                  ...cardTitleStyle,
                   fontSize: 22,
-                  fontWeight: 700,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  color: "#171311",
                   marginBottom: 10,
                 }}
               >
                 Mode Script
               </h3>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
-                Écris librement ton texte. L&apos;IA le découpe et crée une vidéo motion
-                design avec ton contenu exact.
+              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
+                Écris ton texte librement. Motionr le découpe, le met en rythme et garde
+                exactement ton intention.
               </p>
             </div>
 
-            <div
-              style={{
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 11,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 20,
-                }}
-              >
-                🎬
-              </div>
+            <div style={featureCardStyle}>
+              <div style={featureIconStyle}>🎬</div>
               <h3
                 style={{
+                  ...cardTitleStyle,
                   fontSize: 22,
-                  fontWeight: 700,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  color: "#171311",
                   marginBottom: 10,
                 }}
               >
                 72+ animations
               </h3>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
-                Texte cinétique, graphiques de données, effets cinéma, social media,
-                choisies automatiquement selon ton contenu.
+              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
+                Texte cinétique, data, social, cinéma: les scènes sont choisies selon ton
+                contenu, sans réglages lourds.
               </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 20 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 20 }}>
                 {["Kinetic", "Hologram", "Counter", "Matrix", "Aurora"].map((tag) => (
                   <span
                     key={tag}
                     style={{
-                      padding: "3px 10px",
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: 100,
+                      padding: "5px 10px",
+                      background: "rgba(23,19,17,0.03)",
+                      border: "1px solid rgba(23,19,17,0.06)",
+                      borderRadius: 999,
                       fontSize: 11,
-                      color: "rgba(255,255,255,0.4)",
+                      color: "#7A726A",
                     }}
                   >
                     {tag}
@@ -1194,101 +1367,65 @@ export default function LandingPage() {
 
             <div
               style={{
+                ...featureCardStyle,
                 gridColumn: "span 2",
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
-                gap: 40,
+                gap: 32,
                 alignItems: "center",
+                background: "linear-gradient(180deg, #ffffff 0%, rgba(23,19,17,0.02) 100%)",
               }}
             >
               <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 11,
-                    background: "rgba(16,185,129,0.12)",
-                    border: "1px solid rgba(16,185,129,0.2)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 20,
-                    marginBottom: 20,
-                  }}
-                >
-                  🎙️
-                </div>
+                <div style={featureIconStyle}>🎙️</div>
                 <h3
                   style={{
+                    ...cardTitleStyle,
                     fontSize: 22,
-                    fontWeight: 700,
-                    color: "#fff",
-                    letterSpacing: "-0.03em",
+                    color: "#171311",
                     marginBottom: 10,
                   }}
                 >
                   Voix naturelle
                 </h3>
-                <p
-                  style={{
-                    fontSize: 14,
-                    color: "rgba(255,255,255,0.4)",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  ElevenLabs génère une voix off ultra-réaliste parfaitement
-                  synchronisée frame par frame avec les animations.
+                <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
+                  Une voix off fluide et réaliste, parfaitement calée sur le rythme des
+                  animations pour un rendu plus propre dès le premier export.
                 </p>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 3, height: 60 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  height: 72,
+                  padding: "12px 14px",
+                  borderRadius: 16,
+                  background: "rgba(23,19,17,0.03)",
+                  border: "1px solid rgba(23,19,17,0.06)",
+                }}
+              >
                 {Array.from({ length: 24 }, (_, i) => (
                   <div
                     key={i}
                     style={{
                       width: 3,
-                      borderRadius: 3,
-                      height: `${20 + Math.abs(Math.sin(i * 0.8)) * 40}px`,
+                      borderRadius: 999,
+                      height: `${22 + Math.abs(Math.sin(i * 0.8)) * 36}px`,
                       background:
-                        i % 3 === 0 ? "#10B981" : "rgba(255,255,255,0.1)",
+                        i % 3 === 0 ? "rgba(16,185,129,0.8)" : "rgba(23,19,17,0.10)",
                     }}
                   />
                 ))}
               </div>
             </div>
 
-            <div
-              style={{
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 11,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 20,
-                }}
-              >
-                📱
-              </div>
+            <div style={featureCardStyle}>
+              <div style={featureIconStyle}>📱</div>
               <h3
                 style={{
+                  ...cardTitleStyle,
                   fontSize: 22,
-                  fontWeight: 700,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  color: "#171311",
                   marginBottom: 10,
                 }}
               >
@@ -1296,15 +1433,14 @@ export default function LandingPage() {
               </h3>
               <p
                 style={{
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.4)",
-                  lineHeight: 1.7,
+                  ...cardBodyStyle,
+                  color: "#6F6862",
                   marginBottom: 20,
                 }}
               >
-                Génère en 9:16 pour les Reels, 16:9 pour YouTube ou 1:1 pour LinkedIn.
+                Passe du Reel à YouTube ou LinkedIn sans refaire ton contenu.
               </p>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ display: "flex", gap: 10 }}>
                 {[
                   { label: "9:16", w: 28, h: 50 },
                   { label: "1:1", w: 40, h: 40 },
@@ -1323,59 +1459,34 @@ export default function LandingPage() {
                       style={{
                         width: fmt.w,
                         height: fmt.h,
-                        border: "1.5px solid rgba(16,185,129,0.4)",
-                        borderRadius: 5,
+                        border: "1.5px solid rgba(16,185,129,0.24)",
+                        borderRadius: 6,
                         background: "rgba(16,185,129,0.06)",
                       }}
                     />
-                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>
-                      {fmt.label}
-                    </span>
+                    <span style={{ fontSize: 9, color: "#8A837C" }}>{fmt.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div
-              style={{
-                background: "#161616",
-                borderRadius: 20,
-                padding: "40px",
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 11,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 20,
-                }}
-              >
-                ⚡
-              </div>
+            <div style={featureCardStyle}>
+              <div style={featureIconStyle}>⚡</div>
               <h3
                 style={{
+                  ...cardTitleStyle,
                   fontSize: 22,
-                  fontWeight: 700,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  color: "#171311",
                   marginBottom: 10,
                 }}
               >
                 Rendu rapide
               </h3>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
-                Ta vidéo 1080p est prête en 2 à 5 minutes. Télécharge et publie
-                instantanément.
+              <p style={{ ...cardBodyStyle, color: "#6F6862" }}>
+                Ta vidéo 1080p est prête en quelques minutes, avec un rendu propre et
+                directement publiable.
               </p>
-              <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
+              <div style={{ display: "flex", gap: 22, marginTop: 22 }}>
                 {[
                   { v: "2-5", u: "minutes" },
                   { v: "1080p", u: "qualité" },
@@ -1384,67 +1495,19 @@ export default function LandingPage() {
                     <div
                       style={{
                         fontSize: 24,
-                        fontWeight: 900,
-                        color: "#10B981",
+                        fontWeight: 800,
+                        color: accent,
                         letterSpacing: "-0.04em",
                       }}
                     >
                       {s.v}
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
-                      {s.u}
-                    </div>
+                    <div style={{ fontSize: 11, color: "#8A837C" }}>{s.u}</div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="how" style={{ padding: "52px 40px 72px", background: "#fff" }}>
-        <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ ...sectionTitleStyle, marginBottom: 36 }}>
-            3 étapes. C&apos;est tout.
-          </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
-            {steps.map((step) => (
-              <div key={step.num}>
-                <div
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 700,
-                    color: "transparent",
-                    WebkitTextStroke: `1.1px ${accent}`,
-                    marginBottom: 4,
-                    letterSpacing: "-0.04em",
-                  }}
-                >
-                  {step.num}
-                </div>
-                <h3
-                  style={{
-                    ...cardTitleStyle,
-                    fontSize: 13,
-                    lineHeight: 1.2,
-                    marginBottom: 0,
-                  }}
-                >
-                  {step.title}
-                </h3>
-              </div>
-            ))}
-          </div>
-          <div
-            style={{
-              marginTop: 28,
-              width: "100%",
-              aspectRatio: "16 / 9",
-              borderRadius: 22,
-              border: "1.5px dashed #d9d9d9",
-              background: "#fafafa",
-            }}
-          />
         </div>
       </section>
 
