@@ -1,28 +1,18 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const accent = "#7C3AED";
 const accentLight = "#F5F3FF";
-
-const EXAMPLE_VIDEOS = [
-  { title: "Présentation produit", category: "Marketing", bg: "#0a0a0a" },
-  { title: "Témoignage client", category: "Social Media", bg: "#050510" },
-  { title: "Lancement startup", category: "Business", bg: "#0a0500" },
-  { title: "Promotion offre", category: "E-commerce", bg: "#050a05" },
-  { title: "Tutoriel app", category: "Tech", bg: "#0a0a0a" },
-  { title: "Motivation", category: "Lifestyle", bg: "#0a0505" },
-];
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-  const [prompt, setPrompt] = useState("");
-  const router = useRouter();
-  const galleryRef = useRef<HTMLDivElement>(null);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [wordVisible, setWordVisible] = useState(true);
+  const rotatingWords = ["prompts", "scripts", "idées", "mots"];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -30,52 +20,17 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleGenerate = () => {
-    if (prompt.trim()) {
-      router.push(`/signup?prompt=${encodeURIComponent(prompt)}`);
-    } else {
-      router.push("/signup");
-    }
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordVisible(false);
+      setTimeout(() => {
+        setWordIndex((i) => (i + 1) % rotatingWords.length);
+        setWordVisible(true);
+      }, 300);
+    }, 2000);
 
-  const scroll = (dir: "left" | "right") => {
-    if (galleryRef.current) {
-      galleryRef.current.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
-    }
-  };
-
-  const features = [
-    {
-      icon: "✨",
-      title: "IA générative",
-      desc: "Claude analyse ton message et génère un script professionnel optimisé pour le motion design.",
-    },
-    {
-      icon: "🎬",
-      title: "72+ animations",
-      desc: "Choix automatique parmi plus de 72 types de scènes — texte, data, cinéma, social media.",
-    },
-    {
-      icon: "🎙️",
-      title: "Voix naturelle",
-      desc: "ElevenLabs génère une voix off ultra-réaliste parfaitement synchronisée avec les animations.",
-    },
-    {
-      icon: "⚡",
-      title: "Rendu rapide",
-      desc: "Ta vidéo est prête en 2 à 5 minutes. Télécharge en 1080p et partage instantanément.",
-    },
-    {
-      icon: "✍️",
-      title: "Ton propre script",
-      desc: "Écris librement ton texte et l'IA le transforme en vidéo motion design professionnelle.",
-    },
-    {
-      icon: "📱",
-      title: "Multi-format",
-      desc: "Génère en 9:16 pour les Reels, 16:9 pour YouTube ou 1:1 pour LinkedIn en un clic.",
-    },
-  ];
+    return () => clearInterval(interval);
+  }, [rotatingWords.length]);
 
   const steps = [
     {
@@ -207,6 +162,57 @@ export default function LandingPage() {
     },
   ];
 
+  const sectionEyebrowStyle: CSSProperties = {
+    fontSize: 12,
+    fontWeight: 600,
+    color: accent,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    marginBottom: 12,
+  };
+
+  const sectionTitleStyle: CSSProperties = {
+    fontSize: 48,
+    fontWeight: 700,
+    letterSpacing: "-0.045em",
+    lineHeight: 1.08,
+    color: "#1f2937",
+  };
+
+  const sectionBodyStyle: CSSProperties = {
+    fontSize: 16,
+    fontWeight: 400,
+    lineHeight: 1.68,
+    color: "#888",
+  };
+
+  const cardTitleStyle: CSSProperties = {
+    fontSize: 19,
+    fontWeight: 600,
+    letterSpacing: "-0.025em",
+    color: "#1f2937",
+  };
+
+  const cardBodyStyle: CSSProperties = {
+    fontSize: 14,
+    fontWeight: 400,
+    lineHeight: 1.7,
+    color: "#888",
+  };
+
+  const mutedMetaStyle: CSSProperties = {
+    fontSize: 12,
+    fontWeight: 500,
+    color: "#aaa",
+  };
+
+  const surfaceCardStyle: CSSProperties = {
+    background: "#fff",
+    borderRadius: 24,
+    border: "1.5px solid #e8e8e8",
+    boxShadow: "0 18px 44px rgba(15,23,42,0.04)",
+  };
+
   return (
     <div
       style={{
@@ -219,539 +225,264 @@ export default function LandingPage() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        .nav-link { color: #555; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s; }
-        .nav-link:hover { color: #0a0a0a; }
-        .btn-primary { background: ${accent}; color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+        .nav-link { text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s; }
+        .btn-primary { background: ${accent}; color: #fff; border: none; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
         .btn-primary:hover { background: #6D28D9; transform: translateY(-1px); box-shadow: 0 8px 24px ${accent}44; }
-        .btn-secondary { background: #fff; color: #0a0a0a; border: 1.5px solid #e8e8e8; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+        .btn-secondary { background: #fff; color: #0a0a0a; border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
         .btn-secondary:hover { border-color: #ccc; transform: translateY(-1px); }
-        .feature-card { transition: all 0.2s; }
-        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
         .plan-card { transition: all 0.2s; }
-        .plan-card:hover { transform: translateY(-4px); }
+        .plan-card:hover { transform: translateY(-3px); }
         .faq-item { border-bottom: 1px solid #f0f0f0; }
-        .prompt-input { width: 100%; background: none; border: none; outline: none; font-size: 16px; color: #0a0a0a; font-family: inherit; resize: none; }
-        .prompt-input::placeholder { color: #aaa; }
-        .gallery-card:hover .gallery-overlay { opacity: 1 !important; }
-        .scroll-btn:hover { background: rgba(255,255,255,0.95) !important; }
       `}</style>
 
       <header
         style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
+          top: 14,
+          left: "50%",
+          transform: "translateX(-50%)",
           zIndex: 100,
-          padding: "0 40px",
-          height: 60,
+          width: "min(1120px, calc(100% - 32px))",
+          padding: "0 18px",
+          height: 50,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled ? "rgba(250,250,248,0.92)" : "transparent",
-          backdropFilter: scrolled ? "blur(12px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
+          background: scrolled ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.94)",
+          backdropFilter: "blur(14px)",
+          border: "1px solid #e8e8e8",
+          borderRadius: 16,
+          boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
           transition: "all 0.3s",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div
+          <span
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              background: accent,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 13,
-              fontWeight: 900,
-              color: "#fff",
-              boxShadow: `0 2px 8px ${accent}44`,
+              fontSize: 15,
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              color: "#0a0a0a",
             }}
           >
-            M
-          </div>
-          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em" }}>
             Motionr
           </span>
         </div>
 
-        <nav style={{ display: "flex", alignItems: "center", gap: 32 }}>
-          <a href="#features" className="nav-link">
-            Fonctionnalités
+        <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
+          <a href="#features" className="nav-link" style={{ color: "#555" }}>
+            Solutions
           </a>
-          <a href="#how" className="nav-link">
-            Comment ça marche
-          </a>
-          <a href="#pricing" className="nav-link">
-            Tarifs
-          </a>
-          <a href="#faq" className="nav-link">
-            FAQ
+          <a href="#pricing" className="nav-link" style={{ color: "#555" }}>
+            Pricing
           </a>
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Link href="/login" className="btn-secondary" style={{ padding: "8px 18px" }}>
+          <Link
+            href="/login"
+            style={{
+              padding: "8px 12px",
+              color: "#0a0a0a",
+              textDecoration: "none",
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
             Connexion
           </Link>
-          <Link href="/signup" className="btn-primary" style={{ padding: "8px 18px" }}>
-            Commencer gratuitement
+          <Link
+            href="/signup"
+            style={{
+              padding: "10px 16px",
+              background: accent,
+              color: "#ffffff",
+              textDecoration: "none",
+              borderRadius: 12,
+              fontSize: 14,
+              fontWeight: 700,
+              boxShadow: "0 8px 24px rgba(124,58,237,0.16)",
+            }}
+          >
+            Commencer
           </Link>
         </div>
       </header>
 
       <section
+        aria-label="Hero"
         style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "120px 40px 60px",
-          textAlign: "center",
-          background: "linear-gradient(180deg, #ffffff 0%, #FAFAF8 100%)",
+          minHeight: "52vh",
+          background: "#ffffff",
+          borderBottom: "1px solid #f0f0f0",
         }}
       >
         <div
           style={{
-            display: "inline-flex",
+            maxWidth: 980,
+            margin: "0 auto",
+            minHeight: "52vh",
+            padding: "120px 40px 80px",
+            display: "flex",
             alignItems: "center",
-            gap: 8,
-            background: accentLight,
-            border: `1px solid ${accent}22`,
-            borderRadius: 100,
-            padding: "6px 16px",
-            marginBottom: 32,
-            fontSize: 13,
-            fontWeight: 600,
-            color: accent,
+            justifyContent: "center",
+            textAlign: "center",
           }}
         >
-          <span>✨</span> Vidéos motion design générées par IA
-        </div>
-
-        <h1
-          style={{
-            fontSize: 80,
-            fontWeight: 900,
-            letterSpacing: "-0.05em",
-            lineHeight: 1,
-            marginBottom: 20,
-            color: "#0a0a0a",
-            maxWidth: 800,
-          }}
-        >
-          Crée des vidéos
-          <br />
-          <span style={{ color: accent }}>motion design</span>
-          <br />
-          en quelques minutes.
-        </h1>
-
-        <p
-          style={{
-            fontSize: 18,
-            color: "#888",
-            lineHeight: 1.6,
-            marginBottom: 48,
-            maxWidth: 500,
-          }}
-        >
-          Décris ton idée. L&apos;IA génère le script, les animations, la voix et la
-          musique. Prêt à publier.
-        </p>
-
-        <div
-          style={{
-            width: "100%",
-            maxWidth: 680,
-            background: "#fff",
-            borderRadius: 16,
-            border: "1.5px solid #e8e8e8",
-            boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
-            padding: "20px 20px 14px",
-            marginBottom: 16,
-          }}
-        >
-          <textarea
-            className="prompt-input"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ex: Présente mon application de fitness qui aide les gens à perdre du poids..."
-            rows={3}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.metaKey) handleGenerate();
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: 8,
-            }}
-          >
-            <div style={{ fontSize: 12, color: "#ccc" }}>⌘ + Entrée pour générer</div>
-            <button
-              onClick={handleGenerate}
+          <div style={{ maxWidth: 900 }}>
+            <div
               style={{
-                background: accent,
-                color: "#fff",
-                border: "none",
-                borderRadius: 10,
-                padding: "10px 20px",
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                boxShadow: `0 4px 16px ${accent}44`,
-              }}
-            >
-              Générer ✦
-            </button>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            flexWrap: "wrap",
-            justifyContent: "center",
-            marginBottom: 48,
-          }}
-        >
-          {[
-            "Présente mon SaaS",
-            "Vidéo de motivation",
-            "Promotion -50%",
-            "Témoignage client",
-          ].map((suggestion) => (
-            <button
-              key={suggestion}
-              onClick={() => setPrompt(suggestion)}
-              style={{
-                padding: "6px 14px",
-                background: "#fff",
-                border: "1px solid #e8e8e8",
+                background: accentLight,
+                border: `1px solid ${accent}22`,
                 borderRadius: 100,
-                fontSize: 12,
-                color: "#666",
-                cursor: "pointer",
-                transition: "all 0.15s",
-              }}
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-
-        <div
-          style={{
-            fontSize: 13,
-            color: "#bbb",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <span>⭐⭐⭐⭐⭐</span>
-          <span>+1 000 créateurs · Aucune carte requise</span>
-        </div>
-      </section>
-
-      <section style={{ padding: "80px 0", background: "#0a0a0a", overflow: "hidden" }}>
-        <div
-          style={{
-            padding: "0 40px",
-            marginBottom: 32,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div
-              style={{
+                padding: "6px 16px",
+                marginBottom: 32,
                 fontSize: 13,
-                fontWeight: 700,
+                fontWeight: 600,
                 color: accent,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: 8,
               }}
             >
-              Exemples
+              <span>✨</span> Vidéos motion design générées par IA
             </div>
-            <h2
+
+            <h1
               style={{
-                fontSize: 36,
+                fontSize: 80,
                 fontWeight: 900,
-                color: "#ffffff",
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.05em",
+                lineHeight: 1.05,
+                marginBottom: 20,
+                color: "#0a0a0a",
+                maxWidth: 800,
               }}
             >
-              Créé avec Motionr
-            </h2>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            {["←", "→"].map((dir, index) => (
-              <button
-                key={dir}
-                className="scroll-btn"
-                onClick={() => scroll(index === 0 ? "left" : "right")}
+              L&apos;IA qui transforme
+              <br />
+              tes{" "}
+              <span
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.1)",
-                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "inline-block",
+                  background: accent,
                   color: "#fff",
-                  fontSize: 16,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.15s",
+                  borderRadius: 12,
+                  padding: "0 16px",
+                  opacity: wordVisible ? 1 : 0,
+                  transform: wordVisible ? "translateY(0)" : "translateY(8px)",
+                  transition: "all 0.3s ease",
                 }}
               >
-                {dir}
-              </button>
-            ))}
+                {rotatingWords[wordIndex]}
+              </span>{" "}
+              en{" "}
+              <span
+                style={{
+                  background: `linear-gradient(135deg, ${accent}, #a855f7)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                vidéos.
+              </span>
+            </h1>
+
+            <p
+              style={{
+                fontSize: 18,
+                color: "#888",
+                lineHeight: 1.7,
+                marginBottom: 48,
+                maxWidth: 520,
+              }}
+            >
+              Décris ton idée en quelques mots. Motionr génère automatiquement
+              le script, les animations et la voix.{" "}
+              <span style={{ color: "#555", fontWeight: 500 }}>
+                Ta vidéo 1080p est prête en minutes.
+              </span>
+            </p>
           </div>
         </div>
+      </section>
 
+      <section
+        id="features"
+        style={{
+          padding: "70px 40px 70px",
+          maxWidth: 980,
+          margin: "0 auto",
+          position: "relative",
+          zIndex: 5,
+        }}
+      >
         <div
-          ref={galleryRef}
           style={{
-            display: "flex",
-            gap: 16,
-            overflowX: "auto",
-            paddingLeft: 40,
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
+            ...surfaceCardStyle,
+            borderRadius: 28,
+            padding: "40px 40px 44px",
+            textAlign: "center",
           }}
         >
-          {EXAMPLE_VIDEOS.map((video) => (
-            <div
-              key={`${video.category}-${video.title}`}
-              className="gallery-card"
-              style={{
-                flexShrink: 0,
-                width: 200,
-                height: 356,
-                borderRadius: 16,
-                background: video.bg,
-                position: "relative",
-                overflow: "hidden",
-                cursor: "pointer",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: `linear-gradient(135deg, ${accent}22, transparent)`,
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 44,
-                  height: 44,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.15)",
-                  backdropFilter: "blur(8px)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 18,
-                  border: "1px solid rgba(255,255,255,0.2)",
-                }}
-              >
-                ▶
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: "40px 14px 14px",
-                  background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
-                }}
-              >
-                <div style={{ fontSize: 11, color: accent, fontWeight: 700, marginBottom: 4 }}>
-                  {video.category}
-                </div>
-                <div style={{ fontSize: 13, color: "#fff", fontWeight: 600 }}>
-                  {video.title}
-                </div>
-              </div>
-              <div
-                className="gallery-overlay"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: `${accent}22`,
-                  opacity: 0,
-                  transition: "opacity 0.2s",
-                }}
-              />
-            </div>
-          ))}
           <div
             style={{
-              flexShrink: 0,
-              width: 200,
-              height: 356,
-              borderRadius: 16,
-              border: "1.5px dashed rgba(255,255,255,0.2)",
-              display: "flex",
-              flexDirection: "column",
+              display: "inline-flex",
               alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              marginRight: 40,
-              gap: 12,
-            }}
-            onClick={() => router.push("/signup")}
-          >
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                background: `${accent}22`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 20,
-                color: accent,
-              }}
-            >
-              +
-            </div>
-            <div style={{ fontSize: 13, color: "#666", textAlign: "center", padding: "0 20px" }}>
-              Crée ta première vidéo
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" style={{ padding: "100px 40px", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
+              gap: 8,
+              background: accentLight,
               color: accent,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 12,
+              border: `1px solid ${accent}18`,
+              borderRadius: 999,
+              padding: "8px 14px",
+              fontSize: 12,
+              fontWeight: 600,
+              letterSpacing: "0.04em",
+              marginBottom: 18,
             }}
           >
-            Fonctionnalités
+            Nouveau projet
           </div>
-          <h2
-            style={{
-              fontSize: 52,
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
-            }}
-          >
-            Tout ce dont tu as besoin
-            <br />
-            pour créer des vidéos pro.
+
+          <h2 style={{ ...sectionTitleStyle, marginBottom: 14 }}>
+            Prêt à générer ta première vidéo ?
           </h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="feature-card"
-              style={{
-                background: "#fff",
-                borderRadius: 20,
-                padding: "28px",
-                border: "1.5px solid #e8e8e8",
-              }}
-            >
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: accentLight,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  marginBottom: 16,
-                }}
-              >
-                {feature.icon}
-              </div>
-              <h3
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  marginBottom: 8,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {feature.title}
-              </h3>
-              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6 }}>{feature.desc}</p>
-            </div>
-          ))}
+
+          <p style={{ ...sectionBodyStyle, maxWidth: 560, margin: "0 auto 28px" }}>
+            Connecte-toi, ouvre ton dashboard et lance ton premier rendu en quelques clics.
+          </p>
+
+          <Link
+            href="/sign-in"
+            className="btn-primary"
+            style={{
+              padding: "14px 28px",
+              fontSize: 15,
+              background: accent,
+              boxShadow: "0 10px 28px rgba(124,58,237,0.16)",
+            }}
+          >
+            Connexion puis dashboard
+          </Link>
         </div>
       </section>
 
-      <section id="how" style={{ padding: "100px 40px", background: "#fff" }}>
+      <section id="how" style={{ padding: "94px 40px 88px", background: "#fff" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: accent,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            Comment ça marche
-          </div>
-          <h2
-            style={{
-              fontSize: 52,
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
-              marginBottom: 64,
-            }}
-          >
+          <div style={sectionEyebrowStyle}>Comment ça marche</div>
+          <h2 style={{ ...sectionTitleStyle, marginBottom: 64 }}>
             3 étapes. C&apos;est tout.
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 34 }}>
             {steps.map((step) => (
               <div key={step.num}>
                 <div
                   style={{
-                    fontSize: 56,
-                    fontWeight: 900,
+                    fontSize: 52,
+                    fontWeight: 700,
                     color: "transparent",
-                    WebkitTextStroke: `2px ${accent}`,
-                    marginBottom: 16,
+                    WebkitTextStroke: `1.5px ${accent}`,
+                    marginBottom: 14,
                     letterSpacing: "-0.04em",
                   }}
                 >
@@ -759,61 +490,47 @@ export default function LandingPage() {
                 </div>
                 <h3
                   style={{
-                    fontSize: 20,
-                    fontWeight: 700,
+                    ...cardTitleStyle,
                     marginBottom: 8,
-                    letterSpacing: "-0.02em",
                   }}
                 >
                   {step.title}
                 </h3>
-                <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6 }}>{step.desc}</p>
+                <p style={cardBodyStyle}>{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section style={{ padding: "100px 40px", maxWidth: 1100, margin: "0 auto" }}>
+      <section style={{ padding: "94px 40px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: accent,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            Témoignages
-          </div>
-          <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-0.04em" }}>
-            Ils créent avec Motionr.
-          </h2>
+          <div style={sectionEyebrowStyle}>Témoignages</div>
+          <h2 style={sectionTitleStyle}>Ils créent avec Motionr.</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
               style={{
-                background: "#fff",
-                borderRadius: 20,
-                padding: "28px",
-                border: "1.5px solid #e8e8e8",
+                ...surfaceCardStyle,
+                borderRadius: 22,
+                padding: "26px",
               }}
             >
-              <div style={{ fontSize: 20, marginBottom: 16 }}>⭐⭐⭐⭐⭐</div>
+              <div style={{ fontSize: 16, marginBottom: 16, letterSpacing: "0.08em", color: accent }}>
+                ★★★★★
+              </div>
               <p
                 style={{
+                  ...sectionBodyStyle,
                   fontSize: 15,
-                  color: "#333",
-                  lineHeight: 1.7,
+                  color: "#666",
                   marginBottom: 20,
                   fontStyle: "italic",
                 }}
               >
-                "{testimonial.text}"
+                &quot;{testimonial.text}&quot;
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div
@@ -833,8 +550,10 @@ export default function LandingPage() {
                   {testimonial.avatar}
                 </div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>{testimonial.name}</div>
-                  <div style={{ fontSize: 12, color: "#aaa" }}>{testimonial.role}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1f2937" }}>
+                    {testimonial.name}
+                  </div>
+                  <div style={mutedMetaStyle}>{testimonial.role}</div>
                 </div>
               </div>
             </div>
@@ -842,32 +561,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" style={{ padding: "100px 40px", background: "#fff" }}>
+      <section id="pricing" style={{ padding: "94px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: accent,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom: 12,
-              }}
-            >
-              Tarifs
-            </div>
-            <h2
-              style={{
-                fontSize: 52,
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
-                lineHeight: 1.1,
-                marginBottom: 24,
-              }}
-            >
-              Simple et transparent.
-            </h2>
+            <div style={sectionEyebrowStyle}>Tarifs</div>
+            <h2 style={{ ...sectionTitleStyle, marginBottom: 24 }}>Simple et transparent.</h2>
             <div
               style={{
                 display: "inline-flex",
@@ -910,7 +608,9 @@ export default function LandingPage() {
                   background: plan.popular ? accent : "#fff",
                   border: plan.popular ? "none" : "1.5px solid #e8e8e8",
                   color: plan.popular ? "#fff" : "#0a0a0a",
-                  boxShadow: plan.popular ? `0 20px 60px ${accent}44` : "none",
+                  boxShadow: plan.popular
+                    ? `0 20px 60px ${accent}33`
+                    : "0 14px 40px rgba(15,23,42,0.03)",
                   position: "relative",
                 }}
               >
@@ -921,31 +621,34 @@ export default function LandingPage() {
                       top: -12,
                       left: "50%",
                       transform: "translateX(-50%)",
-                      background: "#ffd60a",
-                      color: "#0a0a0a",
+                      background: "#F5F3FF",
+                      color: accent,
                       borderRadius: 100,
                       padding: "4px 14px",
                       fontSize: 11,
-                      fontWeight: 800,
+                      fontWeight: 700,
+                      border: `1px solid ${accent}20`,
                       whiteSpace: "nowrap",
                     }}
                   >
-                    ⭐ POPULAIRE
+                    Populaire
                   </div>
                 )}
-                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
+                <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, letterSpacing: "-0.02em" }}>
+                  {plan.name}
+                </div>
                 <div
                   style={{
                     fontSize: 42,
-                    fontWeight: 900,
-                    letterSpacing: "-0.04em",
+                    fontWeight: 700,
+                    letterSpacing: "-0.045em",
                     marginBottom: 4,
                   }}
                 >
                   {plan.price[billing] === 0 ? "0€" : `${plan.price[billing]}€`}
                   <span style={{ fontSize: 14, fontWeight: 400, opacity: 0.6 }}>/mois</span>
                 </div>
-                <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 24 }}>{plan.videos}</div>
+                <div style={{ ...mutedMetaStyle, opacity: 0.8, marginBottom: 24 }}>{plan.videos}</div>
                 <div
                   style={{
                     display: "flex",
@@ -957,7 +660,14 @@ export default function LandingPage() {
                   {plan.features.map((feature) => (
                     <div
                       key={feature}
-                      style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 8 }}
+                      style={{
+                        fontSize: 13,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        color: plan.popular ? "rgba(255,255,255,0.88)" : "#666",
+                        lineHeight: 1.6,
+                      }}
                     >
                       <span style={{ color: plan.popular ? "#fff" : accent }}>✓</span>
                       {feature}
@@ -988,21 +698,8 @@ export default function LandingPage() {
 
       <section id="faq" style={{ padding: "100px 40px", maxWidth: 700, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: accent,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              marginBottom: 12,
-            }}
-          >
-            FAQ
-          </div>
-          <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-0.04em" }}>
-            Questions fréquentes.
-          </h2>
+          <div style={sectionEyebrowStyle}>FAQ</div>
+          <h2 style={sectionTitleStyle}>Questions fréquentes.</h2>
         </div>
         {faqs.map((faq, index) => (
           <div key={faq.q} className="faq-item" style={{ padding: "20px 0" }}>
@@ -1019,11 +716,21 @@ export default function LandingPage() {
                 alignItems: "center",
               }}
             >
-              <span style={{ fontSize: 16, fontWeight: 600 }}>{faq.q}</span>
+              <span style={{ fontSize: 16, fontWeight: 600, color: "#1f2937", letterSpacing: "-0.01em" }}>
+                {faq.q}
+              </span>
               <span
                 style={{
-                  fontSize: 20,
-                  color: "#aaa",
+                  width: 28,
+                  height: 28,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "50%",
+                  fontSize: 18,
+                  color: "#888",
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
                   transform: openFaq === index ? "rotate(45deg)" : "none",
                   transition: "transform 0.2s",
                 }}
@@ -1032,7 +739,7 @@ export default function LandingPage() {
               </span>
             </button>
             {openFaq === index && (
-              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, marginTop: 12, paddingRight: 32 }}>
+              <p style={{ ...cardBodyStyle, marginTop: 12, paddingRight: 32 }}>
                 {faq.a}
               </p>
             )}
@@ -1040,43 +747,38 @@ export default function LandingPage() {
         ))}
       </section>
 
-      <section style={{ padding: "80px 40px", textAlign: "center" }}>
+      <section style={{ padding: "76px 40px", textAlign: "center" }}>
         <div
           style={{
+            ...surfaceCardStyle,
             maxWidth: 700,
             margin: "0 auto",
-            background: "#fff",
             borderRadius: 24,
             padding: "64px 40px",
-            border: "1.5px solid #e8e8e8",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.06)",
           }}
         >
           <h2
             style={{
-              fontSize: 52,
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
+              ...sectionTitleStyle,
               marginBottom: 16,
             }}
           >
             Prêt à créer ta première vidéo ?
           </h2>
-          <p style={{ fontSize: 16, color: "#666", marginBottom: 32, lineHeight: 1.6 }}>
+          <p style={{ ...sectionBodyStyle, marginBottom: 32 }}>
             Rejoins des milliers de créateurs qui utilisent Motionr pour produire du contenu
             vidéo professionnel en quelques minutes.
           </p>
           <Link href="/signup" className="btn-primary" style={{ fontSize: 16, padding: "16px 40px" }}>
             Commencer gratuitement →
           </Link>
-          <div style={{ fontSize: 12, color: "#aaa", marginTop: 16 }}>
+          <div style={{ ...mutedMetaStyle, marginTop: 16 }}>
             Aucune carte bancaire requise · 3 vidéos gratuites
           </div>
         </div>
       </section>
 
-      <footer style={{ padding: "40px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
+      <footer style={{ padding: "42px 40px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
         <div
           style={{
             maxWidth: 1100,
@@ -1103,20 +805,24 @@ export default function LandingPage() {
             >
               M
             </div>
-            <span style={{ fontSize: 14, fontWeight: 700 }}>Motionr</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#1f2937", letterSpacing: "-0.02em" }}>
+              Motionr
+            </span>
           </div>
           <div style={{ display: "flex", gap: 24 }}>
-            <Link href="/privacy" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
+            <Link href="/privacy" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
               Confidentialité
             </Link>
-            <Link href="/terms" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
+            <Link href="/terms" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
               CGU
             </Link>
-            <Link href="/pricing" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
+            <Link href="/pricing" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
               Tarifs
             </Link>
           </div>
-          <div style={{ fontSize: 13, color: "#aaa" }}>© 2024 Motionr. Tous droits réservés.</div>
+          <div style={{ fontSize: 13, color: "#aaa", fontWeight: 500 }}>
+            © 2024 Motionr. Tous droits réservés.
+          </div>
         </div>
       </footer>
     </div>
