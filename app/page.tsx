@@ -23,9 +23,9 @@ export default function LandingPage() {
 
   const handleGenerate = () => {
     if (prompt.trim()) {
-      router.push(`/login?prompt=${encodeURIComponent(prompt)}`);
+      router.push(`/signup?prompt=${encodeURIComponent(prompt)}`);
     } else {
-      router.push("/login");
+      router.push("/signup");
     }
   };
 
@@ -438,13 +438,13 @@ export default function LandingPage() {
                       icon: "🎬",
                       title: "72+ scènes",
                       desc: "Texte, data, cinéma, social media",
-                      href: "#how",
+                      href: "#features",
                     },
                     {
                       icon: "📱",
                       title: "Multi-format",
                       desc: "9:16 · 16:9 · 1:1",
-                      href: "#how",
+                      href: "#features",
                     },
                   ].map((item, i) => (
                     <a
@@ -516,13 +516,13 @@ export default function LandingPage() {
                       icon: "🎙️",
                       title: "Voix naturelle",
                       desc: "ElevenLabs · Multilingue",
-                      href: "#how",
+                      href: "#features",
                     },
                     {
                       icon: "⚡",
                       title: "Rendu rapide",
                       desc: "Vidéo 1080p en 2-5 minutes",
-                      href: "#how",
+                      href: "#features",
                     },
                   ].map((item, i) => (
                     <a
@@ -647,7 +647,7 @@ export default function LandingPage() {
       <section
         aria-label="Hero"
         style={{
-          minHeight: "76vh",
+          minHeight: "70vh",
           display: "flex",
           flexDirection: "column",
           background: "#ffffff",
@@ -660,15 +660,15 @@ export default function LandingPage() {
             width: "100%",
             maxWidth: 1180,
             margin: "0 auto",
-            paddingTop: 124,
-            paddingBottom: 24,
+            paddingTop: 108,
+            paddingBottom: 8,
           }}
         >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 22,
+              gap: 18,
               alignItems: "center",
             }}
           >
@@ -892,7 +892,7 @@ export default function LandingPage() {
               <div
                 style={{
                   width: "100%",
-                  marginTop: 28,
+                  marginTop: 18,
                   display: "flex",
                   alignItems: "flex-end",
                   justifyContent: "center",
@@ -958,22 +958,465 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="how" style={{ padding: "84px 40px 78px", background: "#fff" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-          <div style={sectionEyebrowStyle}>Comment ça marche</div>
-          <h2 style={{ ...sectionTitleStyle, marginBottom: 56 }}>
+      <section id="features" style={{ padding: "120px 60px", background: "#0f0f0f" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ marginBottom: 80 }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#10B981",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                marginBottom: 16,
+              }}
+            >
+              Fonctionnalités
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: 52,
+                  fontWeight: 900,
+                  letterSpacing: "-0.04em",
+                  lineHeight: 1.05,
+                  color: "#ffffff",
+                  maxWidth: 500,
+                }}
+              >
+                Tout ce dont tu as besoin pour créer.
+              </h2>
+              <p
+                style={{
+                  fontSize: 15,
+                  color: "rgba(255,255,255,0.4)",
+                  lineHeight: 1.7,
+                  maxWidth: 320,
+                  marginBottom: 4,
+                }}
+              >
+                De l&apos;idée à la vidéo publiable, Motionr gère tout automatiquement.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
+            <div
+              style={{
+                gridColumn: "span 2",
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: -60,
+                  right: -60,
+                  width: 200,
+                  height: 200,
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(16,185,129,0.08), transparent)",
+                }}
+              />
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 11,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  marginBottom: 20,
+                }}
+              >
+                ✨
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.03em",
+                  marginBottom: 10,
+                }}
+              >
+                Génération par IA
+              </h3>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.4)",
+                  lineHeight: 1.7,
+                  maxWidth: 400,
+                }}
+              >
+                Claude analyse ton message et génère automatiquement un script
+                professionnel, choisit les meilleures animations et synchronise
+                parfaitement la voix. Zéro compétence requise.
+              </p>
+              <div
+                style={{
+                  marginTop: 28,
+                  padding: "14px 16px",
+                  background: "rgba(255,255,255,0.04)",
+                  borderRadius: 10,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  fontSize: 13,
+                  color: "rgba(255,255,255,0.3)",
+                  fontStyle: "italic",
+                }}
+              >
+                &quot;Présente mon application de fitness...&quot;
+                <span
+                  style={{
+                    color: "#10B981",
+                    marginLeft: 8,
+                    fontStyle: "normal",
+                  }}
+                >
+                  → Vidéo générée ✓
+                </span>
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 11,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  marginBottom: 20,
+                }}
+              >
+                ✍️
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.03em",
+                  marginBottom: 10,
+                }}
+              >
+                Mode Script
+              </h3>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
+                Écris librement ton texte. L&apos;IA le découpe et crée une vidéo motion
+                design avec ton contenu exact.
+              </p>
+            </div>
+
+            <div
+              style={{
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 11,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  marginBottom: 20,
+                }}
+              >
+                🎬
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.03em",
+                  marginBottom: 10,
+                }}
+              >
+                72+ animations
+              </h3>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
+                Texte cinétique, graphiques de données, effets cinéma, social media,
+                choisies automatiquement selon ton contenu.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 20 }}>
+                {["Kinetic", "Hologram", "Counter", "Matrix", "Aurora"].map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      padding: "3px 10px",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 100,
+                      fontSize: 11,
+                      color: "rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                gridColumn: "span 2",
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+                display: "flex",
+                gap: 40,
+                alignItems: "center",
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 11,
+                    background: "rgba(16,185,129,0.12)",
+                    border: "1px solid rgba(16,185,129,0.2)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 20,
+                    marginBottom: 20,
+                  }}
+                >
+                  🎙️
+                </div>
+                <h3
+                  style={{
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: "#fff",
+                    letterSpacing: "-0.03em",
+                    marginBottom: 10,
+                  }}
+                >
+                  Voix naturelle
+                </h3>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.4)",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  ElevenLabs génère une voix off ultra-réaliste parfaitement
+                  synchronisée frame par frame avec les animations.
+                </p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 3, height: 60 }}>
+                {Array.from({ length: 24 }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: 3,
+                      borderRadius: 3,
+                      height: `${20 + Math.abs(Math.sin(i * 0.8)) * 40}px`,
+                      background:
+                        i % 3 === 0 ? "#10B981" : "rgba(255,255,255,0.1)",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 11,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  marginBottom: 20,
+                }}
+              >
+                📱
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.03em",
+                  marginBottom: 10,
+                }}
+              >
+                Multi-format
+              </h3>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.4)",
+                  lineHeight: 1.7,
+                  marginBottom: 20,
+                }}
+              >
+                Génère en 9:16 pour les Reels, 16:9 pour YouTube ou 1:1 pour LinkedIn.
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[
+                  { label: "9:16", w: 28, h: 50 },
+                  { label: "1:1", w: 40, h: 40 },
+                  { label: "16:9", w: 56, h: 32 },
+                ].map((fmt) => (
+                  <div
+                    key={fmt.label}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: fmt.w,
+                        height: fmt.h,
+                        border: "1.5px solid rgba(16,185,129,0.4)",
+                        borderRadius: 5,
+                        background: "rgba(16,185,129,0.06)",
+                      }}
+                    />
+                    <span style={{ fontSize: 9, color: "rgba(255,255,255,0.3)" }}>
+                      {fmt.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#161616",
+                borderRadius: 20,
+                padding: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 11,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  marginBottom: 20,
+                }}
+              >
+                ⚡
+              </div>
+              <h3
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.03em",
+                  marginBottom: 10,
+                }}
+              >
+                Rendu rapide
+              </h3>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", lineHeight: 1.7 }}>
+                Ta vidéo 1080p est prête en 2 à 5 minutes. Télécharge et publie
+                instantanément.
+              </p>
+              <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
+                {[
+                  { v: "2-5", u: "minutes" },
+                  { v: "1080p", u: "qualité" },
+                ].map((s) => (
+                  <div key={s.v}>
+                    <div
+                      style={{
+                        fontSize: 24,
+                        fontWeight: 900,
+                        color: "#10B981",
+                        letterSpacing: "-0.04em",
+                      }}
+                    >
+                      {s.v}
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+                      {s.u}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" style={{ padding: "52px 40px 72px", background: "#fff" }}>
+        <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{ ...sectionTitleStyle, marginBottom: 36 }}>
             3 étapes. C&apos;est tout.
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 34 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }}>
             {steps.map((step) => (
               <div key={step.num}>
                 <div
                   style={{
-                    fontSize: 52,
+                    fontSize: 28,
                     fontWeight: 700,
                     color: "transparent",
-                    WebkitTextStroke: `1.5px ${accent}`,
-                    marginBottom: 14,
+                    WebkitTextStroke: `1.1px ${accent}`,
+                    marginBottom: 4,
                     letterSpacing: "-0.04em",
                   }}
                 >
@@ -982,15 +1425,26 @@ export default function LandingPage() {
                 <h3
                   style={{
                     ...cardTitleStyle,
-                    marginBottom: 8,
+                    fontSize: 13,
+                    lineHeight: 1.2,
+                    marginBottom: 0,
                   }}
                 >
                   {step.title}
                 </h3>
-                <p style={cardBodyStyle}>{step.desc}</p>
               </div>
             ))}
           </div>
+          <div
+            style={{
+              marginTop: 28,
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 22,
+              border: "1.5px dashed #d9d9d9",
+              background: "#fafafa",
+            }}
+          />
         </div>
       </section>
 
