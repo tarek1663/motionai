@@ -1,21 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const accent = "#7C3AED";
 const accentLight = "#F5F3FF";
+
+const EXAMPLE_VIDEOS = [
+  { title: "Présentation produit", category: "Marketing", bg: "#0a0a0a" },
+  { title: "Témoignage client", category: "Social Media", bg: "#050510" },
+  { title: "Lancement startup", category: "Business", bg: "#0a0500" },
+  { title: "Promotion offre", category: "E-commerce", bg: "#050a05" },
+  { title: "Tutoriel app", category: "Tech", bg: "#0a0a0a" },
+  { title: "Motivation", category: "Lifestyle", bg: "#0a0505" },
+];
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [prompt, setPrompt] = useState("");
+  const router = useRouter();
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleGenerate = () => {
+    if (prompt.trim()) {
+      router.push(`/signup?prompt=${encodeURIComponent(prompt)}`);
+    } else {
+      router.push("/signup");
+    }
+  };
+
+  const scroll = (dir: "left" | "right") => {
+    if (galleryRef.current) {
+      galleryRef.current.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
+    }
+  };
 
   const features = [
     {
@@ -198,9 +225,15 @@ export default function LandingPage() {
         .btn-primary:hover { background: #6D28D9; transform: translateY(-1px); box-shadow: 0 8px 24px ${accent}44; }
         .btn-secondary { background: #fff; color: #0a0a0a; border: 1.5px solid #e8e8e8; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
         .btn-secondary:hover { border-color: #ccc; transform: translateY(-1px); }
+        .feature-card { transition: all 0.2s; }
         .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+        .plan-card { transition: all 0.2s; }
         .plan-card:hover { transform: translateY(-4px); }
         .faq-item { border-bottom: 1px solid #f0f0f0; }
+        .prompt-input { width: 100%; background: none; border: none; outline: none; font-size: 16px; color: #0a0a0a; font-family: inherit; resize: none; }
+        .prompt-input::placeholder { color: #aaa; }
+        .gallery-card:hover .gallery-overlay { opacity: 1 !important; }
+        .scroll-btn:hover { background: rgba(255,255,255,0.95) !important; }
       `}</style>
 
       <header
@@ -271,12 +304,14 @@ export default function LandingPage() {
 
       <section
         style={{
-          paddingTop: 140,
-          paddingBottom: 100,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "120px 40px 60px",
           textAlign: "center",
-          padding: "140px 40px 100px",
-          maxWidth: 900,
-          margin: "0 auto",
+          background: "linear-gradient(180deg, #ffffff 0%, #FAFAF8 100%)",
         }}
       >
         <div
@@ -294,129 +329,325 @@ export default function LandingPage() {
             color: accent,
           }}
         >
-          <span>✨</span> 72+ animations motion design disponibles
+          <span>✨</span> Vidéos motion design générées par IA
         </div>
 
         <h1
           style={{
-            fontSize: 72,
+            fontSize: 80,
             fontWeight: 900,
             letterSpacing: "-0.05em",
-            lineHeight: 1.05,
-            marginBottom: 24,
+            lineHeight: 1,
+            marginBottom: 20,
             color: "#0a0a0a",
+            maxWidth: 800,
           }}
         >
-          Transforme tes idées
+          Crée des vidéos
           <br />
-          en vidéos <span style={{ color: accent }}>motion design</span>
+          <span style={{ color: accent }}>motion design</span>
           <br />
           en quelques minutes.
         </h1>
 
         <p
           style={{
-            fontSize: 20,
-            color: "#666",
+            fontSize: 18,
+            color: "#888",
             lineHeight: 1.6,
-            marginBottom: 40,
-            maxWidth: 600,
-            margin: "0 auto 40px",
+            marginBottom: 48,
+            maxWidth: 500,
           }}
         >
-          Tape ton message. L&apos;IA génère le script, les animations, la voix et la
-          musique. Ta vidéo 1080p est prête.
+          Décris ton idée. L&apos;IA génère le script, les animations, la voix et la
+          musique. Prêt à publier.
         </p>
 
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 48 }}>
-          <Link href="/signup" className="btn-primary" style={{ fontSize: 16, padding: "14px 32px" }}>
-            Commencer gratuitement →
-          </Link>
-          <Link href="/dashboard" className="btn-secondary" style={{ fontSize: 16, padding: "14px 32px" }}>
-            Voir une démo
-          </Link>
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 680,
+            background: "#fff",
+            borderRadius: 16,
+            border: "1.5px solid #e8e8e8",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
+            padding: "20px 20px 14px",
+            marginBottom: 16,
+          }}
+        >
+          <textarea
+            className="prompt-input"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Ex: Présente mon application de fitness qui aide les gens à perdre du poids..."
+            rows={3}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.metaKey) handleGenerate();
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: 8,
+            }}
+          >
+            <div style={{ fontSize: 12, color: "#ccc" }}>⌘ + Entrée pour générer</div>
+            <button
+              onClick={handleGenerate}
+              style={{
+                background: accent,
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: `0 4px 16px ${accent}44`,
+              }}
+            >
+              Générer ✦
+            </button>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            flexWrap: "wrap",
+            justifyContent: "center",
+            marginBottom: 48,
+          }}
+        >
+          {[
+            "Présente mon SaaS",
+            "Vidéo de motivation",
+            "Promotion -50%",
+            "Témoignage client",
+          ].map((suggestion) => (
+            <button
+              key={suggestion}
+              onClick={() => setPrompt(suggestion)}
+              style={{
+                padding: "6px 14px",
+                background: "#fff",
+                border: "1px solid #e8e8e8",
+                borderRadius: 100,
+                fontSize: 12,
+                color: "#666",
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {suggestion}
+            </button>
+          ))}
         </div>
 
         <div
           style={{
             fontSize: 13,
-            color: "#aaa",
+            color: "#bbb",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            gap: 16,
+            gap: 12,
           }}
         >
           <span>⭐⭐⭐⭐⭐</span>
-          <span>+1 000 créateurs font confiance à Motionr</span>
-          <span>·</span>
-          <span>Aucune carte requise</span>
+          <span>+1 000 créateurs · Aucune carte requise</span>
         </div>
       </section>
 
-      <section style={{ padding: "0 40px 100px", display: "flex", justifyContent: "center" }}>
+      <section style={{ padding: "80px 0", background: "#0a0a0a", overflow: "hidden" }}>
         <div
           style={{
-            width: "100%",
-            maxWidth: 960,
-            borderRadius: 24,
-            background: "#fff",
-            border: "1.5px solid #e8e8e8",
-            boxShadow: "0 40px 120px rgba(0,0,0,0.08)",
-            overflow: "hidden",
+            padding: "0 40px",
+            marginBottom: 32,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <div
-            style={{
-              padding: "12px 16px",
-              background: "#f5f5f5",
-              borderBottom: "1px solid #e8e8e8",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f56" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
+          <div>
             <div
               style={{
-                flex: 1,
-                background: "#ebebeb",
-                borderRadius: 6,
-                padding: "4px 12px",
-                fontSize: 11,
-                color: "#888",
-                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: accent,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                marginBottom: 8,
               }}
             >
-              app.motionr.app/dashboard
+              Exemples
             </div>
+            <h2
+              style={{
+                fontSize: 36,
+                fontWeight: 900,
+                color: "#ffffff",
+                letterSpacing: "-0.04em",
+              }}
+            >
+              Créé avec Motionr
+            </h2>
           </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {["←", "→"].map((dir, index) => (
+              <button
+                key={dir}
+                className="scroll-btn"
+                onClick={() => scroll(index === 0 ? "left" : "right")}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "#fff",
+                  fontSize: 16,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.15s",
+                }}
+              >
+                {dir}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={galleryRef}
+          style={{
+            display: "flex",
+            gap: 16,
+            overflowX: "auto",
+            paddingLeft: 40,
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          {EXAMPLE_VIDEOS.map((video) => (
+            <div
+              key={`${video.category}-${video.title}`}
+              className="gallery-card"
+              style={{
+                flexShrink: 0,
+                width: 200,
+                height: 356,
+                borderRadius: 16,
+                background: video.bg,
+                position: "relative",
+                overflow: "hidden",
+                cursor: "pointer",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: `linear-gradient(135deg, ${accent}22, transparent)`,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.15)",
+                  backdropFilter: "blur(8px)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 18,
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
+              >
+                ▶
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: "40px 14px 14px",
+                  background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)",
+                }}
+              >
+                <div style={{ fontSize: 11, color: accent, fontWeight: 700, marginBottom: 4 }}>
+                  {video.category}
+                </div>
+                <div style={{ fontSize: 13, color: "#fff", fontWeight: 600 }}>
+                  {video.title}
+                </div>
+              </div>
+              <div
+                className="gallery-overlay"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: `${accent}22`,
+                  opacity: 0,
+                  transition: "opacity 0.2s",
+                }}
+              />
+            </div>
+          ))}
           <div
             style={{
-              padding: 32,
-              background: "#fafaf8",
-              minHeight: 400,
+              flexShrink: 0,
+              width: 200,
+              height: 356,
+              borderRadius: 16,
+              border: "1.5px dashed rgba(255,255,255,0.2)",
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              cursor: "pointer",
+              marginRight: 40,
+              gap: 12,
             }}
+            onClick={() => router.push("/signup")}
           >
-            <div style={{ textAlign: "center", color: "#aaa" }}>
-              <div style={{ fontSize: 64, marginBottom: 16 }}>🎬</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#555" }}>
-                Interface Motionr
-              </div>
-              <div style={{ fontSize: 13, marginTop: 4 }}>
-                Générateur de vidéos motion design par IA
-              </div>
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                background: `${accent}22`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 20,
+                color: accent,
+              }}
+            >
+              +
+            </div>
+            <div style={{ fontSize: 13, color: "#666", textAlign: "center", padding: "0 20px" }}>
+              Crée ta première vidéo
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" style={{ padding: "80px 40px", maxWidth: 1100, margin: "0 auto" }}>
+      <section id="features" style={{ padding: "100px 40px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div
             style={{
@@ -432,7 +663,7 @@ export default function LandingPage() {
           </div>
           <h2
             style={{
-              fontSize: 48,
+              fontSize: 52,
               fontWeight: 900,
               letterSpacing: "-0.04em",
               lineHeight: 1.1,
@@ -443,7 +674,6 @@ export default function LandingPage() {
             pour créer des vidéos pro.
           </h2>
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {features.map((feature) => (
             <div
@@ -454,7 +684,6 @@ export default function LandingPage() {
                 borderRadius: 20,
                 padding: "28px",
                 border: "1.5px solid #e8e8e8",
-                transition: "all 0.2s",
               }}
             >
               <div
@@ -488,7 +717,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="how" style={{ padding: "80px 40px", background: "#fff" }}>
+      <section id="how" style={{ padding: "100px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
           <div
             style={{
@@ -504,7 +733,7 @@ export default function LandingPage() {
           </div>
           <h2
             style={{
-              fontSize: 48,
+              fontSize: 52,
               fontWeight: 900,
               letterSpacing: "-0.04em",
               lineHeight: 1.1,
@@ -513,15 +742,14 @@ export default function LandingPage() {
           >
             3 étapes. C&apos;est tout.
           </h2>
-
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 40 }}>
             {steps.map((step) => (
-              <div key={step.num} style={{ textAlign: "center" }}>
+              <div key={step.num}>
                 <div
                   style={{
-                    fontSize: 48,
+                    fontSize: 56,
                     fontWeight: 900,
-                    color: accentLight,
+                    color: "transparent",
                     WebkitTextStroke: `2px ${accent}`,
                     marginBottom: 16,
                     letterSpacing: "-0.04em",
@@ -546,7 +774,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section style={{ padding: "80px 40px", maxWidth: 1100, margin: "0 auto" }}>
+      <section style={{ padding: "100px 40px", maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
           <div
             style={{
@@ -560,18 +788,10 @@ export default function LandingPage() {
           >
             Témoignages
           </div>
-          <h2
-            style={{
-              fontSize: 48,
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
-            }}
-          >
+          <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-0.04em" }}>
             Ils créent avec Motionr.
           </h2>
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {testimonials.map((testimonial) => (
             <div
@@ -583,7 +803,7 @@ export default function LandingPage() {
                 border: "1.5px solid #e8e8e8",
               }}
             >
-              <div style={{ fontSize: 24, marginBottom: 16 }}>⭐⭐⭐⭐⭐</div>
+              <div style={{ fontSize: 20, marginBottom: 16 }}>⭐⭐⭐⭐⭐</div>
               <p
                 style={{
                   fontSize: 15,
@@ -622,7 +842,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" style={{ padding: "80px 40px", background: "#fff" }}>
+      <section id="pricing" style={{ padding: "100px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <div
@@ -639,7 +859,7 @@ export default function LandingPage() {
             </div>
             <h2
               style={{
-                fontSize: 48,
+                fontSize: 52,
                 fontWeight: 900,
                 letterSpacing: "-0.04em",
                 lineHeight: 1.1,
@@ -648,7 +868,6 @@ export default function LandingPage() {
             >
               Simple et transparent.
             </h2>
-
             <div
               style={{
                 display: "inline-flex",
@@ -671,12 +890,10 @@ export default function LandingPage() {
                     fontSize: 13,
                     cursor: "pointer",
                     color: billing === option ? "#0a0a0a" : "#888",
-                    boxShadow:
-                      billing === option ? "0 1px 4px rgba(0,0,0,0.1)" : "none",
+                    boxShadow: billing === option ? "0 1px 4px rgba(0,0,0,0.1)" : "none",
                   }}
                 >
-                  {option === "monthly" ? "Mensuel" : "Annuel"}
-                  {option === "yearly" ? " -40%" : ""}
+                  {option === "monthly" ? "Mensuel" : "Annuel -40%"}
                 </button>
               ))}
             </div>
@@ -693,7 +910,6 @@ export default function LandingPage() {
                   background: plan.popular ? accent : "#fff",
                   border: plan.popular ? "none" : "1.5px solid #e8e8e8",
                   color: plan.popular ? "#fff" : "#0a0a0a",
-                  transition: "all 0.2s",
                   boxShadow: plan.popular ? `0 20px 60px ${accent}44` : "none",
                   position: "relative",
                 }}
@@ -711,6 +927,7 @@ export default function LandingPage() {
                       padding: "4px 14px",
                       fontSize: 11,
                       fontWeight: 800,
+                      whiteSpace: "nowrap",
                     }}
                   >
                     ⭐ POPULAIRE
@@ -729,7 +946,6 @@ export default function LandingPage() {
                   <span style={{ fontSize: 14, fontWeight: 400, opacity: 0.6 }}>/mois</span>
                 </div>
                 <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 24 }}>{plan.videos}</div>
-
                 <div
                   style={{
                     display: "flex",
@@ -748,7 +964,6 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
-
                 <Link
                   href={plan.id === "free" ? "/signup" : `/signup?plan=${plan.id}`}
                   style={{
@@ -761,7 +976,6 @@ export default function LandingPage() {
                     fontWeight: 700,
                     fontSize: 14,
                     textDecoration: "none",
-                    transition: "all 0.15s",
                   }}
                 >
                   {plan.cta}
@@ -772,7 +986,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" style={{ padding: "80px 40px", maxWidth: 700, margin: "0 auto" }}>
+      <section id="faq" style={{ padding: "100px 40px", maxWidth: 700, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div
             style={{
@@ -786,18 +1000,10 @@ export default function LandingPage() {
           >
             FAQ
           </div>
-          <h2
-            style={{
-              fontSize: 48,
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
-            }}
-          >
+          <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: "-0.04em" }}>
             Questions fréquentes.
           </h2>
         </div>
-
         {faqs.map((faq, index) => (
           <div key={faq.q} className="faq-item" style={{ padding: "20px 0" }}>
             <button
@@ -813,7 +1019,7 @@ export default function LandingPage() {
                 alignItems: "center",
               }}
             >
-              <span style={{ fontSize: 16, fontWeight: 600, color: "#0a0a0a" }}>{faq.q}</span>
+              <span style={{ fontSize: 16, fontWeight: 600 }}>{faq.q}</span>
               <span
                 style={{
                   fontSize: 20,
@@ -826,15 +1032,7 @@ export default function LandingPage() {
               </span>
             </button>
             {openFaq === index && (
-              <p
-                style={{
-                  fontSize: 14,
-                  color: "#666",
-                  lineHeight: 1.7,
-                  marginTop: 12,
-                  paddingRight: 32,
-                }}
-              >
+              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.7, marginTop: 12, paddingRight: 32 }}>
                 {faq.a}
               </p>
             )}
@@ -878,13 +1076,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer
-        style={{
-          padding: "40px",
-          borderTop: "1px solid #f0f0f0",
-          background: "#fff",
-        }}
-      >
+      <footer style={{ padding: "40px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
         <div
           style={{
             maxWidth: 1100,
