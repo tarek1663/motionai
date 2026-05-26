@@ -60,7 +60,7 @@ export default function AccountPage() {
       style={{
         minHeight: "100vh",
         background: "#fafafa",
-        fontFamily: "var(--font-geist), -apple-system, sans-serif",
+        fontFamily: "inherit",
         display: "flex",
       }}
     >

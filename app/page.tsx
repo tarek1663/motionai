@@ -210,7 +210,7 @@ export default function LandingPage() {
   return (
     <div
       style={{
-        fontFamily: "var(--font-geist), -apple-system, sans-serif",
+        fontFamily: "inherit",
         background: "#FAFAF8",
         color: "#0a0a0a",
         overflowX: "hidden",

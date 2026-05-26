@@ -78,7 +78,7 @@ export default function HistoryPage() {
   return (
     <div style={{
       minHeight: "100vh", background: colors.bg2,
-      fontFamily: fonts.sans,
+      fontFamily: "inherit",
       display: "flex",
     }}>
       <style>{`

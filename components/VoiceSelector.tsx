@@ -89,7 +89,7 @@ export const VoiceSelector: React.FC<Props> = ({ selectedVoiceId, onSelect }) =>
           }}>
             <div style={{
               fontSize: 16, fontWeight: 700, color: isSelected ? "#ffffff" : "#aaaaaa",
-              fontFamily: "system-ui",
+              fontFamily: "inherit",
             }}>
               {voice.name}
             </div>
@@ -104,7 +104,7 @@ export const VoiceSelector: React.FC<Props> = ({ selectedVoiceId, onSelect }) =>
             )}
           </div>
           <div style={{
-            fontSize: 13, color: "#666", fontFamily: "system-ui",
+            fontSize: 13, color: "#666", fontFamily: "inherit",
           }}>
             {voice.style}
           </div>
@@ -158,7 +158,7 @@ export const VoiceSelector: React.FC<Props> = ({ selectedVoiceId, onSelect }) =>
         <div style={{
           fontSize: 12, fontWeight: 600, color: "#555",
           letterSpacing: "0.08em", textTransform: "uppercase",
-          fontFamily: "system-ui", marginBottom: 10,
+          fontFamily: "inherit", marginBottom: 10,
         }}>
           Voix féminines
         </div>
@@ -172,7 +172,7 @@ export const VoiceSelector: React.FC<Props> = ({ selectedVoiceId, onSelect }) =>
         <div style={{
           fontSize: 12, fontWeight: 600, color: "#555",
           letterSpacing: "0.08em", textTransform: "uppercase",
-          fontFamily: "system-ui", marginBottom: 10,
+          fontFamily: "inherit", marginBottom: 10,
         }}>
           Voix masculines
         </div>

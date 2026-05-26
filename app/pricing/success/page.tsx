@@ -2,7 +2,7 @@ export default function SuccessPage() {
   return (
     <div style={{
       minHeight: "100vh", background: "#0a0a0a",
-      fontFamily: "system-ui", color: "#ffffff",
+      fontFamily: "inherit", color: "#ffffff",
       display: "flex", alignItems: "center", justifyContent: "center",
       flexDirection: "column", gap: 24, textAlign: "center", padding: 40,
     }}>

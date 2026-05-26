@@ -2,7 +2,7 @@ export default function TermsPage() {
   return (
     <div style={{
       minHeight: "100vh", background: "#0a0a0a",
-      fontFamily: "system-ui", color: "#ffffff",
+      fontFamily: "inherit", color: "#ffffff",
       padding: "80px 40px",
     }}>
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
