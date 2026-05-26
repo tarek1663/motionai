@@ -246,9 +246,10 @@ export default function LandingPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled ? "rgba(10,10,10,0.92)" : "transparent",
-          backdropFilter: scrolled ? "blur(12px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
+          background: scrolled ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.94)",
+          backdropFilter: "blur(12px)",
+          borderBottom: "1px solid rgba(23,19,17,0.08)",
+          boxShadow: "0 8px 24px rgba(23,19,17,0.05)",
           transition: "all 0.3s",
         }}
       >
@@ -270,7 +271,7 @@ export default function LandingPage() {
           >
             M
           </div>
-          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
+          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em", color: "#0a0a0a" }}>
             Motionr
           </span>
         </div>
@@ -284,9 +285,9 @@ export default function LandingPage() {
             <button
               style={{
                 padding: "8px 14px",
-                background: showProductMenu ? "rgba(255,255,255,0.06)" : "none",
-                border: "none",
-                color: showProductMenu ? "#ffffff" : "rgba(255,255,255,0.55)",
+                background: showProductMenu ? "rgba(16,185,129,0.08)" : "rgba(23,19,17,0.03)",
+                border: "1px solid rgba(23,19,17,0.08)",
+                color: showProductMenu ? "#0a0a0a" : "rgba(23,19,17,0.72)",
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: "pointer",
@@ -584,20 +585,22 @@ export default function LandingPage() {
               href={item.href}
               style={{
                 padding: "8px 14px",
-                color: "rgba(255,255,255,0.55)",
+                color: "rgba(23,19,17,0.72)",
                 textDecoration: "none",
                 fontSize: 14,
                 fontWeight: 500,
                 borderRadius: 8,
                 transition: "all 0.15s",
+                background: "rgba(23,19,17,0.03)",
+                border: "1px solid rgba(23,19,17,0.08)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = "#fff";
-                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.color = "#0a0a0a";
+                e.currentTarget.style.background = "rgba(16,185,129,0.08)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = "rgba(255,255,255,0.55)";
-                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "rgba(23,19,17,0.72)";
+                e.currentTarget.style.background = "rgba(23,19,17,0.03)";
               }}
             >
               {item.label}
@@ -606,24 +609,24 @@ export default function LandingPage() {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Link
-            href="/login"
+          <button
+            onClick={() => router.push("/login")}
             style={{
               padding: "8px 18px",
               background: "transparent",
-              border: "1px solid rgba(255,255,255,0.15)",
+              border: "1px solid rgba(23,19,17,0.12)",
               borderRadius: 10,
               fontSize: 14,
               fontWeight: 600,
-              color: "rgba(255,255,255,0.7)",
+              color: "#0a0a0a",
               textDecoration: "none",
               transition: "all 0.15s",
             }}
           >
             Connexion
-          </Link>
-          <Link
-            href="/signup"
+          </button>
+          <button
+            onClick={() => router.push("/signup")}
             style={{
               padding: "8px 18px",
               background: "#10B981",
@@ -637,7 +640,7 @@ export default function LandingPage() {
             }}
           >
             Commencer gratuitement
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -845,8 +848,8 @@ export default function LandingPage() {
                   flexWrap: "wrap",
                 }}
               >
-                <Link
-                  href="/login"
+                <button
+                  onClick={() => router.push("/signup")}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -854,16 +857,17 @@ export default function LandingPage() {
                     padding: "12px 20px",
                     minWidth: 220,
                     borderRadius: 12,
-                    background: "#171311",
-                    color: "#ffffff",
-                    textDecoration: "none",
+                    background: "#ffffff",
+                    color: "#0a0a0a",
+                    border: "none",
                     fontSize: 14,
                     fontWeight: 700,
-                    boxShadow: "0 10px 24px rgba(23,19,17,0.10)",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
                   }}
                 >
-                  Générer des vidéos gratuitement
-                </Link>
+                  Créer ma première vidéo →
+                </button>
                 <a
                   href="#how"
                   style={{
