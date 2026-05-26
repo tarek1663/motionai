@@ -2,14 +2,17 @@
 
 import { type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const accent = "#7C3AED";
 const accentLight = "#F5F3FF";
 
 export default function LandingPage() {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [prompt, setPrompt] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
   const rotatingWords = ["prompts", "scripts", "idées", "mots"];
@@ -31,6 +34,14 @@ export default function LandingPage() {
 
     return () => clearInterval(interval);
   }, [rotatingWords.length]);
+
+  const handleGenerate = () => {
+    if (prompt.trim()) {
+      router.push(`/login?prompt=${encodeURIComponent(prompt)}`);
+    } else {
+      router.push("/login");
+    }
+  };
 
   const steps = [
     {
@@ -312,98 +323,195 @@ export default function LandingPage() {
       <section
         aria-label="Hero"
         style={{
-          minHeight: "52vh",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "120px 40px 80px",
+          textAlign: "center",
           background: "#ffffff",
-          borderBottom: "1px solid #f0f0f0",
         }}
       >
         <div
           style={{
-            maxWidth: 980,
-            margin: "0 auto",
-            minHeight: "52vh",
-            padding: "120px 40px 80px",
-            display: "flex",
+            display: "inline-flex",
             alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
+            gap: 8,
+            background: accentLight,
+            border: `1px solid ${accent}22`,
+            borderRadius: 100,
+            padding: "5px 14px",
+            marginBottom: 40,
+            fontSize: 12,
+            fontWeight: 600,
+            color: accent,
           }}
         >
-          <div style={{ maxWidth: 900 }}>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                background: accentLight,
-                border: `1px solid ${accent}22`,
-                borderRadius: 100,
-                padding: "6px 16px",
-                marginBottom: 32,
-                fontSize: 13,
-                fontWeight: 600,
-                color: accent,
-              }}
-            >
-              <span>✨</span> Vidéos motion design générées par IA
+          ✨ Motion design · Voix IA · 1080p
+        </div>
+
+        <h1
+          style={{
+            fontSize: 76,
+            fontWeight: 900,
+            letterSpacing: "-0.05em",
+            lineHeight: 1.05,
+            color: "#0a0a0a",
+            marginBottom: 20,
+            maxWidth: 760,
+          }}
+        >
+          L&apos;IA qui transforme
+          <br />
+          tes{" "}
+          <span
+            style={{
+              display: "inline-block",
+              background: accent,
+              color: "#fff",
+              borderRadius: 10,
+              padding: "0 14px",
+              opacity: wordVisible ? 1 : 0,
+              transform: wordVisible ? "translateY(0px)" : "translateY(6px)",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {rotatingWords[wordIndex]}
+          </span>{" "}
+          en{" "}
+          <span
+            style={{
+              background: `linear-gradient(135deg, ${accent}, #a855f7)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            vidéos.
+          </span>
+        </h1>
+
+        <p
+          style={{
+            fontSize: 17,
+            color: "#999",
+            lineHeight: 1.7,
+            marginBottom: 52,
+            maxWidth: 480,
+            fontWeight: 400,
+          }}
+        >
+          Décris ton idée en quelques mots. Motionr génère automatiquement le
+          script, les animations et la voix.{" "}
+          <span style={{ color: "#666", fontWeight: 500 }}>
+            Ta vidéo 1080p est prête en minutes.
+          </span>
+        </p>
+
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 640,
+            background: "#fff",
+            borderRadius: 18,
+            border: "1.5px solid #e8e8e8",
+            boxShadow:
+              "0 4px 32px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
+            padding: "18px 18px 14px",
+          }}
+        >
+          <textarea
+            className="prompt-input"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Ex: Présente mon application de fitness qui aide à perdre du poids..."
+            rows={3}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleGenerate();
+              }
+            }}
+            style={{
+              width: "100%",
+              background: "none",
+              border: "none",
+              outline: "none",
+              fontSize: 15,
+              color: "#0a0a0a",
+              fontFamily: "inherit",
+              resize: "none",
+              lineHeight: 1.6,
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: 10,
+              paddingTop: 10,
+              borderTop: "1px solid #f5f5f5",
+            }}
+          >
+            <div style={{ display: "flex", gap: 8 }}>
+              {["Présente mon SaaS", "Vidéo motivation", "Promo -50%"].map(
+                (suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => setPrompt(suggestion)}
+                    style={{
+                      padding: "5px 12px",
+                      background: "#f5f5f5",
+                      border: "none",
+                      borderRadius: 100,
+                      fontSize: 11,
+                      color: "#888",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {suggestion}
+                  </button>
+                ),
+              )}
             </div>
-
-            <h1
+            <button
+              onClick={handleGenerate}
               style={{
-                fontSize: 80,
-                fontWeight: 900,
-                letterSpacing: "-0.05em",
-                lineHeight: 1.05,
-                marginBottom: 20,
-                color: "#0a0a0a",
-                maxWidth: 800,
+                background: accent,
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                padding: "9px 20px",
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                boxShadow: `0 4px 16px ${accent}44`,
+                transition: "all 0.15s",
               }}
             >
-              L&apos;IA qui transforme
-              <br />
-              tes{" "}
-              <span
-                style={{
-                  display: "inline-block",
-                  background: accent,
-                  color: "#fff",
-                  borderRadius: 12,
-                  padding: "0 16px",
-                  opacity: wordVisible ? 1 : 0,
-                  transform: wordVisible ? "translateY(0)" : "translateY(8px)",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                {rotatingWords[wordIndex]}
-              </span>{" "}
-              en{" "}
-              <span
-                style={{
-                  background: `linear-gradient(135deg, ${accent}, #a855f7)`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                vidéos.
-              </span>
-            </h1>
-
-            <p
-              style={{
-                fontSize: 18,
-                color: "#888",
-                lineHeight: 1.7,
-                marginBottom: 48,
-                maxWidth: 520,
-              }}
-            >
-              Décris ton idée en quelques mots. Motionr génère automatiquement
-              le script, les animations et la voix.{" "}
-              <span style={{ color: "#555", fontWeight: 500 }}>
-                Ta vidéo 1080p est prête en minutes.
-              </span>
-            </p>
+              Générer ✦
+            </button>
           </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: 28,
+            fontSize: 12,
+            color: "#ccc",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <span>⭐⭐⭐⭐⭐</span>
+          <span>+1 000 créateurs · Aucune carte requise</span>
         </div>
       </section>
 
