@@ -1,12 +1,19 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-/** Routes accessibles sans redirection sign-in (Clerk tourne quand même → auth() OK avec cookie). */
+/** Routes accessibles sans authentification obligatoire. */
 const isPublicRoute = createRouteMatcher([
+  "/",
+  "/pricing",
+  "/pricing/success",
+  "/pricing/cancel",
+  "/login(.*)",
+  "/signup(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/privacy",
+  "/terms",
   "/api/render(.*)",
   "/api/stripe/webhook",
-  "/pricing(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
