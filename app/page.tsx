@@ -4,36 +4,22 @@ import { type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const accent = "#7C3AED";
-const accentLight = "#F5F3FF";
+const accent = "#10B981";
+const accentLight = "#ffffff";
 
 export default function LandingPage() {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
+  const [showProductMenu, setShowProductMenu] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [prompt, setPrompt] = useState("");
-  const [wordIndex, setWordIndex] = useState(0);
-  const [wordVisible, setWordVisible] = useState(true);
-  const rotatingWords = ["prompts", "scripts", "idées", "mots"];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setWordVisible(false);
-      setTimeout(() => {
-        setWordIndex((i) => (i + 1) % rotatingWords.length);
-        setWordVisible(true);
-      }, 300);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [rotatingWords.length]);
 
   const handleGenerate = () => {
     if (prompt.trim()) {
@@ -183,7 +169,7 @@ export default function LandingPage() {
   };
 
   const sectionTitleStyle: CSSProperties = {
-    fontSize: 48,
+    fontSize: 44,
     fontWeight: 700,
     letterSpacing: "-0.045em",
     lineHeight: 1.08,
@@ -228,19 +214,19 @@ export default function LandingPage() {
     <div
       style={{
         fontFamily: "inherit",
-        background: "#0a0a0a",
-        color: "#ffffff",
+        background: "#ffffff",
+        color: "#171311",
         overflowX: "hidden",
       }}
     >
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        .nav-link { text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s; color: rgba(255,255,255,0.5); }
-        .nav-link:hover { color: #ffffff; }
-        .prompt-input::placeholder { color: rgba(255,255,255,0.32); }
+        .nav-link { text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.15s; color: rgba(23,19,17,0.5); }
+        .nav-link:hover { color: #171311; }
+        .prompt-input::placeholder { color: rgba(97,90,84,0.72); }
         .btn-primary { background: ${accent}; color: #fff; border: none; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
-        .btn-primary:hover { background: #6D28D9; transform: translateY(-1px); box-shadow: 0 8px 24px ${accent}44; }
+        .btn-primary:hover { background: ${accent}; transform: translateY(-1px); box-shadow: 0 8px 24px ${accent}44; }
         .btn-secondary { background: #fff; color: #0a0a0a; border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
         .btn-secondary:hover { border-color: #ccc; transform: translateY(-1px); }
         .plan-card { transition: all 0.2s; }
@@ -251,45 +237,372 @@ export default function LandingPage() {
       <header
         style={{
           position: "fixed",
-          top: 14,
-          left: "50%",
-          transform: "translateX(-50%)",
+          top: 0,
+          left: 0,
+          right: 0,
           zIndex: 100,
-          width: "min(1120px, calc(100% - 32px))",
-          padding: "0 18px",
-          height: 50,
+          padding: "0 48px",
+          height: 60,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           background: scrolled ? "rgba(10,10,10,0.92)" : "transparent",
-          backdropFilter: "blur(14px)",
-          border: "none",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
           borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
-          borderRadius: 16,
-          boxShadow: "none",
           transition: "all 0.3s",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span
+          <div
             style={{
-              fontSize: 15,
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              color: "#ffffff",
+              width: 28,
+              height: 28,
+              borderRadius: 7,
+              background: "#10B981",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 13,
+              fontWeight: 900,
+              color: "#fff",
+              boxShadow: "0 2px 8px rgba(16,185,129,0.4)",
             }}
           >
+            M
+          </div>
+          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
             Motionr
           </span>
         </div>
 
-        <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-          <a href="#features" className="nav-link">
-            Solutions
-          </a>
-          <a href="#pricing" className="nav-link">
-            Pricing
-          </a>
+        <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div
+            style={{ position: "relative" }}
+            onMouseEnter={() => setShowProductMenu(true)}
+            onMouseLeave={() => setShowProductMenu(false)}
+          >
+            <button
+              style={{
+                padding: "8px 14px",
+                background: showProductMenu ? "rgba(255,255,255,0.06)" : "none",
+                border: "none",
+                color: showProductMenu ? "#ffffff" : "rgba(255,255,255,0.55)",
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                transition: "color 0.15s",
+                borderRadius: 8,
+              }}
+            >
+              Produit
+              <span
+                style={{
+                  fontSize: 10,
+                  opacity: 0.5,
+                  transform: showProductMenu ? "rotate(180deg)" : "none",
+                  transition: "transform 0.2s",
+                }}
+              >
+                ▼
+              </span>
+            </button>
+
+            {showProductMenu && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 8px)",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 360,
+                  background: "#ffffff",
+                  borderRadius: 16,
+                  padding: "20px",
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.05)",
+                  zIndex: 200,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    left: "50%",
+                    transform: "translateX(-50%) rotate(45deg)",
+                    width: 12,
+                    height: 12,
+                    background: "#ffffff",
+                    borderTop: "1px solid rgba(0,0,0,0.05)",
+                    borderLeft: "1px solid rgba(0,0,0,0.05)",
+                  }}
+                />
+
+                <div style={{ marginBottom: 16 }}>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#aaa",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Créer
+                  </div>
+                  {[
+                    {
+                      icon: "✨",
+                      title: "Générer par IA",
+                      desc: "Décris ton idée, l'IA fait le reste",
+                      href: "/dashboard",
+                    },
+                    {
+                      icon: "✍️",
+                      title: "Mode Script",
+                      desc: "Écris ton texte, on le met en vidéo",
+                      href: "/dashboard",
+                    },
+                  ].map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.href}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 12,
+                        padding: "10px 10px",
+                        borderRadius: 10,
+                        textDecoration: "none",
+                        transition: "background 0.15s",
+                        background: "transparent",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 9,
+                          background: "rgba(16,185,129,0.1)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 16,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#0a0a0a",
+                            marginBottom: 2,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+                          {item.desc}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+
+                <div style={{ height: 1, background: "#f0f0f0", marginBottom: 16 }} />
+
+                <div style={{ marginBottom: 16 }}>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#aaa",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Animations
+                  </div>
+                  {[
+                    {
+                      icon: "🎬",
+                      title: "72+ scènes",
+                      desc: "Texte, data, cinéma, social media",
+                      href: "#how",
+                    },
+                    {
+                      icon: "📱",
+                      title: "Multi-format",
+                      desc: "9:16 · 16:9 · 1:1",
+                      href: "#how",
+                    },
+                  ].map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.href}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 12,
+                        padding: "10px 10px",
+                        borderRadius: 10,
+                        textDecoration: "none",
+                        transition: "background 0.15s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 9,
+                          background: "rgba(16,185,129,0.1)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 16,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#0a0a0a",
+                            marginBottom: 2,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+                          {item.desc}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+
+                <div style={{ height: 1, background: "#f0f0f0", marginBottom: 16 }} />
+
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#aaa",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Qualité
+                  </div>
+                  {[
+                    {
+                      icon: "🎙️",
+                      title: "Voix naturelle",
+                      desc: "ElevenLabs · Multilingue",
+                      href: "#how",
+                    },
+                    {
+                      icon: "⚡",
+                      title: "Rendu rapide",
+                      desc: "Vidéo 1080p en 2-5 minutes",
+                      href: "#how",
+                    },
+                  ].map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.href}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 12,
+                        padding: "10px 10px",
+                        borderRadius: 10,
+                        textDecoration: "none",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 9,
+                          background: "rgba(16,185,129,0.1)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 16,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#0a0a0a",
+                            marginBottom: 2,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#888", lineHeight: 1.4 }}>
+                          {item.desc}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {[
+            { label: "Tarifs", href: "#pricing" },
+            { label: "FAQ", href: "#faq" },
+          ].map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              style={{
+                padding: "8px 14px",
+                color: "rgba(255,255,255,0.55)",
+                textDecoration: "none",
+                fontSize: 14,
+                fontWeight: 500,
+                borderRadius: 8,
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -300,10 +613,11 @@ export default function LandingPage() {
               background: "transparent",
               border: "1px solid rgba(255,255,255,0.15)",
               borderRadius: 10,
-              color: "rgba(255,255,255,0.7)",
-              textDecoration: "none",
               fontSize: 14,
               fontWeight: 600,
+              color: "rgba(255,255,255,0.7)",
+              textDecoration: "none",
+              transition: "all 0.15s",
             }}
           >
             Connexion
@@ -312,13 +626,14 @@ export default function LandingPage() {
             href="/signup"
             style={{
               padding: "8px 18px",
-              background: "#ffffff",
-              color: "#0a0a0a",
-              textDecoration: "none",
+              background: "#10B981",
+              color: "#ffffff",
               border: "none",
               borderRadius: 10,
               fontSize: 14,
               fontWeight: 700,
+              textDecoration: "none",
+              boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
             }}
           >
             Commencer gratuitement
@@ -329,391 +644,320 @@ export default function LandingPage() {
       <section
         aria-label="Hero"
         style={{
-          minHeight: "100vh",
+          minHeight: "76vh",
           display: "flex",
           flexDirection: "column",
-          background: "#0a0a0a",
+          background: "#ffffff",
           padding: "0 60px",
-          justifyContent: "center",
+          justifyContent: "flex-start",
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 60,
-            paddingTop: 80,
-            paddingBottom: 60,
+            width: "100%",
+            maxWidth: 1180,
+            margin: "0 auto",
+            paddingTop: 124,
+            paddingBottom: 24,
           }}
         >
-          <div style={{ flex: 1, maxWidth: 560 }}>
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 100,
-                padding: "5px 14px",
-                marginBottom: 32,
-                fontSize: 12,
-                fontWeight: 500,
-                color: "rgba(255,255,255,0.5)",
-                letterSpacing: "0.02em",
-              }}
-            >
-              Motion design · Voix IA · 1080p
-            </div>
-
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 22,
+              alignItems: "center",
+            }}
+          >
             <h1
               style={{
-                fontSize: 64,
-                fontWeight: 800,
+                fontSize: 60,
+                fontWeight: 700,
                 letterSpacing: "-0.04em",
-                lineHeight: 1.08,
-                color: "#ffffff",
-                marginBottom: 20,
+                lineHeight: 1.02,
+                color: "#171311",
+                maxWidth: 980,
+                textAlign: "center",
+                margin: "0 auto",
               }}
             >
-              L&apos;IA qui transforme
-              <br />
-              tes{" "}
-              <span
-                style={{
-                  display: "inline-block",
-                  opacity: wordVisible ? 1 : 0,
-                  transform: wordVisible ? "translateY(0)" : "translateY(6px)",
-                  transition: "all 0.3s ease",
-                  color: "#ffffff",
-                  fontStyle: "italic",
-                }}
-              >
-                {rotatingWords[wordIndex]}
+              <span style={{ display: "block" }}>
+                L&apos;IA qui transforme tes{" "}
+                <span
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "0.01em",
+                    marginRight: "0.01em",
+                    fontStyle: "italic",
+                    color: "#171311",
+                  }}
+                >
+                  mots
+                </span>{" "}
+                en vidéos.
               </span>
-              <br />
-              en vidéos.
             </h1>
 
             <p
               style={{
-                fontSize: 16,
-                color: "rgba(255,255,255,0.45)",
+                maxWidth: 700,
+                margin: "0 auto 8px",
+                textAlign: "center",
+                fontSize: 18,
                 lineHeight: 1.7,
-                marginBottom: 40,
-                maxWidth: 420,
-                fontWeight: 400,
+                color: "#6F6862",
               }}
             >
-              Décris ton idée. Motionr génère automatiquement le script, les
-              animations et la voix. Ta vidéo 1080p est prête en minutes.
+              Décris ton idée. L&apos;IA génère le script, les animations et la voix. Ta
+              vidéo professionnelle est prête en quelques minutes.
             </p>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button
-                onClick={() => router.push("/signup")}
-                style={{
-                  background: "#ffffff",
-                  color: "#0a0a0a",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 24px",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  transition: "all 0.15s",
-                }}
-              >
-                Créer ma première vidéo →
-              </button>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
-                Gratuit · Aucune carte requise
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 12,
-              height: 520,
-            }}
-          >
             <div
-              style={{
-                width: 150,
-                height: 267,
-                borderRadius: 14,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                flexShrink: 0,
-              }}
-            >
-              <div style={{ fontSize: 22 }}>▶</div>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "rgba(255,255,255,0.3)",
-                  letterSpacing: "0.06em",
-                }}
-              >
-                9:16
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div
-                style={{
-                  width: 240,
-                  height: 135,
-                  borderRadius: 14,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                }}
-              >
-                <div style={{ fontSize: 18 }}>▶</div>
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  16:9
-                </div>
-              </div>
-
-              <div
-                style={{
-                  width: 135,
-                  height: 135,
-                  borderRadius: 14,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  alignSelf: "center",
-                }}
-              >
-                <div style={{ fontSize: 18 }}>▶</div>
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  1:1
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                width: 120,
-                height: 213,
-                borderRadius: 14,
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                flexShrink: 0,
-                marginTop: 60,
-              }}
-            >
-              <div style={{ fontSize: 18 }}>▶</div>
-              <div
-                style={{
-                  fontSize: 10,
-                  color: "rgba(255,255,255,0.3)",
-                  letterSpacing: "0.06em",
-                }}
-              >
-                9:16
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            width: "100%",
-            maxWidth: 640,
-            margin: "0 auto",
-            paddingBottom: 80,
-          }}
-        >
-          <div
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              borderRadius: 16,
-              border: "1px solid rgba(255,255,255,0.1)",
-              padding: "18px 18px 14px",
-            }}
-          >
-            <textarea
-              className="prompt-input"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Décris ta vidéo... Ex: Présente mon app de fitness qui aide à perdre du poids"
-              rows={2}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleGenerate();
-                }
-              }}
               style={{
                 width: "100%",
-                background: "none",
-                border: "none",
-                outline: "none",
-                fontSize: 15,
-                color: "rgba(255,255,255,0.85)",
-                fontFamily: "inherit",
-                resize: "none",
-                lineHeight: 1.6,
-              }}
-            />
-            <div
-              style={{
+                maxWidth: 980,
+                margin: "0 auto",
                 display: "flex",
+                flexDirection: "column",
+                gap: 0,
                 alignItems: "center",
-                justifyContent: "space-between",
-                marginTop: 10,
-                paddingTop: 10,
-                borderTop: "1px solid rgba(255,255,255,0.06)",
               }}
             >
-              <div style={{ display: "flex", gap: 6 }}>
-                {["Mon SaaS", "Motivation", "Promo"].map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => setPrompt(suggestion)}
-                    style={{
-                      padding: "4px 10px",
-                      background: "rgba(255,255,255,0.06)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: 100,
-                      fontSize: 11,
-                      color: "rgba(255,255,255,0.4)",
-                      cursor: "pointer",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={handleGenerate}
+              <div
                 style={{
+                  width: "100%",
+                  maxWidth: 700,
+                  margin: "0 auto",
                   background: "#ffffff",
-                  color: "#0a0a0a",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "9px 20px",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
+                  borderRadius: 18,
+                  border: "1px solid rgba(23,19,17,0.06)",
+                  boxShadow: "0 14px 34px rgba(24,19,15,0.08)",
+                  padding: "18px 20px 14px",
                 }}
               >
-                Générer →
-              </button>
+                <textarea
+                  className="prompt-input"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Crée une vidéo de lancement pour..."
+                  rows={1}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleGenerate();
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "none",
+                    border: "none",
+                    outline: "none",
+                    fontSize: 15,
+                    color: "#625b55",
+                    fontFamily: "inherit",
+                    resize: "none",
+                    lineHeight: 1.5,
+                    minHeight: 46,
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginTop: 6,
+                    paddingTop: 4,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                    {[
+                      { label: "✦", value: "Launch video" },
+                      { label: "◷ 5s", value: "Vidéo 5s" },
+                      { label: "▯ 9:16", value: "Vidéo verticale 9:16" },
+                    ].map((control) => (
+                      <button
+                        key={control.label}
+                        onClick={() => setPrompt(control.value)}
+                        style={{
+                          padding: 0,
+                          background: "transparent",
+                          border: "none",
+                          fontSize: 12,
+                          color: "#4f4843",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        {control.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                    <button
+                      onClick={() => setPrompt("Plan de vidéo")}
+                      style={{
+                        padding: 0,
+                        background: "transparent",
+                        border: "none",
+                        fontSize: 12,
+                        color: "#6b645f",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      Plan
+                    </button>
+                    <button
+                      onClick={handleGenerate}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        background: accent,
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: 999,
+                        fontSize: 18,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: `0 6px 18px ${accent}44`,
+                      }}
+                    >
+                      ↑
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 12,
+                  marginTop: 18,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Link
+                  href="/login"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "12px 20px",
+                    minWidth: 220,
+                    borderRadius: 12,
+                    background: "#171311",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    boxShadow: "0 10px 24px rgba(23,19,17,0.10)",
+                  }}
+                >
+                  Générer des vidéos gratuitement
+                </Link>
+                <a
+                  href="#how"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "12px 20px",
+                    minWidth: 220,
+                    borderRadius: 12,
+                    background: "rgba(23,19,17,0.04)",
+                    color: "#171311",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    border: "1px solid rgba(23,19,17,0.08)",
+                  }}
+                >
+                  Voir comment ça fonctionne
+                </a>
+              </div>
+
+              <div
+                style={{
+                  width: "100%",
+                  marginTop: 28,
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                {[
+                  { format: "9:16", width: 132, height: 235 },
+                  { format: "1:1", width: 168, height: 168 },
+                  { format: "16:9", width: 298, height: 168 },
+                  { format: "1:1", width: 168, height: 168 },
+                  { format: "9:16", width: 132, height: 235 },
+                ].map((item, index) => (
+                  <div
+                    key={`${item.format}-${index}`}
+                    style={{
+                      width: item.width,
+                      height: item.height,
+                      borderRadius: 18,
+                      background: "#ffffff",
+                      border: "1px solid rgba(23,19,17,0.08)",
+                      boxShadow: "0 10px 28px rgba(24,19,15,0.05)",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: item.format === "16:9" ? 44 : 38,
+                        height: item.format === "16:9" ? 44 : 38,
+                        borderRadius: 999,
+                        background: "#FFFFFF",
+                        border: "1px solid rgba(23,19,17,0.08)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#171311",
+                        fontSize: 14,
+                        boxShadow: "0 4px 12px rgba(24,19,15,0.06)",
+                      }}
+                    >
+                      ▶
+                    </div>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        letterSpacing: "0.02em",
+                        color: "#7A726A",
+                      }}
+                    >
+                      {item.format}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section
-        id="features"
-        style={{
-          padding: "70px 40px 70px",
-          maxWidth: 980,
-          margin: "0 auto",
-          position: "relative",
-          zIndex: 5,
-        }}
-      >
-        <div
-          style={{
-            ...surfaceCardStyle,
-            borderRadius: 28,
-            padding: "40px 40px 44px",
-            textAlign: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              background: accentLight,
-              color: accent,
-              border: `1px solid ${accent}18`,
-              borderRadius: 999,
-              padding: "8px 14px",
-              fontSize: 12,
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              marginBottom: 18,
-            }}
-          >
-            Nouveau projet
-          </div>
-
-          <h2 style={{ ...sectionTitleStyle, marginBottom: 14 }}>
-            Prêt à générer ta première vidéo ?
-          </h2>
-
-          <p style={{ ...sectionBodyStyle, maxWidth: 560, margin: "0 auto 28px" }}>
-            Connecte-toi, ouvre ton dashboard et lance ton premier rendu en quelques clics.
-          </p>
-
-          <Link
-            href="/sign-in"
-            className="btn-primary"
-            style={{
-              padding: "14px 28px",
-              fontSize: 15,
-              background: accent,
-              boxShadow: "0 10px 28px rgba(124,58,237,0.16)",
-            }}
-          >
-            Connexion puis dashboard
-          </Link>
-        </div>
-      </section>
-
-      <section id="how" style={{ padding: "94px 40px 88px", background: "#fff" }}>
+      <section id="how" style={{ padding: "84px 40px 78px", background: "#fff" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
           <div style={sectionEyebrowStyle}>Comment ça marche</div>
-          <h2 style={{ ...sectionTitleStyle, marginBottom: 64 }}>
+          <h2 style={{ ...sectionTitleStyle, marginBottom: 56 }}>
             3 étapes. C&apos;est tout.
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 34 }}>
@@ -746,8 +990,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section style={{ padding: "94px 40px", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
+      <section style={{ padding: "84px 40px", maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
           <div style={sectionEyebrowStyle}>Témoignages</div>
           <h2 style={sectionTitleStyle}>Ils créent avec Motionr.</h2>
         </div>
@@ -804,7 +1048,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" style={{ padding: "94px 40px", background: "#fff" }}>
+      <section id="pricing" style={{ padding: "84px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <div style={sectionEyebrowStyle}>Tarifs</div>
@@ -864,7 +1108,7 @@ export default function LandingPage() {
                       top: -12,
                       left: "50%",
                       transform: "translateX(-50%)",
-                      background: "#F5F3FF",
+                      background: accentLight,
                       color: accent,
                       borderRadius: 100,
                       padding: "4px 14px",
@@ -939,7 +1183,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" style={{ padding: "100px 40px", maxWidth: 700, margin: "0 auto" }}>
+      <section id="faq" style={{ padding: "84px 40px", maxWidth: 700, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={sectionEyebrowStyle}>FAQ</div>
           <h2 style={sectionTitleStyle}>Questions fréquentes.</h2>
