@@ -361,7 +361,7 @@ export default function LandingPage() {
   return (
     <div
       style={{
-        fontFamily: "inherit",
+        fontFamily: "var(--font-sans)",
         background: "#ffffff",
         color: "#171311",
         overflowX: "hidden",
@@ -421,7 +421,15 @@ export default function LandingPage() {
           >
             M
           </div>
-          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em", color: "#0a0a0a" }}>
+          <span
+            style={{
+              fontSize: 16,
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              color: "#0a0a0a",
+              fontFamily: "var(--font-display)",
+            }}
+          >
             Motionr
           </span>
         </div>
@@ -759,8 +767,8 @@ export default function LandingPage() {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
-            onClick={() => router.push("/login")}
+          <Link
+            href="/login"
             style={{
               padding: "8px 18px",
               background: "transparent",
@@ -771,12 +779,14 @@ export default function LandingPage() {
               color: "#0a0a0a",
               textDecoration: "none",
               transition: "all 0.15s",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             Connexion
-          </button>
-          <button
-            onClick={() => router.push("/signup")}
+          </Link>
+          <Link
+            href="/signup"
             style={{
               padding: "8px 18px",
               background: "#10B981",
@@ -787,10 +797,12 @@ export default function LandingPage() {
               fontWeight: 700,
               textDecoration: "none",
               boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+              display: "inline-flex",
+              alignItems: "center",
             }}
           >
             Commencer gratuitement
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -832,6 +844,7 @@ export default function LandingPage() {
                 maxWidth: 980,
                 textAlign: "center",
                 margin: "0 auto",
+                fontFamily: "var(--font-display)",
               }}
             >
               <span style={{ display: "block" }}>
@@ -2449,7 +2462,15 @@ export default function LandingPage() {
                 >
                   M
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 800, color: "#0a0a0a", letterSpacing: "-0.04em" }}>
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 800,
+                    color: "#0a0a0a",
+                    letterSpacing: "-0.04em",
+                    fontFamily: "var(--font-display)",
+                  }}
+                >
                   Motionr
                 </span>
               </div>
