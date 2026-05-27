@@ -83,7 +83,7 @@ export default function AdminPage() {
           textAlign: "center",
         }}
       >
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", maxWidth: 400 }}>
+        <p style={{ fontSize: 14, color: "#7b746d", maxWidth: 400 }}>
           Configure <code>NEXT_PUBLIC_ADMIN_EMAIL</code> et <code>ADMIN_USER_ID</code> dans
           Vercel pour activer l&apos;admin.
         </p>
@@ -136,11 +136,11 @@ export default function AdminPage() {
             <div
               key={stat.label}
               style={{
-                background: "#161616",
+                background: "#ffffff",
                 borderRadius: 16,
                 padding: "20px",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 12px 30px rgba(0,0,0,0.3)",
+                border: "1.5px solid #e8e8e8",
+                boxShadow: "0 12px 30px rgba(24,19,15,0.08)",
               }}
             >
               <div style={{ fontSize: 24, marginBottom: 8 }}>{stat.icon}</div>
@@ -161,11 +161,12 @@ export default function AdminPage() {
 
         <div
           style={{
-            background: "#161616",
+            background: "#ffffff",
             borderRadius: 20,
             padding: "24px",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1.5px solid #e8e8e8",
             marginBottom: 16,
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
           }}
         >
           <div
@@ -208,7 +209,7 @@ export default function AdminPage() {
                   <div
                     style={{
                       height: 6,
-                      background: "rgba(255,255,255,0.08)",
+                      background: "rgba(23,19,17,0.08)",
                       borderRadius: 3,
                       overflow: "hidden",
                     }}
@@ -230,10 +231,11 @@ export default function AdminPage() {
 
         <div
           style={{
-            background: "#161616",
+            background: "#ffffff",
             borderRadius: 20,
             padding: "24px",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1.5px solid #e8e8e8",
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
           }}
         >
           <div
@@ -257,7 +259,7 @@ export default function AdminPage() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "10px 0",
-                  borderBottom: "1px solid rgba(255,255,255,0.08)",
+                  borderBottom: "1px solid rgba(23,19,17,0.08)",
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>

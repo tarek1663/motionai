@@ -75,19 +75,19 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#161616",
+            background: "#ffffff",
             borderRadius: 20,
             padding: "24px",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1.5px solid #e8e8e8",
             marginBottom: 16,
-            boxShadow: "0 14px 36px rgba(0,0,0,0.3)",
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "rgba(255,255,255,0.45)",
+              color: "#9b938c",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -129,12 +129,12 @@ export default function AccountPage() {
                 onClick={() => openUserProfile()}
                 style={{
                   padding: "8px 16px",
-                  background: "transparent",
-                  border: "1px solid rgba(255,255,255,0.15)",
+                  background: "#ffffff",
+                  border: "1.5px solid #e8e8e8",
                   borderRadius: 10,
                   fontSize: 12,
                   fontWeight: 600,
-                  color: "rgba(255,255,255,0.75)",
+                  color: "rgba(23,19,17,0.72)",
                   cursor: "pointer",
                 }}
               >
@@ -146,19 +146,19 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#161616",
+            background: "#ffffff",
             borderRadius: 20,
             padding: "24px",
-            border: "1px solid rgba(255,255,255,0.08)",
+            border: "1.5px solid #e8e8e8",
             marginBottom: 16,
-            boxShadow: "0 14px 36px rgba(0,0,0,0.3)",
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "rgba(255,255,255,0.45)",
+              color: "#9b938c",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -189,8 +189,8 @@ export default function AccountPage() {
                     style={{
                       padding: "4px 12px",
                       borderRadius: 100,
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(16,185,129,0.08)",
+                      border: "1px solid rgba(16,185,129,0.2)",
                       fontSize: 13,
                       fontWeight: 700,
                       color: planColors[credits?.plan || "free"] || "#888",
@@ -233,12 +233,12 @@ export default function AccountPage() {
                     disabled={portalLoading}
                     style={{
                       padding: "8px 16px",
-                      background: "transparent",
-                      border: "1px solid rgba(255,255,255,0.15)",
+                      background: "#ffffff",
+                      border: "1.5px solid #e8e8e8",
                       borderRadius: 10,
                       fontSize: 12,
                       fontWeight: 600,
-                      color: "rgba(255,255,255,0.75)",
+                      color: "rgba(23,19,17,0.72)",
                       cursor: "pointer",
                     }}
                   >
@@ -264,7 +264,7 @@ export default function AccountPage() {
                 <div
                   style={{
                     height: 6,
-                    background: "rgba(255,255,255,0.08)",
+                    background: "rgba(23,19,17,0.08)",
                     borderRadius: 3,
                     overflow: "hidden",
                   }}
@@ -364,16 +364,16 @@ export default function AccountPage() {
                     style={{
                       padding: "14px 18px",
                       background: isCurrent
-                        ? "rgba(255,255,255,0.04)"
+                        ? "rgba(23,19,17,0.05)"
                         : plan.popular
                           ? colors.accent
-                          : "rgba(255,255,255,0.06)",
-                      color: isCurrent || isDowngrade ? "rgba(255,255,255,0.25)" : "#fff",
+                          : "#ffffff",
+                      color: isCurrent || isDowngrade ? "rgba(23,19,17,0.35)" : plan.popular ? "#fff" : "#171311",
                       border: isCurrent
-                        ? "1px solid rgba(255,255,255,0.08)"
+                        ? "1px solid rgba(23,19,17,0.1)"
                         : plan.popular
                           ? "none"
-                          : "1px solid rgba(255,255,255,0.1)",
+                          : "1px solid #e8e8e8",
                       borderRadius: 12, cursor: isDisabled ? "not-allowed" : "pointer",
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                       opacity: isDowngrade ? 0.4 : 1,
@@ -404,10 +404,11 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#161616",
+            background: "#ffffff",
             borderRadius: 20,
             padding: "24px",
             border: "1px solid rgba(239,68,68,0.35)",
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
           }}
         >
           <div

@@ -192,14 +192,14 @@ export default function PricingPage() {
               borderRadius: 10,
               border: "none",
               background: isCurrent
-                ? "rgba(255,255,255,0.06)"
+                ? "rgba(23,19,17,0.05)"
                 : isDowngrade
-                  ? "rgba(255,255,255,0.04)"
+                  ? "rgba(23,19,17,0.04)"
                   : plan.popular
                     ? "#fff"
                     : accent,
               color: isCurrent || isDowngrade
-                ? "rgba(255,255,255,0.25)"
+                ? "rgba(23,19,17,0.38)"
                 : plan.popular
                   ? accent
                   : "#fff",
@@ -210,6 +210,7 @@ export default function PricingPage() {
               opacity: isDowngrade ? 0.4 : 1,
               transition: "all 0.15s",
               boxShadow: !isDisabled && !plan.popular ? "0 8px 20px rgba(16,185,129,0.22)" : "none",
+              border: isCurrent || isDowngrade ? "1px solid rgba(23,19,17,0.08)" : "none",
             });
 
             return (

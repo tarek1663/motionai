@@ -17,10 +17,10 @@ export default function BackButton({ href, label = "Retour" }: BackButtonProps) 
       style={{
         background: "none",
         border: "none",
-        color: "rgba(255,255,255,0.4)",
+        color: "rgba(23,19,17,0.5)",
         cursor: "pointer",
         fontSize: 13,
-        fontWeight: 500,
+        fontWeight: 600,
         fontFamily: "inherit",
         display: "flex",
         alignItems: "center",
@@ -29,10 +29,10 @@ export default function BackButton({ href, label = "Retour" }: BackButtonProps) 
         transition: "color 0.15s",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.color = "#fff";
+        e.currentTarget.style.color = "#171311";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.color = "rgba(255,255,255,0.4)";
+        e.currentTarget.style.color = "rgba(23,19,17,0.5)";
       }}
     >
       ← {label}

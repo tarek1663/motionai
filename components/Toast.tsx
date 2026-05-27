@@ -16,9 +16,9 @@ export default function Toast({ message, type, onClose, duration = 4000 }: Toast
   }, [onClose, duration]);
 
   const colors = {
-    success: { border: "rgba(16,185,129,0.3)" },
-    error: { border: "rgba(239,68,68,0.3)" },
-    info: { border: "rgba(255,255,255,0.15)" },
+    success: { border: "rgba(16,185,129,0.35)", accent: "#10B981" },
+    error: { border: "rgba(239,68,68,0.3)", accent: "#ef4444" },
+    info: { border: "rgba(23,19,17,0.12)", accent: "#171311" },
   };
 
   const icons = { success: "✅", error: "❌", info: "ℹ️" };
@@ -32,14 +32,14 @@ export default function Toast({ message, type, onClose, duration = 4000 }: Toast
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 9999,
-        background: "#161616",
+        background: "#ffffff",
         border: `1px solid ${c.border}`,
         borderRadius: 12,
         padding: "12px 20px",
         display: "flex",
         alignItems: "center",
         gap: 10,
-        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        boxShadow: "0 14px 34px rgba(24,19,15,0.12)",
         animation: "toastIn 0.3s ease",
         minWidth: 280,
         maxWidth: 440,
@@ -52,16 +52,22 @@ export default function Toast({ message, type, onClose, duration = 4000 }: Toast
         }
       `}</style>
       <span style={{ fontSize: 16 }}>{icons[type]}</span>
-      <span style={{ fontSize: 13, color: "#fff", fontWeight: 500, flex: 1 }}>{message}</span>
+      <span style={{ fontSize: 13, color: "#171311", fontWeight: 600, flex: 1 }}>{message}</span>
       <button
         onClick={onClose}
         style={{
           background: "none",
           border: "none",
-          color: "rgba(255,255,255,0.3)",
+          color: "rgba(23,19,17,0.35)",
           cursor: "pointer",
           fontSize: 16,
           padding: 0,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = c.accent;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = "rgba(23,19,17,0.35)";
         }}
       >
         ×

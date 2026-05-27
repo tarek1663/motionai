@@ -3,7 +3,7 @@ export default function Loading() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0a0a0a",
+        background: "#ffffff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -14,7 +14,7 @@ export default function Loading() {
           width: 32,
           height: 32,
           borderRadius: "50%",
-          border: "2px solid rgba(255,255,255,0.06)",
+          border: "2px solid #e8e8e8",
           borderTop: "2px solid #10B981",
           animation: "spin 0.8s linear infinite",
         }}
