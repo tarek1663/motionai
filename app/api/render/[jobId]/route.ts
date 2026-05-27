@@ -8,9 +8,15 @@ export async function GET(
 ) {
   try {
     const { jobId } = params;
-    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
 
-    const res  = await fetch(`${RENDER_URL}/render/${jobId}`, { cache: "no-store" });
+    let RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
+    if (!RENDER_URL.startsWith("http://") && !RENDER_URL.startsWith("https://")) {
+      RENDER_URL = `https://${RENDER_URL}`;
+    }
+
+    console.log("🔍 Polling:", `${RENDER_URL}/render/${jobId}`);
+
+    const res = await fetch(`${RENDER_URL}/render/${jobId}`, { cache: "no-store" });
     const data = await res.json();
 
     if (data.status === "done" && data.videoUrl) {
@@ -18,17 +24,17 @@ export async function GET(
         const { userId } = await auth();
         if (userId) {
           const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, { cache: "no-store" });
-          const meta    = metaRes.ok ? await metaRes.json() : {};
+          const meta = metaRes.ok ? await metaRes.json() : {};
 
           await supabase.from("videos").insert({
-            user_id:      userId,
-            prompt:       meta.prompt      || "Vidéo générée",
-            format:       meta.format      || "9:16",
-            duration:     meta.duration    || 30,
-            video_url:    data.videoUrl,
+            user_id: userId,
+            prompt: meta.prompt || "Vidéo générée",
+            format: meta.format || "9:16",
+            duration: meta.duration || 30,
+            video_url: data.videoUrl,
             accent_color: meta.accentColor || null,
-            format_name:  meta.formatName  || null,
-            status:       "done",
+            format_name: meta.formatName || null,
+            status: "done",
           });
 
           const { data: currentSub } = await supabase
@@ -50,6 +56,7 @@ export async function GET(
 
     return NextResponse.json(data);
   } catch (err: any) {
+    console.error("Polling error:", err.message);
     return NextResponse.json({ status: "error", error: err.message });
   }
 }
