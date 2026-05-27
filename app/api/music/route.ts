@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
+
+    let RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
+    if (!RENDER_URL.startsWith("http://") && !RENDER_URL.startsWith("https://")) {
+      RENDER_URL = `https://${RENDER_URL}`;
+    }
 
     const res = await fetch(`${RENDER_URL}/music`, {
       method: "POST",
