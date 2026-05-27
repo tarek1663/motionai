@@ -3,14 +3,7 @@
 import { useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { colors } from "@/lib/colors";
-
-const accent = colors.accent;
-
-const NAV_ITEMS = [
-  { icon: "✏️", label: "Créer", href: "/dashboard", active: false },
-  { icon: "🎬", label: "Historique", href: "/history", active: false },
-  { icon: "⚙️", label: "Compte", href: "/account", active: true },
-];
+import { Sidebar } from "@/components/Sidebar";
 
 export default function AccountPage() {
   const { user } = useUser();
@@ -49,91 +42,21 @@ export default function AccountPage() {
   };
 
   const planColors: Record<string, string> = {
-    free: "#888",
-    starter: "#7C3AED",
-    pro: "#2563eb",
+    free: "rgba(255,255,255,0.5)",
+    starter: colors.accent,
+    pro: "#34d399",
     business: "#f59e0b",
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#fafafa",
-        fontFamily: "inherit",
-        display: "flex",
-      }}
-    >
-      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; } .nav-item:hover { background: #f0f0f0 !important; }`}</style>
-
-      <div
-        style={{
-          width: 56,
-          height: "100vh",
-          position: "sticky",
-          top: 0,
-          background: "#ffffff",
-          borderRight: "1px solid #ebebeb",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "16px 0",
-          gap: 4,
-          zIndex: 50,
-        }}
-      >
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 7,
-            background: accent,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 12,
-            fontWeight: 900,
-            color: "#fff",
-            marginBottom: 20,
-            boxShadow: `0 2px 8px ${accent}44`,
-          }}
-        >
-          M
-        </div>
-        {NAV_ITEMS.map((item) => (
-          <a
-            key={item.href}
-            href={item.href}
-            className="nav-item"
-            title={item.label}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: item.active ? "#f5f3ff" : "transparent",
-              textDecoration: "none",
-              fontSize: 16,
-              border: item.active ? `1px solid ${accent}22` : "1px solid transparent",
-              transition: "all 0.15s",
-            }}
-          >
-            {item.icon}
-          </a>
-        ))}
-        <div style={{ marginTop: "auto" }}>
-          <UserButton afterSignOutUrl="/login" />
-        </div>
-      </div>
-
-      <div style={{ flex: 1, padding: "40px 48px", maxWidth: 760 }}>
+    <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", display: "flex" }}>
+      <Sidebar active="account" credits={credits} />
+      <div style={{ flex: 1, padding: "32px 40px", maxWidth: 860 }}>
         <h1
           style={{
             fontSize: 28,
             fontWeight: 800,
-            color: "#0a0a0a",
+            color: colors.text,
             letterSpacing: "-0.04em",
             marginBottom: 32,
           }}
@@ -143,19 +66,19 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: 16,
+            background: "#161616",
+            borderRadius: 20,
             padding: "24px",
-            border: "1.5px solid #e8e8e8",
+            border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: 16,
-            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+            boxShadow: "0 14px 36px rgba(0,0,0,0.3)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "#aaa",
+              color: "rgba(255,255,255,0.45)",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -169,14 +92,14 @@ export default function AccountPage() {
                 width: 56,
                 height: 56,
                 borderRadius: "50%",
-                background: `${accent}22`,
-                border: `2px solid ${accent}33`,
+                background: "rgba(16,185,129,0.14)",
+                border: `2px solid rgba(16,185,129,0.25)`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 22,
                 fontWeight: 700,
-                color: accent,
+                color: colors.accent,
               }}
             >
               {user?.firstName?.[0] ||
@@ -184,10 +107,10 @@ export default function AccountPage() {
                 "U"}
             </div>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#0a0a0a" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>
                 {user?.firstName} {user?.lastName}
               </div>
-              <div style={{ fontSize: 13, color: "#aaa", marginTop: 2 }}>
+              <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 2 }}>
                 {user?.emailAddresses?.[0]?.emailAddress}
               </div>
             </div>
@@ -196,12 +119,12 @@ export default function AccountPage() {
                 href="/account/profile"
                 style={{
                   padding: "8px 16px",
-                  background: "#f5f5f5",
-                  border: "1px solid #e8e8e8",
-                  borderRadius: 8,
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: 10,
                   fontSize: 12,
                   fontWeight: 600,
-                  color: "#555",
+                  color: "rgba(255,255,255,0.75)",
                   textDecoration: "none",
                 }}
               >
@@ -213,19 +136,19 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: 16,
+            background: "#161616",
+            borderRadius: 20,
             padding: "24px",
-            border: "1.5px solid #e8e8e8",
+            border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: 16,
-            boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+            boxShadow: "0 14px 36px rgba(0,0,0,0.3)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "#aaa",
+              color: "rgba(255,255,255,0.45)",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -256,8 +179,8 @@ export default function AccountPage() {
                     style={{
                       padding: "4px 12px",
                       borderRadius: 100,
-                      background: `${planColors[credits?.plan || "free"] || "#888"}22`,
-                      border: `1px solid ${planColors[credits?.plan || "free"] || "#888"}44`,
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.1)",
                       fontSize: 13,
                       fontWeight: 700,
                       color: planColors[credits?.plan || "free"] || "#888",
@@ -266,7 +189,7 @@ export default function AccountPage() {
                     {credits?.planName || "Gratuit"}
                   </div>
                   {credits?.plan !== "free" && (
-                    <div style={{ fontSize: 12, color: "#aaa" }}>
+                    <div style={{ fontSize: 12, color: colors.textMuted }}>
                       Renouvellement le{" "}
                       {credits?.period_end
                         ? new Date(credits.period_end).toLocaleDateString("fr-FR", {
@@ -282,13 +205,13 @@ export default function AccountPage() {
                     href="/pricing"
                     style={{
                       padding: "8px 16px",
-                      background: accent,
+                      background: colors.accent,
                       color: "#fff",
-                      borderRadius: 8,
+                      borderRadius: 10,
                       fontSize: 12,
                       fontWeight: 700,
                       textDecoration: "none",
-                      boxShadow: `0 4px 12px ${accent}44`,
+                      boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
                     }}
                   >
                     Upgrader →
@@ -300,12 +223,12 @@ export default function AccountPage() {
                     disabled={portalLoading}
                     style={{
                       padding: "8px 16px",
-                      background: "#f5f5f5",
-                      border: "1px solid #e8e8e8",
-                      borderRadius: 8,
+                      background: "transparent",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      borderRadius: 10,
                       fontSize: 12,
                       fontWeight: 600,
-                      color: "#555",
+                      color: "rgba(255,255,255,0.75)",
                       cursor: "pointer",
                     }}
                   >
@@ -322,8 +245,8 @@ export default function AccountPage() {
                     marginBottom: 8,
                   }}
                 >
-                  <span style={{ fontSize: 13, color: "#555" }}>Vidéos ce mois</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#0a0a0a" }}>
+                  <span style={{ fontSize: 13, color: colors.textSub }}>Vidéos ce mois</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: colors.text }}>
                     {credits?.videos_used || 0} /{" "}
                     {credits?.plan === "business" ? "∞" : credits?.videos_limit || 3}
                   </span>
@@ -331,7 +254,7 @@ export default function AccountPage() {
                 <div
                   style={{
                     height: 6,
-                    background: "#f0f0f0",
+                    background: "rgba(255,255,255,0.08)",
                     borderRadius: 3,
                     overflow: "hidden",
                   }}
@@ -344,13 +267,13 @@ export default function AccountPage() {
                           ? "10%"
                           : `${Math.min(100, ((credits?.videos_used || 0) / (credits?.videos_limit || 3)) * 100)}%`,
                       background:
-                        (credits?.videos_remaining ?? 1) <= 1 ? "#ef4444" : accent,
+                        (credits?.videos_remaining ?? 1) <= 1 ? "#ef4444" : colors.accent,
                       borderRadius: 3,
                       transition: "width 0.3s",
                     }}
                   />
                 </div>
-                <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>
+                <div style={{ fontSize: 11, color: colors.textMuted, marginTop: 6 }}>
                   {credits?.plan === "business"
                     ? "Illimité"
                     : `${credits?.videos_remaining || 0} vidéos restantes ce mois`}
@@ -421,15 +344,15 @@ export default function AccountPage() {
                   }}
                   style={{
                     padding: "14px 18px",
-                    background: plan.popular ? accent : "#f5f5f5",
-                    color: plan.popular ? "#fff" : "#0a0a0a",
-                    border: plan.popular ? "none" : "1px solid #e8e8e8",
+                    background: plan.popular ? colors.accent : "rgba(255,255,255,0.03)",
+                    color: "#fff",
+                    border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    boxShadow: plan.popular ? `0 4px 16px ${accent}44` : "none",
+                    boxShadow: plan.popular ? "0 8px 24px rgba(16,185,129,0.28)" : "none",
                   }}
                 >
                   <div style={{ textAlign: "left" }}>
@@ -451,17 +374,17 @@ export default function AccountPage() {
 
         <div
           style={{
-            background: "#fff5f5",
-            borderRadius: 16,
+            background: "#161616",
+            borderRadius: 20,
             padding: "24px",
-            border: "1.5px solid #fecaca",
+            border: "1px solid rgba(239,68,68,0.35)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "#ef4444",
+              color: "#f87171",
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -477,10 +400,10 @@ export default function AccountPage() {
             }}
           >
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#0a0a0a" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>
                 Supprimer mon compte
               </div>
-              <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
                 Toutes tes vidéos et données seront supprimées
               </div>
             </div>

@@ -1,25 +1,25 @@
 export const colors = {
   // ── Accent ──────────────────────────────
-  accent: "#7C3AED",
-  accentHover: "#6D28D9",
-  accentLight: "#a78bfa",
-  accentSubtle: "#f5f3ff",
-  accentBorder: "#e0d9ff",
+  accent: "#10B981",
+  accentHover: "#0ea271",
+  accentLight: "#34d399",
+  accentSubtle: "rgba(16,185,129,0.12)",
+  accentBorder: "rgba(16,185,129,0.36)",
 
   // ── Backgrounds ─────────────────────────
-  bg: "#ffffff",
-  bg2: "#fafafa",
-  bg3: "#f5f5f5",
+  bg: "#0a0a0a",
+  bg2: "#111111",
+  bg3: "#161616",
 
   // ── Text ────────────────────────────────
-  text: "#0a0a0a",
-  textSub: "#555555",
-  textMuted: "#aaaaaa",
-  textDisabled: "#cccccc",
+  text: "#ffffff",
+  textSub: "rgba(255,255,255,0.7)",
+  textMuted: "rgba(255,255,255,0.5)",
+  textDisabled: "rgba(255,255,255,0.3)",
 
   // ── Borders ─────────────────────────────
-  border: "#e8e8e8",
-  borderSubtle: "#f0f0f0",
+  border: "rgba(255,255,255,0.1)",
+  borderSubtle: "rgba(255,255,255,0.06)",
 
   // ── States ──────────────────────────────
   success: "#30d158",
@@ -27,10 +27,10 @@ export const colors = {
   warning: "#f59e0b",
 
   // ── Sidebar ─────────────────────────────
-  sidebarBg: "#ffffff",
-  sidebarBorder: "#ebebeb",
-  sidebarActive: "#0a0a0a",
-  sidebarIdle: "#555555",
+  sidebarBg: "#111111",
+  sidebarBorder: "rgba(255,255,255,0.06)",
+  sidebarActive: "#10B981",
+  sidebarIdle: "rgba(255,255,255,0.6)",
 } as const;
 
 export type Colors = typeof colors;

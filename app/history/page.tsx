@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useUser, UserButton } from "@clerk/nextjs";
-import { colors, accentAlpha, fonts } from "@/lib/colors";
+import { useUser } from "@clerk/nextjs";
+import { colors, accentAlpha } from "@/lib/colors";
+import { Sidebar } from "@/components/Sidebar";
 
 const accent = colors.accent;
 
@@ -15,12 +16,6 @@ type Video = {
   created_at: string;
   status: string;
 };
-
-const NAV_ITEMS = [
-  { icon: "✏️", label: "Créer", href: "/dashboard", active: false },
-  { icon: "🎬", label: "Historique", href: "/history", active: true },
-  { icon: "⚙️", label: "Compte", href: "/account", active: false },
-];
 
 export default function HistoryPage() {
   const { user } = useUser();
@@ -89,35 +84,7 @@ export default function HistoryPage() {
         .del-btn:hover { background: rgba(239,68,68,0.1) !important; border-color: ${colors.error} !important; color: ${colors.error} !important; }
       `}</style>
 
-      {/* ── SIDEBAR ── */}
-      <div style={{
-        width: 56, height: "100vh", position: "fixed", left: 0, top: 0,
-        background: colors.sidebarBg, borderRight: `1px solid ${colors.borderSubtle}`,
-        display: "flex", flexDirection: "column",
-        alignItems: "center", padding: "16px 0", gap: 4, zIndex: 50,
-      }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 8, background: accent,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 900, color: "#fff", marginBottom: 20,
-          boxShadow: `0 4px 12px ${accentAlpha(0.27)}`,
-        }}>M</div>
-        {NAV_ITEMS.map(item => (
-          <a key={item.href} href={item.href} title={item.label} className="nav-item" style={{
-            width: 36, height: 36, borderRadius: 8,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            background: item.active ? colors.accentSubtle : "transparent",
-            textDecoration: "none", fontSize: 16,
-            border: item.active ? `1px solid ${accentAlpha(0.13)}` : "1px solid transparent",
-            transition: "all 0.15s",
-          }}>
-            {item.icon}
-          </a>
-        ))}
-        <div style={{ marginTop: "auto" }}>
-          <UserButton afterSignOutUrl="/login" />
-        </div>
-      </div>
+      <Sidebar active="history" />
 
       {/* ── MAIN ── */}
       <div style={{ marginLeft: 56, flex: 1, padding: "40px 40px" }}>

@@ -95,14 +95,7 @@ export default function PricingPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#ffffff",
-        fontFamily: "inherit",
-        color: "#0a0a0a",
-      }}
-    >
+    <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", color: colors.text }}>
       <nav
         style={{
           padding: "0 48px",
@@ -110,12 +103,14 @@ export default function PricingPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: "1px solid #f0f0f0",
-          position: "sticky",
-          top: 0,
-          background: "rgba(255,255,255,0.9)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          position: "fixed",
+          top: 44,
+          left: 0,
+          right: 0,
+          background: "rgba(10,10,10,0.86)",
           backdropFilter: "blur(20px)",
-          zIndex: 100,
+          zIndex: 90,
         }}
       >
         <a
@@ -125,16 +120,16 @@ export default function PricingPage() {
             fontWeight: 900,
             letterSpacing: "-0.04em",
             textDecoration: "none",
-            color: "#0a0a0a",
+            color: colors.text,
           }}
         >
-          Motion<span style={{ color: accent }}>AI</span>
+          Motion<span style={{ color: accent }}>r</span>
         </a>
         <a
           href={isSignedIn ? "/dashboard" : "/login"}
           style={{
             fontSize: 13,
-            color: "#666",
+            color: colors.textMuted,
             textDecoration: "none",
             fontWeight: 500,
           }}
@@ -143,7 +138,7 @@ export default function PricingPage() {
         </a>
       </nav>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "60px 40px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "132px 40px 60px" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <h1
             style={{
@@ -156,17 +151,18 @@ export default function PricingPage() {
           >
             Tarifs simples.
           </h1>
-          <p style={{ fontSize: 16, color: "#888", marginBottom: 32 }}>
+          <p style={{ fontSize: 16, color: colors.textMuted, marginBottom: 32 }}>
             Sans engagement. Annule quand tu veux.
           </p>
 
           <div
             style={{
               display: "inline-flex",
-              background: "#f0f0f0",
+              background: "#111111",
               borderRadius: 12,
               padding: 4,
               gap: 4,
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
             <button
@@ -176,13 +172,13 @@ export default function PricingPage() {
                 padding: "8px 20px",
                 borderRadius: 9,
                 border: "none",
-                background: billing === "yearly" ? "#ffffff" : "transparent",
+                background: billing === "yearly" ? "#161616" : "transparent",
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: "pointer",
-                color: billing === "yearly" ? "#0a0a0a" : "#888",
+                color: billing === "yearly" ? colors.text : colors.textMuted,
                 boxShadow:
-                  billing === "yearly" ? "0 1px 8px rgba(0,0,0,0.08)" : "none",
+                  billing === "yearly" ? "0 1px 8px rgba(0,0,0,0.3)" : "none",
                 transition: "all 0.2s",
               }}
             >
@@ -192,7 +188,7 @@ export default function PricingPage() {
                   marginLeft: 6,
                   fontSize: 10,
                   fontWeight: 800,
-                  background: "#30d158",
+                  background: accent,
                   color: "#fff",
                   padding: "2px 6px",
                   borderRadius: 100,
@@ -208,13 +204,13 @@ export default function PricingPage() {
                 padding: "8px 20px",
                 borderRadius: 9,
                 border: "none",
-                background: billing === "monthly" ? "#ffffff" : "transparent",
+                background: billing === "monthly" ? "#161616" : "transparent",
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: "pointer",
-                color: billing === "monthly" ? "#0a0a0a" : "#888",
+                color: billing === "monthly" ? colors.text : colors.textMuted,
                 boxShadow:
-                  billing === "monthly" ? "0 1px 8px rgba(0,0,0,0.08)" : "none",
+                  billing === "monthly" ? "0 1px 8px rgba(0,0,0,0.3)" : "none",
                 transition: "all 0.2s",
               }}
             >
@@ -236,13 +232,13 @@ export default function PricingPage() {
               style={{
                 padding: "24px",
                 borderRadius: 20,
-                background: plan.highlight ? accent : "#ffffff",
-                border: plan.highlight ? "none" : "1.5px solid #e8e8e8",
-                color: plan.highlight ? "#ffffff" : "#0a0a0a",
+                background: "#161616",
+                border: plan.highlight ? "1px solid rgba(16,185,129,0.48)" : "1px solid rgba(255,255,255,0.08)",
+                color: "#ffffff",
                 position: "relative",
                 boxShadow: plan.highlight
-                  ? `0 20px 60px ${accent}33`
-                  : "0 2px 12px rgba(0,0,0,0.04)",
+                  ? "0 0 24px rgba(16,185,129,0.24), 0 16px 48px rgba(0,0,0,0.4)"
+                  : "0 12px 30px rgba(0,0,0,0.28)",
               }}
             >
               {plan.highlight && (
@@ -253,7 +249,7 @@ export default function PricingPage() {
                     left: "50%",
                     transform: "translateX(-50%)",
                     padding: "3px 14px",
-                    background: "#0a0a0a",
+                    background: accent,
                     borderRadius: 100,
                     fontSize: 10,
                     fontWeight: 800,
@@ -270,7 +266,7 @@ export default function PricingPage() {
                 style={{
                   fontSize: 11,
                   marginBottom: 20,
-                  color: plan.highlight ? "rgba(255,255,255,0.6)" : "#aaa",
+                color: colors.textMuted,
                 }}
               >
                 {plan.videos === 999 ? "Illimité" : `${plan.videos} vidéos/mois`}
@@ -290,7 +286,7 @@ export default function PricingPage() {
                   style={{
                     fontSize: 12,
                     marginLeft: 4,
-                    color: plan.highlight ? "rgba(255,255,255,0.6)" : "#aaa",
+                    color: colors.textMuted,
                   }}
                 >
                   /mois
@@ -300,7 +296,7 @@ export default function PricingPage() {
                     style={{
                       fontSize: 10,
                       marginTop: 2,
-                      color: plan.highlight ? "rgba(255,255,255,0.5)" : "#aaa",
+                      color: colors.textMuted,
                     }}
                   >
                     Facturé {plan.yearly * 12}€/an
@@ -318,12 +314,12 @@ export default function PricingPage() {
                       alignItems: "center",
                       gap: 7,
                       marginBottom: 7,
-                      color: plan.highlight ? "rgba(255,255,255,0.85)" : "#555",
+                      color: "rgba(255,255,255,0.88)",
                     }}
                   >
                     <span
                       style={{
-                        color: plan.highlight ? "rgba(255,255,255,0.6)" : "#30d158",
+                        color: accent,
                         flexShrink: 0,
                       }}
                     >
@@ -341,14 +337,14 @@ export default function PricingPage() {
                 style={{
                   width: "100%",
                   padding: "11px",
-                  background: plan.highlight ? "#ffffff" : accent,
-                  color: plan.highlight ? accent : "#ffffff",
+                  background: accent,
+                  color: "#ffffff",
                   borderRadius: 10,
                   fontSize: 13,
                   fontWeight: 700,
                   border: "none",
                   cursor: "pointer",
-                  boxShadow: plan.highlight ? "none" : `0 4px 14px ${accent}44`,
+                  boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
                   opacity: loading === plan.id ? 0.7 : 1,
                   transition: "all 0.2s",
                 }}
@@ -363,7 +359,7 @@ export default function PricingPage() {
           style={{
             textAlign: "center",
             marginTop: 48,
-            color: "#aaa",
+            color: colors.textMuted,
             fontSize: 13,
           }}
         >

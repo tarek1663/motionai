@@ -4,8 +4,8 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ADMIN_EMAIL, isAdminEmail } from "@/lib/admin";
-
-const accent = "#7C3AED";
+import { colors } from "@/lib/colors";
+import { Sidebar } from "@/components/Sidebar";
 
 type AdminStats = {
   totalUsers?: number;
@@ -54,7 +54,7 @@ export default function AdminPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#fafafa",
+          background: colors.bg,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -87,47 +87,15 @@ export default function AdminPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#fafafa",
-        fontFamily: "inherit",
-      }}
-    >
+    <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", display: "flex" }}>
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
-
-      <div
-        style={{
-          padding: "20px 40px",
-          borderBottom: "1px solid #f0f0f0",
-          background: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 18,
-            fontWeight: 800,
-            letterSpacing: "-0.04em",
-            color: "#0a0a0a",
-          }}
-        >
-          Motion<span style={{ color: accent }}>AI</span>{" "}
-          <span style={{ fontSize: 13, color: "#aaa", fontWeight: 400 }}>Admin</span>
-        </div>
-        <a href="/dashboard" style={{ fontSize: 13, color: "#888", textDecoration: "none" }}>
-          ← Dashboard
-        </a>
-      </div>
-
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 40px" }}>
+      <Sidebar active="account" />
+      <div style={{ flex: 1, maxWidth: 1060, padding: "32px 40px" }}>
         <h1
           style={{
             fontSize: 28,
             fontWeight: 800,
-            color: "#0a0a0a",
+            color: colors.text,
             letterSpacing: "-0.04em",
             marginBottom: 32,
           }}
@@ -162,11 +130,11 @@ export default function AdminPage() {
             <div
               key={stat.label}
               style={{
-                background: "#ffffff",
-                borderRadius: 14,
+                background: "#161616",
+                borderRadius: 16,
                 padding: "20px",
-                border: "1.5px solid #e8e8e8",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 12px 30px rgba(0,0,0,0.3)",
               }}
             >
               <div style={{ fontSize: 24, marginBottom: 8 }}>{stat.icon}</div>
@@ -180,17 +148,17 @@ export default function AdminPage() {
               >
                 {stat.value}
               </div>
-              <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{stat.label}</div>
+              <div style={{ fontSize: 12, color: colors.textMuted, marginTop: 4 }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: 16,
+            background: "#161616",
+            borderRadius: 20,
             padding: "24px",
-            border: "1.5px solid #e8e8e8",
+            border: "1px solid rgba(255,255,255,0.08)",
             marginBottom: 16,
           }}
         >
@@ -198,7 +166,7 @@ export default function AdminPage() {
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "#aaa",
+              color: colors.textMuted,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -224,17 +192,17 @@ export default function AdminPage() {
                       marginBottom: 6,
                     }}
                   >
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0a0a0a" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>
                       {p.plan}
                     </span>
-                    <span style={{ fontSize: 13, color: "#aaa" }}>
+                    <span style={{ fontSize: 13, color: colors.textMuted }}>
                       {p.count} utilisateurs ({pct}%)
                     </span>
                   </div>
                   <div
                     style={{
                       height: 6,
-                      background: "#f0f0f0",
+                      background: "rgba(255,255,255,0.08)",
                       borderRadius: 3,
                       overflow: "hidden",
                     }}
@@ -256,17 +224,17 @@ export default function AdminPage() {
 
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: 16,
+            background: "#161616",
+            borderRadius: 20,
             padding: "24px",
-            border: "1.5px solid #e8e8e8",
+            border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: "#aaa",
+              color: colors.textMuted,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: 16,
@@ -283,7 +251,7 @@ export default function AdminPage() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "10px 0",
-                  borderBottom: "1px solid #f5f5f5",
+                  borderBottom: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -291,7 +259,7 @@ export default function AdminPage() {
                     style={{
                       fontSize: 13,
                       fontWeight: 600,
-                      color: "#0a0a0a",
+                      color: colors.text,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
@@ -299,7 +267,7 @@ export default function AdminPage() {
                   >
                     {video.prompt}
                   </div>
-                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: colors.textMuted, marginTop: 2 }}>
                     {new Date(video.created_at).toLocaleDateString("fr-FR")} ·{" "}
                     {video.format_name || "Vidéo"}
                   </div>

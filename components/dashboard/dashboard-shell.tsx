@@ -110,8 +110,9 @@ export function DashboardShell(state: UseDashboardReturn) {
         >
           <div
             style={{
-              background: "#ffffff",
-              borderRadius: 24,
+              background: "#161616",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 20,
               padding: "40px",
               maxWidth: 480,
               width: "100%",
@@ -125,14 +126,14 @@ export function DashboardShell(state: UseDashboardReturn) {
               style={{
                 fontSize: 28,
                 fontWeight: 800,
-                color: "#0a0a0a",
+                color: "#ffffff",
                 letterSpacing: "-0.03em",
                 marginBottom: 8,
               }}
             >
               Limite atteinte
             </h2>
-            <p style={{ fontSize: 15, color: "#888", marginBottom: 32, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", marginBottom: 32, lineHeight: 1.6 }}>
               {upgradeReason}. Upgrade ton plan pour continuer à générer des vidéos.
             </p>
 
@@ -156,9 +157,9 @@ export function DashboardShell(state: UseDashboardReturn) {
                   }}
                   style={{
                     padding: "14px 20px",
-                    background: plan.popular ? accent : "#f5f5f5",
-                    color: plan.popular ? "#ffffff" : "#0a0a0a",
-                    border: "none",
+                    background: plan.popular ? accent : "rgba(255,255,255,0.04)",
+                    color: "#ffffff",
+                    border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
                     cursor: "pointer",
                     display: "flex",
@@ -186,10 +187,10 @@ export function DashboardShell(state: UseDashboardReturn) {
                 width: "100%",
                 padding: "12px",
                 background: "transparent",
-                border: "1px solid #e8e8e8",
+                border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 10,
                 fontSize: 13,
-                color: "#aaa",
+                color: "rgba(255,255,255,0.7)",
                 cursor: "pointer",
               }}
             >

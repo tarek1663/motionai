@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { GeistSans } from "geist/font/sans";
 import { colors } from "@/lib/colors";
+import { GlobalAnnouncementBar } from "@/components/ui/global-announcement-bar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -43,7 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             MozOsxFontSmoothing: "grayscale",
           }}
         >
-          {children}
+          <GlobalAnnouncementBar />
+          <div style={{ paddingTop: 44 }}>{children}</div>
         </body>
       </html>
     </ClerkProvider>

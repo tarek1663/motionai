@@ -382,68 +382,7 @@ export default function LandingPage() {
         .faq-item { border-bottom: 1px solid #f0f0f0; }
         .footer-link { text-decoration: none; font-size: 13px; font-weight: 500; color: #888; transition: color 0.15s; }
         .footer-link:hover { color: #171311; }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        .shimmer-bar {
-          position: absolute;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-          animation: shimmer 3s infinite;
-        }
       `}</style>
-
-      {/* ── BARRE D'ANNONCE ── */}
-      <div
-        style={{
-          background: "#0a0a0a",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          padding: "10px 0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 101,
-        }}
-        onClick={() => router.push("/pricing")}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            router.push("/pricing");
-          }
-        }}
-      >
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 100,
-            padding: "5px 16px",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div className="shimmer-bar" aria-hidden="true" />
-          <span style={{ fontSize: 13, color: "#10B981", fontWeight: 700 }}>✨ Offre limitée</span>
-          <span style={{ width: 1, height: 12, background: "rgba(255,255,255,0.1)" }} />
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: 400 }}>
-            Essaie le plan Starter
-            <span style={{ color: "#ffffff", fontWeight: 600 }}> 4 jours gratuitement</span>
-            {" "}— sans carte bancaire
-          </span>
-          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>→</span>
-        </div>
-      </div>
 
       <header
         style={{
@@ -871,7 +810,7 @@ export default function LandingPage() {
             width: "100%",
             maxWidth: 1180,
             margin: "0 auto",
-            paddingTop: 152,
+            paddingTop: 156,
             paddingBottom: 8,
           }}
         >

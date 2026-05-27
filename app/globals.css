@@ -18,24 +18,24 @@
   --font-size-5xl: 80px;
 
   /* Apple / Spotify-inspired neutrals */
-  --dash-bg: #f5f5f7;
-  --dash-surface: #ffffff;
-  --dash-surface-muted: #f5f5f7;
-  --dash-text: #1d1d1f;
-  --dash-text-secondary: #6e6e73;
-  --dash-text-tertiary: #86868b;
-  --dash-border: rgba(0, 0, 0, 0.08);
-  --dash-border-solid: #e8e8ed;
-  --dash-brand: #7c3aed;
+  --dash-bg: #0a0a0a;
+  --dash-surface: #161616;
+  --dash-surface-muted: #111111;
+  --dash-text: #ffffff;
+  --dash-text-secondary: rgba(255, 255, 255, 0.7);
+  --dash-text-tertiary: rgba(255, 255, 255, 0.5);
+  --dash-border: rgba(255, 255, 255, 0.08);
+  --dash-border-solid: rgba(255, 255, 255, 0.1);
+  --dash-brand: #10b981;
   --dash-radius-sm: 8px;
   --dash-radius-md: 12px;
   --dash-radius-lg: 16px;
-  --dash-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
-  --dash-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --dash-focus: 0 0 0 4px rgba(124, 58, 237, 0.18);
+  --dash-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --dash-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4);
+  --dash-focus: 0 0 0 3px rgba(16, 185, 129, 0.28);
 
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +59,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 button {
   cursor: pointer;
   font-family: inherit;
@@ -68,6 +82,15 @@ textarea {
   resize: none;
   outline: none;
   font-family: inherit;
+}
+
+input,
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 10px;
 }
 
 video {
@@ -120,6 +143,25 @@ video:-moz-full-screen {
   50% {
     opacity: 0.45;
   }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  animation: shimmer 2.6s infinite;
 }
 
 .dash-animate-spin {
@@ -584,14 +626,12 @@ video:-moz-full-screen {
 }
 
 .dash-sidebar {
-  width: 336px;
-  min-width: 336px;
+  width: 56px;
+  min-width: 56px;
   height: 100vh;
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: #111111;
   border-right: 1px solid var(--dash-border-solid);
   display: flex;
   flex-direction: column;
@@ -827,9 +867,9 @@ video:-moz-full-screen {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 56px 40px 64px;
+  padding: 24px 40px 64px;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.06), transparent),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08), transparent),
     var(--dash-bg);
 }
 
