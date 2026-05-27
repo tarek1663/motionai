@@ -1,20 +1,94 @@
 "use client";
 
-import { type CSSProperties, useEffect, useState } from "react";
+import { Fragment, type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FaLinkedinIn } from "react-icons/fa6";
+import {
+  siFacebook,
+  siInstagram,
+  siPinterest,
+  siSnapchat,
+  siTiktok,
+  siX,
+  siYoutube,
+} from "simple-icons";
 
 import { BackgroundComponents } from "@/components/ui/background-components";
 
 const accent = "#10B981";
 const accentLight = "#ffffff";
 
+type SocialBrand =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "linkedin"
+  | "x"
+  | "facebook"
+  | "pinterest"
+  | "snapchat";
+
+const socialPlatforms: Array<{ name: string; brand: SocialBrand }> = [
+  { name: "Instagram", brand: "instagram" },
+  { name: "TikTok", brand: "tiktok" },
+  { name: "YouTube", brand: "youtube" },
+  { name: "LinkedIn", brand: "linkedin" },
+  { name: "Twitter / X", brand: "x" },
+  { name: "Facebook", brand: "facebook" },
+  { name: "Pinterest", brand: "pinterest" },
+  { name: "Snapchat", brand: "snapchat" },
+];
+
+const socialPlatformSequence = [...socialPlatforms, ...socialPlatforms, ...socialPlatforms];
+
+function SimpleBrandLogo({
+  icon,
+  size = 36,
+}: {
+  icon: { path: string; hex: string };
+  size?: number;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={`#${icon.hex}`}
+      aria-hidden="true"
+    >
+      <path d={icon.path} />
+    </svg>
+  );
+}
+
+function SocialBrandLogo({ brand }: { brand: SocialBrand }) {
+  switch (brand) {
+    case "instagram":
+      return <SimpleBrandLogo icon={siInstagram} size={38} />;
+    case "tiktok":
+      return <SimpleBrandLogo icon={siTiktok} size={38} />;
+    case "youtube":
+      return <SimpleBrandLogo icon={siYoutube} size={40} />;
+    case "linkedin":
+      return <FaLinkedinIn size={36} color="#0a66c2" aria-hidden="true" />;
+    case "x":
+      return <SimpleBrandLogo icon={siX} size={37} />;
+    case "facebook":
+      return <SimpleBrandLogo icon={siFacebook} size={38} />;
+    case "pinterest":
+      return <SimpleBrandLogo icon={siPinterest} size={38} />;
+    case "snapchat":
+      return <SimpleBrandLogo icon={siSnapchat} size={38} />;
+  }
+}
+
 export default function LandingPage() {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [showProductMenu, setShowProductMenu] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
   const [prompt, setPrompt] = useState("");
 
   useEffect(() => {
@@ -37,24 +111,48 @@ export default function LandingPage() {
     { num: "03", title: "Télécharge et partage" },
   ];
 
-  const testimonials = [
+  const comparisonRows = [
     {
-      name: "Marie L.",
-      role: "Content Creator",
-      text: "J'ai divisé mon temps de création par 10. Les vidéos sont bluffantes de qualité.",
-      avatar: "ML",
+      without: "Faire appel à une agence vidéo coûteuse",
+      with: {
+        title: "Vidéo pro générée en quelques minutes",
+        desc: "De l'idée à la vidéo publiable sans intermédiaire.",
+      },
     },
     {
-      name: "Thomas B.",
-      role: "Marketing Manager",
-      text: "On produit 3x plus de contenu vidéo sans augmenter notre budget. Indispensable.",
-      avatar: "TB",
+      without: "Attendre des jours avant d'avoir un résultat",
+      with: {
+        title: "Script, animations et voix automatiques",
+        desc: "L'IA gère tout de A à Z pour toi.",
+      },
     },
     {
-      name: "Sophie M.",
-      role: "Entrepreneur",
-      text: "Le meilleur outil que j'ai utilisé cette année. Simple, rapide, professionnel.",
-      avatar: "SM",
+      without: "Multiplier les allers-retours avec un prestataire",
+      with: {
+        title: "Résultat 1080p dès la première génération",
+        desc: "Moins d'ajustements, plus de vitesse.",
+      },
+    },
+    {
+      without: "Avoir besoin de compétences techniques",
+      with: {
+        title: "Zéro compétence technique requise",
+        desc: "Si tu peux écrire, tu peux créer.",
+      },
+    },
+    {
+      without: "Produire un seul format à la fois",
+      with: {
+        title: "9:16, 16:9 et 1:1 en un clic",
+        desc: "Tous les formats pour tous les réseaux.",
+      },
+    },
+    {
+      without: "Réserver la vidéo aux plus gros budgets",
+      with: {
+        title: "Accessible dès 0€",
+        desc: "Commence gratuitement, sans carte bancaire.",
+      },
     },
   ];
 
@@ -103,7 +201,7 @@ export default function LandingPage() {
     {
       id: "starter",
       name: "Starter",
-      price: { monthly: 23, yearly: 13 },
+      price: { monthly: 0, yearly: 0 },
       videos: "60 vidéos/mois",
       features: [
         "60 vidéos par mois",
@@ -118,7 +216,7 @@ export default function LandingPage() {
     {
       id: "pro",
       name: "Pro",
-      price: { monthly: 45, yearly: 35 },
+      price: { monthly: 0, yearly: 0 },
       videos: "150 vidéos/mois",
       features: [
         "150 vidéos par mois",
@@ -200,6 +298,60 @@ export default function LandingPage() {
     boxShadow: "0 18px 44px rgba(15,23,42,0.04)",
   };
 
+  const featureTagStyle: CSSProperties = {
+    fontSize: 12,
+    fontWeight: 700,
+    color: accent,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
+    marginBottom: 12,
+  };
+
+  const featureLightCardStyle: CSSProperties = {
+    ...surfaceCardStyle,
+    borderRadius: 26,
+    padding: "36px",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100%",
+    background: "linear-gradient(180deg, #ffffff 0%, #fcfbfa 100%)",
+    border: "1px solid rgba(16,185,129,0.24)",
+    boxShadow:
+      "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.18), 0 0 34px rgba(16,185,129,0.14), 0 20px 46px rgba(24,19,15,0.07)",
+    overflow: "hidden",
+  };
+
+  const featureDarkCardStyle: CSSProperties = {
+    borderRadius: 26,
+    padding: "36px",
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100%",
+    background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
+    border: "1px solid rgba(16,185,129,0.28)",
+    boxShadow:
+      "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 1px rgba(16,185,129,0.12), 0 0 20px rgba(16,185,129,0.22), 0 0 38px rgba(16,185,129,0.16), 0 20px 46px rgba(10,10,10,0.18)",
+    overflow: "hidden",
+  };
+
+  const featureLightDemoStyle: CSSProperties = {
+    marginTop: "auto",
+    background: "#fafaf8",
+    borderRadius: 18,
+    padding: "22px",
+    border: "1px solid rgba(23,19,17,0.08)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)",
+  };
+
+  const featureDarkDemoStyle: CSSProperties = {
+    marginTop: "auto",
+    background: "rgba(255,255,255,0.03)",
+    borderRadius: 18,
+    padding: "22px",
+    border: "1px solid rgba(255,255,255,0.06)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)",
+  };
+
   return (
     <div
       style={{
@@ -219,8 +371,8 @@ export default function LandingPage() {
         .btn-primary:hover { background: ${accent}; transform: translateY(-1px); box-shadow: 0 8px 24px ${accent}44; }
         .btn-secondary { background: #fff; color: #0a0a0a; border: 1.5px solid #e8e8e8; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
         .btn-secondary:hover { border-color: #ccc; transform: translateY(-1px); }
-        .plan-card { transition: all 0.2s; }
-        .plan-card:hover { transform: translateY(-3px); }
+        .plan-card { transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
+        .plan-card:hover { transform: translateY(-6px); }
         .faq-item { border-bottom: 1px solid #f0f0f0; }
       `}</style>
 
@@ -658,7 +810,7 @@ export default function LandingPage() {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: 18,
+              gap: 34,
               alignItems: "center",
             }}
           >
@@ -694,7 +846,7 @@ export default function LandingPage() {
             <p
               style={{
                 maxWidth: 700,
-                margin: "0 auto 8px",
+                margin: "0 auto 20px",
                 textAlign: "center",
                 fontSize: 18,
                 lineHeight: 1.7,
@@ -865,7 +1017,7 @@ export default function LandingPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 12,
-                  marginTop: 18,
+                  marginTop: 38,
                   flexWrap: "wrap",
                   position: "relative",
                   zIndex: 4,
@@ -919,7 +1071,8 @@ export default function LandingPage() {
               <div
                 style={{
                   width: "100%",
-                  marginTop: 18,
+                  marginTop: 46,
+                  marginBottom: 24,
                   display: "flex",
                   alignItems: "flex-end",
                   justifyContent: "center",
@@ -980,123 +1133,88 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
+
+              <div
+                style={{
+                  width: "100%",
+                  background: "#ffffff",
+                  padding: "18px 0 22px",
+                  marginBottom: 18,
+                }}
+              >
+                <style>{`
+                  @keyframes social-scroll {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                  }
+                  .social-scroll-track {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    animation: social-scroll 24s linear infinite;
+                    width: max-content;
+                    flex-wrap: nowrap;
+                    will-change: transform;
+                    pointer-events: none;
+                    user-select: none;
+                  }
+                  .social-scroll-track * {
+                    pointer-events: none;
+                    user-select: none;
+                  }
+                `}</style>
+
+                <div
+                  style={{ maxWidth: 980, margin: "0 auto", position: "relative", padding: "0 8px" }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: 8,
+                      top: 0,
+                      bottom: 0,
+                      width: 84,
+                      background: "linear-gradient(90deg, #ffffff, rgba(255,255,255,0))",
+                      zIndex: 2,
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: 8,
+                      top: 0,
+                      bottom: 0,
+                      width: 84,
+                      background: "linear-gradient(270deg, #ffffff, rgba(255,255,255,0))",
+                      zIndex: 2,
+                    }}
+                  />
+
+                  <div style={{ overflow: "hidden" }}>
+                    <div className="social-scroll-track">
+                      {[...socialPlatformSequence, ...socialPlatformSequence].map((item, i) => (
+                        <div
+                          key={`${item.name}-${i}`}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: "8px 22px",
+                            whiteSpace: "nowrap",
+                            flex: "0 0 auto",
+                          }}
+                        >
+                          <SocialBrandLogo brand={item.brand} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
-      <div
-        style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          padding: "24px 0",
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 120,
-            background: "linear-gradient(90deg, #0a0a0a, transparent)",
-            zIndex: 2,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 120,
-            background: "linear-gradient(270deg, #0a0a0a, transparent)",
-            zIndex: 2,
-          }}
-        />
-
-        <div
-          style={{
-            textAlign: "center",
-            fontSize: 11,
-            fontWeight: 500,
-            color: "rgba(255,255,255,0.2)",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            marginBottom: 20,
-          }}
-        >
-          Parfait pour tous vos réseaux
-        </div>
-
-        <style>{`
-          @keyframes social-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .social-scroll-track {
-            display: flex;
-            animation: social-scroll 20s linear infinite;
-            width: max-content;
-          }
-          .social-scroll-track:hover {
-            animation-play-state: paused;
-          }
-        `}</style>
-
-        <div style={{ overflow: "hidden" }}>
-          <div className="social-scroll-track">
-            {[
-              { name: "Instagram", icon: "📸" },
-              { name: "TikTok", icon: "🎵" },
-              { name: "YouTube", icon: "▶️" },
-              { name: "LinkedIn", icon: "💼" },
-              { name: "Twitter / X", icon: "𝕏" },
-              { name: "Facebook", icon: "👥" },
-              { name: "Pinterest", icon: "📌" },
-              { name: "Snapchat", icon: "👻" },
-              { name: "Reels", icon: "🎬" },
-              { name: "Shorts", icon: "⚡" },
-              { name: "Instagram", icon: "📸" },
-              { name: "TikTok", icon: "🎵" },
-              { name: "YouTube", icon: "▶️" },
-              { name: "LinkedIn", icon: "💼" },
-              { name: "Twitter / X", icon: "𝕏" },
-              { name: "Facebook", icon: "👥" },
-              { name: "Pinterest", icon: "📌" },
-              { name: "Snapchat", icon: "👻" },
-              { name: "Reels", icon: "🎬" },
-              { name: "Shorts", icon: "⚡" },
-            ].map((item, i) => (
-              <div
-                key={`${item.name}-${i}`}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "8px 28px",
-                  borderRight: "1px solid rgba(255,255,255,0.06)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span style={{ fontSize: 18 }}>{item.icon}</span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.35)",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  {item.name}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <section id="how" style={{ padding: "52px 40px 72px", background: "#fff" }}>
         <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>
@@ -1137,8 +1255,10 @@ export default function LandingPage() {
               width: "100%",
               aspectRatio: "16 / 9",
               borderRadius: 22,
-              border: "1.5px dashed #d9d9d9",
+              border: "1.5px solid rgba(16,185,129,0.72)",
               background: "#fafafa",
+              boxShadow:
+                "0 0 0 1px rgba(16,185,129,0.16), 0 0 26px rgba(16,185,129,0.24), inset 0 0 0 1px rgba(16,185,129,0.08)",
             }}
           />
         </div>
@@ -1152,33 +1272,92 @@ export default function LandingPage() {
                 ...sectionTitleStyle,
                 fontSize: 48,
                 color: "#171311",
-                maxWidth: 640,
                 margin: "0 auto 14px",
               }}
             >
               La création vidéo, enfin accessible à tous.
             </h2>
-            <p
-              style={{
-                ...sectionBodyStyle,
-                maxWidth: 640,
-                margin: "0 auto",
-                color: "#6F6862",
-              }}
-            >
-              Compare le flux classique, lent et coûteux, avec une production pensée pour
-              aller de l&apos;idée à la vidéo publiable en quelques minutes.
-            </p>
           </div>
 
           <div
             style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                color: "#171311",
+                fontSize: 18,
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                padding: "0 6px",
+              }}
+            >
+              <span
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: "#ef4444",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 12,
+                  color: "#ffffff",
+                }}
+              >
+                ✕
+              </span>
+              Sans Motionr
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                color: "#171311",
+                fontSize: 18,
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                padding: "0 6px",
+              }}
+            >
+              <span
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: "#10B981",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 12,
+                  color: "#ffffff",
+                }}
+              >
+                ✓
+              </span>
+              Avec Motionr
+            </div>
+          </div>
+
+          <div
+            style={{
+              ...surfaceCardStyle,
               position: "relative",
-              borderRadius: 28,
+              borderRadius: 30,
               overflow: "hidden",
-              border: "1px solid rgba(23,19,17,0.08)",
+              border: "1px solid rgba(16,185,129,0.34)",
               background: "#ffffff",
-              boxShadow: "0 24px 64px rgba(24,19,15,0.06)",
+              boxShadow:
+                "0 0 0 1px rgba(16,185,129,0.18), 0 0 18px rgba(16,185,129,0.22), 0 0 36px rgba(16,185,129,0.16), 0 24px 54px rgba(24,19,15,0.08)",
             }}
           >
             <div
@@ -1186,282 +1365,477 @@ export default function LandingPage() {
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 alignItems: "stretch",
+                background: "#ffffff",
               }}
             >
-              <div
-                style={{
-                  padding: "40px 36px 36px",
-                  background: "#ffffff",
-                  borderRight: "1px solid rgba(23,19,17,0.06)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    color: "#171311",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    marginBottom: 28,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  <span
+              {comparisonRows.map((item, i) => (
+                <Fragment key={item.with.title}>
+                  <div
                     style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: "50%",
-                      background: "#ef4444",
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 12,
-                      color: "#ffffff",
+                      alignItems: "flex-start",
+                      gap: 14,
+                      padding: "22px 28px",
+                      background: "#ffffff",
+                      borderRight: "1px solid rgba(23,19,17,0.05)",
+                      borderBottom:
+                        i === comparisonRows.length - 1 ? "none" : "1px solid rgba(23,19,17,0.05)",
                     }}
                   >
-                    ✕
-                  </span>
-                  Sans Motionr
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {[
-                    "Faire appel à une agence vidéo coûteuse",
-                    "Attendre des jours avant d'avoir un résultat",
-                    "Multiplier les allers-retours avec un prestataire",
-                    "Avoir besoin de compétences techniques",
-                    "Produire un seul format à la fois",
-                    "Réserver la vidéo aux plus gros budgets",
-                  ].map((item, i) => (
                     <div
-                      key={i}
                       style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        background: "#ef4444",
+                        flexShrink: 0,
                         display: "flex",
-                        alignItems: "flex-start",
-                        gap: 14,
-                        padding: "14px 0",
-                        borderBottom:
-                          i === 5 ? "none" : "1px solid rgba(23,19,17,0.06)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        color: "#ffffff",
+                        marginTop: 1,
                       }}
                     >
+                      ✕
+                    </div>
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: "#7b746d",
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {item.without}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 14,
+                      padding: "22px 28px",
+                      background: "#ffffff",
+                      borderBottom:
+                        i === comparisonRows.length - 1 ? "none" : "1px solid rgba(23,19,17,0.05)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        background: "#10B981",
+                        flexShrink: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        color: "#ffffff",
+                        marginTop: 2,
+                      }}
+                    >
+                      ✓
+                    </div>
+                    <div>
                       <div
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          background: "#ef4444",
-                          flexShrink: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 11,
-                          color: "#ffffff",
-                          marginTop: 1,
-                        }}
-                      >
-                        ✕
-                      </div>
-                      <span
                         style={{
                           fontSize: 14,
-                          color: "#8A837C",
-                          lineHeight: 1.55,
+                          fontWeight: 600,
+                          color: "#171311",
+                          lineHeight: 1.5,
+                          marginBottom: 4,
+                          letterSpacing: "-0.02em",
                         }}
                       >
-                        {item}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  padding: "40px 36px 36px",
-                  background: "#ffffff",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    color: "#171311",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    marginBottom: 28,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: "50%",
-                      background: "#10B981",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 12,
-                      color: "#ffffff",
-                    }}
-                  >
-                    ✓
-                  </span>
-                  Avec Motionr
-                </div>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {[
-                    {
-                      title: "Vidéo pro générée en quelques minutes",
-                      desc: "De l'idée à la vidéo publiable sans intermédiaire.",
-                    },
-                    {
-                      title: "Script, animations et voix automatiques",
-                      desc: "L'IA gère tout de A à Z pour toi.",
-                    },
-                    {
-                      title: "Résultat 1080p dès la première génération",
-                      desc: "Moins d'ajustements, plus de vitesse.",
-                    },
-                    {
-                      title: "Zéro compétence technique requise",
-                      desc: "Si tu peux écrire, tu peux créer.",
-                    },
-                    {
-                      title: "9:16, 16:9 et 1:1 en un clic",
-                      desc: "Tous les formats pour tous les réseaux.",
-                    },
-                    {
-                      title: "Accessible dès 0€",
-                      desc: "Commence gratuitement, sans carte bancaire.",
-                    },
-                  ].map((item, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 14,
-                        padding: "14px 16px",
-                        borderRadius: 18,
-                        background: "#ffffff",
-                        border: "1px solid rgba(23,19,17,0.06)",
-                      }}
-                    >
+                        {item.with.title}
+                      </div>
                       <div
                         style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          background: "#10B981",
-                          flexShrink: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 11,
-                          color: "#ffffff",
-                          marginTop: 2,
+                          fontSize: 13,
+                          color: "#7b746d",
+                          lineHeight: 1.6,
                         }}
                       >
-                        ✓
-                      </div>
-                      <div>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: "#171311",
-                            lineHeight: 1.45,
-                            marginBottom: 3,
-                          }}
-                        >
-                          {item.title}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            color: "#8A837C",
-                            lineHeight: 1.55,
-                          }}
-                        >
-                          {item.desc}
-                        </div>
+                        {item.with.desc}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                </Fragment>
+              ))}
             </div>
           </div>
 
         </div>
       </section>
 
-      <section style={{ padding: "84px 40px", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <div style={sectionEyebrowStyle}>Témoignages</div>
-          <h2 style={sectionTitleStyle}>Ils créent avec Motionr.</h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.name}
+      <section id="features" style={{ padding: "108px 60px 100px", background: "#ffffff" }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <h2
               style={{
-                ...surfaceCardStyle,
-                borderRadius: 22,
-                padding: "26px",
+                ...sectionTitleStyle,
+                fontSize: 48,
+                color: "#171311",
+                maxWidth: 720,
+                margin: "0 auto",
               }}
             >
-              <div style={{ fontSize: 16, marginBottom: 16, letterSpacing: "0.08em", color: accent }}>
-                ★★★★★
-              </div>
-              <p
+              Tout ce dont tu as besoin
+              <br />
+              pour créer des vidéos pro.
+            </h2>
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              borderRadius: 34,
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 24,
+                alignItems: "stretch",
+                background: "transparent",
+              }}
+            >
+              <div style={featureLightCardStyle}>
+              <div style={featureTagStyle}>Génération par IA</div>
+              <h3
                 style={{
-                  ...sectionBodyStyle,
-                  fontSize: 15,
-                  color: "#666",
-                  marginBottom: 20,
-                  fontStyle: "italic",
+                  ...cardTitleStyle,
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: "#171311",
+                  letterSpacing: "-0.04em",
+                  marginBottom: 10,
+                  lineHeight: 1.2,
                 }}
               >
-                &quot;{testimonial.text}&quot;
+                Décris ton idée.
+                <br />
+                L&apos;IA fait le reste.
+              </h3>
+              <p
+                style={{
+                  ...cardBodyStyle,
+                  fontSize: 14,
+                  color: "#6F6862",
+                  lineHeight: 1.72,
+                  marginBottom: 30,
+                }}
+              >
+                Claude analyse ton message et génère automatiquement le script, choisit les
+                animations et synchronise la voix.
               </p>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div
+                style={{
+                  ...featureLightDemoStyle,
+                  padding: "20px",
+                }}
+              >
+                <div style={{ fontSize: 12, color: "#9b938c", marginBottom: 12 }}>Ton prompt</div>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: "50%",
-                    background: `${accent}22`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    background: "#fff",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                    border: "1px solid rgba(23,19,17,0.08)",
                     fontSize: 13,
-                    fontWeight: 700,
-                    color: accent,
+                    color: "#625b55",
+                    marginBottom: 12,
+                    fontStyle: "italic",
                   }}
                 >
-                  {testimonial.avatar}
+                  &quot;Présente mon app de fitness...&quot;
                 </div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1f2937" }}>
-                    {testimonial.name}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <div style={{ flex: 1, height: 1, background: "#e8e8e8" }} />
+                  <div style={{ fontSize: 11, color: "#10B981", fontWeight: 600 }}>
+                    IA en action
                   </div>
-                  <div style={mutedMetaStyle}>{testimonial.role}</div>
+                  <div style={{ flex: 1, height: 1, background: "#e8e8e8" }} />
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {["Script ✓", "Animations ✓", "Voix ✓"].map((s) => (
+                    <div
+                      key={s}
+                      style={{
+                        padding: "6px 10px",
+                        background: "rgba(16,185,129,0.08)",
+                        border: "1px solid rgba(16,185,129,0.2)",
+                        borderRadius: 100,
+                        fontSize: 11,
+                        color: "#10B981",
+                        fontWeight: 600,
+                        boxShadow: "inset 0 0 0 1px rgba(16,185,129,0.02)",
+                      }}
+                    >
+                      {s}
+                    </div>
+                  ))}
                 </div>
               </div>
+              </div>
+
+              <div style={featureDarkCardStyle}>
+              <div style={featureTagStyle}>Mode Script</div>
+              <h3
+                style={{
+                  ...cardTitleStyle,
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.04em",
+                  marginBottom: 10,
+                  lineHeight: 1.2,
+                }}
+              >
+                Écris librement.
+                <br />
+                On met en vidéo.
+              </h3>
+              <p
+                style={{
+                  ...cardBodyStyle,
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.58)",
+                  lineHeight: 1.72,
+                  marginBottom: 30,
+                }}
+              >
+                Colle ton texte existant. L&apos;IA le découpe intelligemment et crée une vidéo
+                avec ton contenu exact.
+              </p>
+              <div
+                style={{
+                  ...featureDarkDemoStyle,
+                  padding: "20px",
+                }}
+              >
+                {[
+                  "Bienvenue chez Motionr.",
+                  "La création vidéo réinventée.",
+                  "Essaie gratuitement.",
+                ].map((line, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                      padding: "10px 0",
+                      borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        background: "rgba(16,185,129,0.15)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 9,
+                        color: "#10B981",
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {i + 1}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "rgba(255,255,255,0.62)",
+                        lineHeight: 1.5,
+                        flex: 1,
+                      }}
+                    >
+                      {line}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 10,
+                        color: "#10B981",
+                        padding: "4px 8px",
+                        borderRadius: 999,
+                        background: "rgba(16,185,129,0.12)",
+                        whiteSpace: "nowrap",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Scène {i + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              </div>
+
+              <div style={featureDarkCardStyle}>
+              <div style={featureTagStyle}>Voix naturelle</div>
+              <h3
+                style={{
+                  ...cardTitleStyle,
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: "#fff",
+                  letterSpacing: "-0.04em",
+                  marginBottom: 10,
+                  lineHeight: 1.2,
+                }}
+              >
+                Une voix off
+                <br />
+                ultra-réaliste.
+              </h3>
+              <p
+                style={{
+                  ...cardBodyStyle,
+                  fontSize: 14,
+                  color: "rgba(255,255,255,0.58)",
+                  lineHeight: 1.72,
+                  marginBottom: 30,
+                }}
+              >
+                ElevenLabs génère une voix naturelle synchronisée frame par frame avec les
+                animations.
+              </p>
+              <div
+                style={{
+                  ...featureDarkDemoStyle,
+                  padding: "24px 20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <div style={{ fontSize: 20 }}>🎙️</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 3, flex: 1, minHeight: 40 }}>
+                  {Array.from({ length: 40 }, (_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: 3,
+                        borderRadius: 3,
+                        height: `${10 + Math.abs(Math.sin(i * 0.6)) * 28}px`,
+                        background: i % 4 === 0 ? "#10B981" : "rgba(255,255,255,0.12)",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "#10B981",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Sync ✓
+                </div>
+              </div>
+              </div>
+
+              <div style={featureLightCardStyle}>
+              <div style={featureTagStyle}>Multi-format</div>
+              <h3
+                style={{
+                  ...cardTitleStyle,
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: "#171311",
+                  letterSpacing: "-0.04em",
+                  marginBottom: 10,
+                  lineHeight: 1.2,
+                }}
+              >
+                Tous les formats.
+                <br />
+                Tous les réseaux.
+              </h3>
+              <p
+                style={{
+                  ...cardBodyStyle,
+                  fontSize: 14,
+                  color: "#6F6862",
+                  lineHeight: 1.72,
+                  marginBottom: 30,
+                }}
+              >
+                Génère en 9:16 pour les Reels, 16:9 pour YouTube ou 1:1 pour LinkedIn en un
+                clic.
+              </p>
+              <div
+                style={{
+                  ...featureLightDemoStyle,
+                  padding: "24px",
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  gap: 20,
+                }}
+              >
+                {[
+                  { label: "9:16", w: 50, h: 89, network: "Reels · TikTok" },
+                  { label: "1:1", w: 70, h: 70, network: "Feed · LinkedIn" },
+                  { label: "16:9", w: 100, h: 56, network: "YouTube" },
+                ].map((fmt) => (
+                  <div
+                    key={fmt.label}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: fmt.w,
+                        height: fmt.h,
+                        border: "1.5px solid rgba(16,185,129,0.4)",
+                        borderRadius: 8,
+                        background: "rgba(16,185,129,0.06)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 10,
+                        color: "#10B981",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {fmt.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 9,
+                        color: "#9b938c",
+                        textAlign: "center",
+                        lineHeight: 1.45,
+                        maxWidth: 78,
+                      }}
+                    >
+                      {fmt.network}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
       <section id="pricing" style={{ padding: "84px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div style={sectionEyebrowStyle}>Tarifs</div>
             <h2 style={{ ...sectionTitleStyle, marginBottom: 24 }}>Simple et transparent.</h2>
             <div
               style={{
@@ -1502,12 +1876,17 @@ export default function LandingPage() {
                 style={{
                   borderRadius: 20,
                   padding: "28px",
-                  background: plan.popular ? accent : "#fff",
-                  border: plan.popular ? "none" : "1.5px solid #e8e8e8",
+                  minHeight: 470,
+                  background: plan.popular
+                    ? "linear-gradient(165deg, #10b981 0%, #0ea371 100%)"
+                    : "linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%)",
+                  border: plan.popular
+                    ? "1px solid rgba(255,255,255,0.18)"
+                    : "1.5px solid rgba(16,185,129,0.35)",
                   color: plan.popular ? "#fff" : "#0a0a0a",
                   boxShadow: plan.popular
-                    ? `0 20px 60px ${accent}33`
-                    : "0 14px 40px rgba(15,23,42,0.03)",
+                    ? `0 0 0 1px rgba(255,255,255,0.14), 0 0 0 2px rgba(16,185,129,0.2), 0 0 20px rgba(16,185,129,0.42), 0 0 38px rgba(16,185,129,0.3), 0 0 64px rgba(16,185,129,0.2), 0 0 20px rgba(10,10,10,0.16)`
+                    : "0 0 0 1px rgba(16,185,129,0.24), 0 0 0 2px rgba(16,185,129,0.1), 0 0 16px rgba(16,185,129,0.2), 0 0 30px rgba(16,185,129,0.14), 0 0 50px rgba(16,185,129,0.1), 0 0 16px rgba(15,23,42,0.1)",
                   position: "relative",
                 }}
               >
@@ -1536,16 +1915,66 @@ export default function LandingPage() {
                 </div>
                 <div
                   style={{
-                    fontSize: 42,
-                    fontWeight: 700,
+                    fontSize: 52,
+                    fontWeight: 800,
                     letterSpacing: "-0.045em",
-                    marginBottom: 4,
+                    lineHeight: 1,
+                    marginBottom: 8,
+                    color: "#0a0a0a",
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: 10,
+                    justifyContent: "center",
+                    textShadow: "0 1px 0 rgba(255,255,255,0.3)",
                   }}
                 >
+                  {(plan.id === "starter" || plan.id === "pro") && (
+                    <span
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                        fontSize: 20,
+                        fontWeight: 600,
+                        opacity: 0.9,
+                        color: "#111",
+                        fontFamily:
+                          '"Marker Felt", "Comic Sans MS", "Bradley Hand", "Segoe Print", cursive',
+                        letterSpacing: "0.01em",
+                        transform: "rotate(-7deg)",
+                      }}
+                    >
+                      {plan.id === "starter"
+                        ? `${billing === "monthly" ? 23 : 13}€`
+                        : `${billing === "monthly" ? 45 : 35}€`}
+                      <span
+                        style={{
+                          position: "absolute",
+                          left: -10,
+                          right: -8,
+                          top: "49%",
+                          height: 3,
+                          background: "currentColor",
+                          borderRadius: 999,
+                          opacity: 0.95,
+                          transform: "rotate(-9deg)",
+                        }}
+                      />
+                    </span>
+                  )}
                   {plan.price[billing] === 0 ? "0€" : `${plan.price[billing]}€`}
-                  <span style={{ fontSize: 14, fontWeight: 400, opacity: 0.6 }}>/mois</span>
+                  <span style={{ fontSize: 15, fontWeight: 600, opacity: 0.78, marginLeft: 2 }}>/mois</span>
                 </div>
-                <div style={{ ...mutedMetaStyle, opacity: 0.8, marginBottom: 24 }}>{plan.videos}</div>
+                <div
+                  style={{
+                    ...mutedMetaStyle,
+                    opacity: plan.popular ? 0.92 : 0.9,
+                    color: plan.popular ? "rgba(255,255,255,0.92)" : "#4a4a4a",
+                    marginBottom: 24,
+                    fontWeight: 600,
+                  }}
+                >
+                  {plan.videos}
+                </div>
                 <div
                   style={{
                     display: "flex",
@@ -1576,13 +2005,14 @@ export default function LandingPage() {
                   style={{
                     display: "block",
                     textAlign: "center",
-                    padding: "12px",
-                    borderRadius: 10,
+                    padding: "13px",
+                    borderRadius: 12,
                     background: plan.popular ? "#fff" : accent,
                     color: plan.popular ? accent : "#fff",
-                    fontWeight: 700,
+                    fontWeight: 800,
                     fontSize: 14,
                     textDecoration: "none",
+                    boxShadow: plan.popular ? "0 8px 20px rgba(255,255,255,0.25)" : `0 10px 20px ${accent}33`,
                   }}
                 >
                   {plan.cta}
@@ -1644,81 +2074,500 @@ export default function LandingPage() {
         ))}
       </section>
 
-      <section style={{ padding: "76px 40px", textAlign: "center" }}>
-        <div
-          style={{
-            ...surfaceCardStyle,
-            maxWidth: 700,
-            margin: "0 auto",
-            borderRadius: 24,
-            padding: "64px 40px",
-          }}
-        >
-          <h2
-            style={{
-              ...sectionTitleStyle,
-              marginBottom: 16,
-            }}
-          >
-            Prêt à créer ta première vidéo ?
-          </h2>
-          <p style={{ ...sectionBodyStyle, marginBottom: 32 }}>
-            Rejoins des milliers de créateurs qui utilisent Motionr pour produire du contenu
-            vidéo professionnel en quelques minutes.
-          </p>
-          <Link href="/signup" className="btn-primary" style={{ fontSize: 16, padding: "16px 40px" }}>
-            Commencer gratuitement →
-          </Link>
-          <div style={{ ...mutedMetaStyle, marginTop: 16 }}>
-            Aucune carte bancaire requise · 3 vidéos gratuites
-          </div>
-        </div>
-      </section>
-
-      <footer style={{ padding: "42px 40px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
+      {/* ── MOCKUP FINAL ── */}
+      <section
+        style={{
+          padding: "120px 60px",
+          background: "#0a0a0a",
+          overflow: "hidden",
+        }}
+      >
         <div
           style={{
             maxWidth: 1100,
             margin: "0 auto",
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
+            gap: 80,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* Gauche — texte */}
+          <div style={{ flex: 1, maxWidth: 420 }}>
             <div
               style={{
-                width: 24,
-                height: 24,
-                borderRadius: 6,
-                background: accent,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 fontSize: 11,
-                fontWeight: 900,
-                color: "#fff",
+                fontWeight: 700,
+                color: "#10B981",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                marginBottom: 16,
               }}
             >
-              M
+              Disponible partout
             </div>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#1f2937", letterSpacing: "-0.02em" }}>
-              Motionr
-            </span>
+            <h2
+              style={{
+                fontSize: 52,
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                lineHeight: 1.05,
+                color: "#ffffff",
+                marginBottom: 20,
+              }}
+            >
+              Crée des vidéos pro depuis n&apos;importe où.
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                color: "rgba(255,255,255,0.4)",
+                lineHeight: 1.7,
+                marginBottom: 40,
+              }}
+            >
+              Accède à Motionr depuis ton ordinateur ou ton téléphone. Génère, télécharge et publie
+              en quelques minutes.
+            </p>
+            <button
+              onClick={() => router.push("/signup")}
+              style={{
+                background: "#10B981",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 12,
+                padding: "14px 32px",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              Commencer gratuitement →
+            </button>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 12 }}>
+              Aucune carte requise · 3 vidéos offertes
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 24 }}>
-            <Link href="/privacy" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
-              Confidentialité
-            </Link>
-            <Link href="/terms" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
-              CGU
-            </Link>
-            <Link href="/pricing" style={{ fontSize: 13, color: "#888", textDecoration: "none", fontWeight: 500 }}>
-              Tarifs
-            </Link>
+
+          {/* Droite — mockups */}
+          <div
+            style={{
+              flex: 1,
+              position: "relative",
+              height: 520,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Mockup PC */}
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: 520,
+              }}
+            >
+              {/* Ecran */}
+              <div
+                style={{
+                  background: "#1a1a1a",
+                  borderRadius: "16px 16px 0 0",
+                  border: "2px solid #333",
+                  overflow: "hidden",
+                  boxShadow: "0 40px 80px rgba(0,0,0,0.6)",
+                }}
+              >
+                {/* Barre navigateur */}
+                <div
+                  style={{
+                    background: "#222",
+                    padding: "8px 14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    borderBottom: "1px solid #333",
+                  }}
+                >
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f56" }} />
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ffbd2e" }} />
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#27c93f" }} />
+                  <div
+                    style={{
+                      flex: 1,
+                      background: "#2a2a2a",
+                      borderRadius: 4,
+                      padding: "3px 10px",
+                      fontSize: 10,
+                      color: "#555",
+                      marginLeft: 8,
+                      textAlign: "center",
+                    }}
+                  >
+                    app.motionr.app
+                  </div>
+                </div>
+                {/* Contenu — mini hero */}
+                <div
+                  style={{
+                    background: "#0a0a0a",
+                    padding: "24px 28px",
+                    minHeight: 280,
+                  }}
+                >
+                  {/* Mini nav */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: 32,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div
+                        style={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: 4,
+                          background: "#10B981",
+                        }}
+                      />
+                      <span style={{ fontSize: 10, fontWeight: 800, color: "#fff" }}>Motionr</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 12 }}>
+                      {["Produit", "Tarifs", "FAQ"].map((n) => (
+                        <span key={n} style={{ fontSize: 8, color: "rgba(255,255,255,0.3)" }}>
+                          {n}
+                        </span>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        background: "#10B981",
+                        borderRadius: 4,
+                        padding: "3px 8px",
+                        fontSize: 8,
+                        color: "#fff",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Commencer
+                    </div>
+                  </div>
+                  {/* Mini hero text */}
+                  <div style={{ textAlign: "center", marginBottom: 20 }}>
+                    <div
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 900,
+                        color: "#fff",
+                        letterSpacing: "-0.04em",
+                        lineHeight: 1.1,
+                        marginBottom: 8,
+                      }}
+                    >
+                      L&apos;IA qui transforme
+                      <br />
+                      tes mots en vidéos.
+                    </div>
+                    <div style={{ fontSize: 9, color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>
+                      Décris ton idée. Motionr génère le script, les animations et la voix.
+                    </div>
+                    {/* Mini prompt box */}
+                    <div
+                      style={{
+                        background: "rgba(255,255,255,0.06)",
+                        borderRadius: 8,
+                        padding: "10px 12px",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        maxWidth: 300,
+                        margin: "0 auto",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 8,
+                          color: "rgba(255,255,255,0.3)",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Décris ta vidéo...
+                      </span>
+                      <div
+                        style={{
+                          background: "#10B981",
+                          borderRadius: 4,
+                          padding: "3px 8px",
+                          fontSize: 8,
+                          color: "#fff",
+                          fontWeight: 700,
+                        }}
+                      >
+                        Générer →
+                      </div>
+                    </div>
+                  </div>
+                  {/* Mini vidéos placeholders */}
+                  <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                    {[
+                      { w: 42, h: 74 },
+                      { w: 64, h: 36 },
+                      { w: 42, h: 42 },
+                      { w: 36, h: 64 },
+                    ].map((v, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          width: v.w,
+                          height: v.h,
+                          borderRadius: 6,
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 10,
+                        }}
+                      >
+                        ▶
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              {/* Pied écran */}
+              <div
+                style={{
+                  background: "#252525",
+                  height: 16,
+                  borderRadius: "0 0 4px 4px",
+                  border: "2px solid #333",
+                  borderTop: "none",
+                }}
+              />
+              {/* Pied de mac */}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <div
+                  style={{
+                    width: 120,
+                    height: 8,
+                    background: "#2a2a2a",
+                    borderRadius: "0 0 8px 8px",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Mockup iPhone */}
+            <div
+              style={{
+                position: "absolute",
+                right: -20,
+                bottom: 0,
+                width: 130,
+                background: "#1a1a1a",
+                borderRadius: 28,
+                border: "2px solid #333",
+                padding: "10px 4px",
+                boxShadow: "0 40px 80px rgba(0,0,0,0.6)",
+                zIndex: 2,
+              }}
+            >
+              {/* Notch */}
+              <div
+                style={{
+                  width: 50,
+                  height: 8,
+                  background: "#111",
+                  borderRadius: 10,
+                  margin: "0 auto 8px",
+                }}
+              />
+              {/* Ecran */}
+              <div
+                style={{
+                  background: "#0a0a0a",
+                  borderRadius: 20,
+                  height: 220,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: "#10B981",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 16,
+                    fontWeight: 900,
+                    color: "#fff",
+                  }}
+                >
+                  M
+                </div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: "#fff" }}>Motionr</div>
+                <div
+                  style={{
+                    fontSize: 7,
+                    color: "rgba(255,255,255,0.3)",
+                    textAlign: "center",
+                    padding: "0 12px",
+                  }}
+                >
+                  Version mobile bientôt disponible
+                </div>
+              </div>
+              {/* Home indicator */}
+              <div
+                style={{
+                  width: 40,
+                  height: 3,
+                  background: "#333",
+                  borderRadius: 10,
+                  margin: "8px auto 0",
+                }}
+              />
+            </div>
           </div>
-          <div style={{ fontSize: 13, color: "#aaa", fontWeight: 500 }}>
-            © 2024 Motionr. Tous droits réservés.
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer
+        style={{
+          background: "#0a0a0a",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "40px 60px",
+        }}
+      >
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Top footer */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 40,
+            }}
+          >
+            {/* Logo + desc */}
+            <div style={{ maxWidth: 260 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 7,
+                    background: "#10B981",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    fontWeight: 900,
+                    color: "#fff",
+                  }}
+                >
+                  M
+                </div>
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#fff", letterSpacing: "-0.04em" }}>
+                  Motionr
+                </span>
+              </div>
+              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", lineHeight: 1.6 }}>
+                L&apos;IA qui transforme tes mots en vidéos motion design professionnelles.
+              </p>
+            </div>
+
+            {/* Liens */}
+            <div style={{ display: "flex", gap: 60 }}>
+              <div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,0.3)",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    marginBottom: 14,
+                  }}
+                >
+                  Produit
+                </div>
+                {["Fonctionnalités", "Tarifs", "FAQ", "Dashboard"].map((l) => (
+                  <div key={l} style={{ marginBottom: 10 }}>
+                    <a href="#" style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                      {l}
+                    </a>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "rgba(255,255,255,0.3)",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    marginBottom: 14,
+                  }}
+                >
+                  Légal
+                </div>
+                {[
+                  { label: "Confidentialité", href: "/privacy" },
+                  { label: "CGU", href: "/terms" },
+                  { label: "Mentions légales", href: "/mentions" },
+                ].map((l) => (
+                  <div key={l.label} style={{ marginBottom: 10 }}>
+                    <a
+                      href={l.href}
+                      style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "none" }}
+                    >
+                      {l.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom footer */}
+          <div
+            style={{
+              borderTop: "1px solid rgba(255,255,255,0.06)",
+              paddingTop: 24,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)" }}>
+              © 2024 Motionr. Tous droits réservés.
+            </div>
+            <div style={{ display: "flex", gap: 20 }}>
+              {["Instagram", "Twitter / X", "LinkedIn"].map((s) => (
+                <a key={s} href="#" style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", textDecoration: "none" }}>
+                  {s}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </footer>
