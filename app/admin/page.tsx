@@ -70,7 +70,7 @@ export default function AdminPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#fafafa",
+          background: colors.bg,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -78,7 +78,7 @@ export default function AdminPage() {
           textAlign: "center",
         }}
       >
-        <p style={{ fontSize: 14, color: "#888", maxWidth: 400 }}>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", maxWidth: 400 }}>
           Configure <code>NEXT_PUBLIC_ADMIN_EMAIL</code> et <code>ADMIN_USER_ID</code> dans
           Vercel pour activer l&apos;admin.
         </p>
@@ -91,6 +91,12 @@ export default function AdminPage() {
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
       <Sidebar active="account" />
       <div style={{ flex: 1, maxWidth: 1060, padding: "32px 40px" }}>
+        <a
+          href="/dashboard"
+          style={{ display: "inline-flex", marginBottom: 14, color: colors.textMuted, textDecoration: "none", fontSize: 13 }}
+        >
+          ← Dashboard
+        </a>
         <h1
           style={{
             fontSize: 28,

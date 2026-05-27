@@ -10,7 +10,7 @@ type SidebarProps = {
 
 const ITEMS: Array<{ key: SidebarProps["active"]; icon: string; label: string; href: string }> = [
   { key: "create", icon: "✏️", label: "Creer", href: "/dashboard" },
-  { key: "history", icon: "🎬", label: "Historique", href: "/history" },
+  { key: "history", icon: "🎬", label: "Historique", href: "/dashboard" },
   { key: "account", icon: "⚙️", label: "Compte", href: "/account" },
 ];
 
@@ -32,7 +32,8 @@ export function Sidebar({ active, credits }: SidebarProps) {
         zIndex: 70,
       }}
     >
-      <div
+      <a
+        href="/dashboard"
         style={{
           width: 28,
           height: 28,
@@ -46,10 +47,11 @@ export function Sidebar({ active, credits }: SidebarProps) {
           color: "#fff",
           marginBottom: 18,
           boxShadow: "0 4px 14px rgba(16,185,129,0.4)",
+          textDecoration: "none",
         }}
       >
         M
-      </div>
+      </a>
 
       {ITEMS.map((item) => {
         const isActive = item.key === active;
@@ -94,6 +96,10 @@ export function Sidebar({ active, credits }: SidebarProps) {
           {credits?.videos_remaining ?? 0}/{credits?.videos_limit ?? 0}
           <br />
           credits
+          <br />
+          <a href="/pricing" style={{ color: "#10B981", textDecoration: "none", fontWeight: 700 }}>
+            Upgrader →
+          </a>
         </div>
         <UserButton afterSignOutUrl="/login" />
       </div>

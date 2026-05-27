@@ -1,12 +1,13 @@
 "use client";
 
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useClerk, useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { colors } from "@/lib/colors";
 import { Sidebar } from "@/components/Sidebar";
 
 export default function AccountPage() {
   const { user } = useUser();
+  const { openUserProfile } = useClerk();
   const [credits, setCredits] = useState<{
     plan?: string;
     planName?: string;
@@ -52,6 +53,18 @@ export default function AccountPage() {
     <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", display: "flex" }}>
       <Sidebar active="account" credits={credits} />
       <div style={{ flex: 1, padding: "32px 40px", maxWidth: 860 }}>
+        <a
+          href="/dashboard"
+          style={{
+            display: "inline-flex",
+            marginBottom: 14,
+            color: colors.textMuted,
+            textDecoration: "none",
+            fontSize: 13,
+          }}
+        >
+          ← Dashboard
+        </a>
         <h1
           style={{
             fontSize: 28,
@@ -115,8 +128,9 @@ export default function AccountPage() {
               </div>
             </div>
             <div style={{ marginLeft: "auto" }}>
-              <a
-                href="/account/profile"
+              <button
+                type="button"
+                onClick={() => openUserProfile()}
                 style={{
                   padding: "8px 16px",
                   background: "transparent",
@@ -125,11 +139,11 @@ export default function AccountPage() {
                   fontSize: 12,
                   fontWeight: 600,
                   color: "rgba(255,255,255,0.75)",
-                  textDecoration: "none",
+                  cursor: "pointer",
                 }}
               >
                 Modifier
-              </a>
+              </button>
             </div>
           </div>
         </div>

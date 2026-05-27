@@ -73,6 +73,15 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleCheckout = async (planId: string) => {
+    if (!isSignedIn) {
+      if (planId === "free") {
+        window.location.href = "/signup";
+        return;
+      }
+      window.location.href = `/signup?plan=${planId}`;
+      return;
+    }
+
     if (planId === "free") {
       window.location.href = "/signup";
       return;

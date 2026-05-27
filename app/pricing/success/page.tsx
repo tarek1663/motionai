@@ -1,4 +1,16 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function SuccessPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => router.push("/dashboard"), 5000);
+    return () => clearTimeout(timer);
+  }, [router]);
+
   return (
     <div
       style={{
@@ -12,38 +24,33 @@ export default function SuccessPage() {
         padding: 40,
       }}
     >
-      <div
-        style={{
-          background: "#161616",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 20,
-          padding: "36px 32px",
-          maxWidth: 520,
-          textAlign: "center",
-        }}
-      >
+      <div style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "36px 32px", maxWidth: 520, textAlign: "center" }}>
       <div style={{ fontSize: 64 }}>🎉</div>
-      <h1 style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.04em" }}>
-        Paiement réussi !
+      <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em" }}>
+        Bienvenue sur Motionr !
       </h1>
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 16, maxWidth: 400, margin: "12px auto 24px" }}>
-        Ton abonnement est actif. Tu peux maintenant générer des vidéos sans limite.
+      <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 15, textAlign: "center", maxWidth: 400, margin: "12px auto 24px" }}>
+        Ton abonnement est actif. Tu vas être redirigé vers le dashboard dans quelques secondes.
       </p>
-      <a
-        href="/dashboard"
+      <button
+        onClick={() => router.push("/dashboard")}
         style={{
-          display: "inline-block",
+          border: "none",
           padding: "14px 32px",
           background: "#10B981",
           color: "#fff",
           borderRadius: 10,
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: 700,
-          textDecoration: "none",
+          cursor: "pointer",
+          fontFamily: "inherit",
         }}
       >
         Aller au dashboard →
-      </a>
+      </button>
+      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 12 }}>
+        Redirection automatique dans 5 secondes...
+      </p>
       </div>
     </div>
   );

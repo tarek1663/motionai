@@ -99,9 +99,9 @@ export default function LandingPage() {
 
   const handleGenerate = () => {
     if (prompt.trim()) {
-      router.push(`/signup?prompt=${encodeURIComponent(prompt)}`);
+      router.push(`/login?prompt=${encodeURIComponent(prompt)}`);
     } else {
-      router.push("/signup");
+      router.push("/login");
     }
   };
 
@@ -727,7 +727,7 @@ export default function LandingPage() {
           </div>
 
           {[
-            { label: "Tarifs", href: "#pricing" },
+            { label: "Tarifs", href: "/pricing" },
             { label: "FAQ", href: "#faq" },
           ].map((item) => (
             <a
@@ -2463,7 +2463,7 @@ export default function LandingPage() {
                 <div style={{ ...featureTagStyle, marginBottom: 14 }}>Produit</div>
                 {[
                   { label: "Fonctionnalités", href: "#features" },
-                  { label: "Tarifs", href: "#pricing" },
+                  { label: "Tarifs", href: "/pricing" },
                   { label: "FAQ", href: "#faq" },
                   { label: "Dashboard", href: "/dashboard" },
                 ].map((l) => (
