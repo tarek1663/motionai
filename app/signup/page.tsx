@@ -11,7 +11,12 @@ export default function SignupPage() {
         justifyContent: "center",
       }}
     >
-      <SignUp routing="hash" signInUrl="/login" afterSignUpUrl="/dashboard" />
+      <SignUp
+        routing="hash"
+        signInUrl="/login"
+        afterSignUpUrl="/onboarding"
+        redirectUrl="/onboarding"
+      />
     </div>
   );
 }
