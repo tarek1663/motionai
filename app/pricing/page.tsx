@@ -1,104 +1,63 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { colors } from "@/lib/colors";
+import { useEffect, useState } from "react";
 
-const accent = colors.accent;
-
-const PLANS = [
-  {
-    id: "free",
-    name: "Gratuit",
-    monthly: 0,
-    yearly: 0,
-    videos: 3,
-    duration: "30s max",
-    features: ["3 vidéos / mois", "30 secondes max", "1080p", "Filigrane MotionAI"],
-    cta: "Commencer gratuit",
-    highlight: false,
-  },
-  {
-    id: "starter",
-    name: "Starter",
-    monthly: 23,
-    yearly: 13,
-    videos: 60,
-    duration: "60s max",
-    features: ["60 vidéos / mois", "60 secondes max", "1080p", "Sans filigrane", "Toutes les voix"],
-    cta: "Choisir Starter",
-    highlight: false,
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    monthly: 45,
-    yearly: 35,
-    videos: 150,
-    duration: "2min max",
-    features: [
-      "150 vidéos / mois",
-      "2 minutes max",
-      "1080p",
-      "Sans filigrane",
-      "Toutes les voix",
-      "Priorité de rendu",
-    ],
-    cta: "Choisir Pro",
-    highlight: true,
-  },
-  {
-    id: "business",
-    name: "Business",
-    monthly: 120,
-    yearly: 99,
-    videos: 999,
-    duration: "2min max",
-    features: [
-      "Illimité",
-      "2 minutes max",
-      "1080p",
-      "Sans filigrane",
-      "Priorité maximale",
-      "Support dédié",
-    ],
-    cta: "Choisir Business",
-    highlight: false,
-  },
-];
+const accent = "#10B981";
 
 export default function PricingPage() {
-  const { isSignedIn } = useUser();
-  const [billing, setBilling] = useState<"yearly" | "monthly">("yearly");
-  const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
+  const { user } = useUser();
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [currentPlan, setCurrentPlan] = useState<string>("free");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/credits")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.plan) setCurrentPlan(d.plan);
-      })
-      .catch(() => {
-        // ignore
-      });
-  }, []);
-
-  const handleCheckout = async (planId: string) => {
-    if (!isSignedIn) {
-      if (planId === "free") {
-        window.location.href = "/signup";
-        return;
-      }
-      window.location.href = `/signup?plan=${planId}`;
-      return;
+    if (user) {
+      fetch("/api/credits").then((r) => r.json()).then((d) => setCurrentPlan(d.plan || "free"));
     }
+  }, [user]);
 
-    if (planId === "free") {
-      window.location.href = "/signup";
-      return;
-    }
-    setLoading(planId);
+  const plans = [
+    {
+      id: "free", name: "Gratuit",
+      price: { monthly: 0, yearly: 0 },
+      videos: "3 vidéos/mois",
+      features: ["3 vidéos par mois", "Qualité 1080p", "72+ animations", "Filigrane Motionr"],
+      cta: "Commencer gratuitement",
+    },
+    {
+      id: "starter", name: "Starter",
+      price: { monthly: 23, yearly: 13 },
+      videos: "60 vidéos/mois",
+      features: ["60 vidéos par mois", "Qualité 1080p", "72+ animations", "Sans filigrane", "Essai 4 jours gratuit"],
+      cta: "Essayer 4 jours gratuit",
+    },
+    {
+      id: "pro", name: "Pro",
+      price: { monthly: 45, yearly: 35 },
+      videos: "150 vidéos/mois",
+      features: ["150 vidéos par mois", "Qualité 1080p", "72+ animations", "Sans filigrane", "Priorité rendu", "Essai 4 jours gratuit"],
+      cta: "Essayer 4 jours gratuit",
+      popular: true,
+    },
+    {
+      id: "business", name: "Business",
+      price: { monthly: 120, yearly: 99 },
+      videos: "Illimité",
+      features: ["Vidéos illimitées", "Qualité 1080p", "72+ animations", "Sans filigrane", "Rendu prioritaire", "Support dédié"],
+      cta: "Contacter les ventes",
+    },
+  ];
+
+  const planOrder = ["free", "starter", "pro", "business"];
+
+  const handlePlan = async (planId: string) => {
+    if (planId === currentPlan) return;
+    if (!user) { router.push(`/signup?plan=${planId}`); return; }
+    if (planId === "free") return;
+
+    setLoading(true);
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
@@ -107,300 +66,140 @@ export default function PricingPage() {
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
-      else if (data.error) console.error(data.error);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(null);
-    }
+    } catch {}
+    finally { setLoading(false); }
   };
 
   return (
-    <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", color: colors.text }}>
-      <nav
-        style={{
-          padding: "0 48px",
-          height: 60,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          position: "fixed",
-          top: 44,
-          left: 0,
-          right: 0,
-          background: "rgba(10,10,10,0.86)",
-          backdropFilter: "blur(20px)",
-          zIndex: 90,
-        }}
-      >
-        <a
-          href="/"
-          style={{
-            fontSize: 17,
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
-            textDecoration: "none",
-            color: colors.text,
-          }}
-        >
-          Motion<span style={{ color: accent }}>r</span>
-        </a>
-        <a
-          href={isSignedIn ? "/dashboard" : "/login"}
-          style={{
-            fontSize: 13,
-            color: colors.textMuted,
-            textDecoration: "none",
-            fontWeight: 500,
-          }}
-        >
-          {isSignedIn ? "Dashboard →" : "Connexion"}
-        </a>
-      </nav>
+    <div style={{
+      minHeight: "100vh", background: "#0a0a0a",
+      fontFamily: "inherit", color: "#fff",
+    }}>
+      <div style={{
+        padding: "20px 40px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+          onClick={() => router.push("/")}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 7, background: accent,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 13, fontWeight: 900, color: "#fff",
+          }}>M</div>
+          <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.04em" }}>Motionr</span>
+        </div>
+        <button onClick={() => router.push(user ? "/dashboard" : "/login")} style={{
+          background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 8, padding: "8px 16px", fontSize: 13,
+          color: "rgba(255,255,255,0.7)", cursor: "pointer", fontFamily: "inherit",
+        }}>
+          {user ? "← Dashboard" : "Connexion"}
+        </button>
+      </div>
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "132px 40px 60px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "80px 40px" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <h1
-            style={{
-              fontSize: 48,
-              fontWeight: 900,
-              letterSpacing: "-0.05em",
-              marginBottom: 12,
-              lineHeight: 1,
-            }}
-          >
-            Tarifs simples.
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: accent,
+            letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12,
+          }}>Tarifs</div>
+          <h1 style={{
+            fontSize: 52, fontWeight: 900, letterSpacing: "-0.04em",
+            lineHeight: 1.05, marginBottom: 24,
+          }}>
+            Simple et transparent.
           </h1>
-          <p style={{ fontSize: 16, color: colors.textMuted, marginBottom: 32 }}>
-            Sans engagement. Annule quand tu veux.
-          </p>
 
-          <div
-            style={{
-              display: "inline-flex",
-              background: "#111111",
-              borderRadius: 12,
-              padding: 4,
-              gap: 4,
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setBilling("yearly")}
-              style={{
-                padding: "8px 20px",
-                borderRadius: 9,
-                border: "none",
-                background: billing === "yearly" ? "#161616" : "transparent",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-                color: billing === "yearly" ? colors.text : colors.textMuted,
-                boxShadow:
-                  billing === "yearly" ? "0 1px 8px rgba(0,0,0,0.3)" : "none",
-                transition: "all 0.2s",
-              }}
-            >
-              Annuel
-              <span
-                style={{
-                  marginLeft: 6,
-                  fontSize: 10,
-                  fontWeight: 800,
-                  background: accent,
-                  color: "#fff",
-                  padding: "2px 6px",
-                  borderRadius: 100,
-                }}
-              >
-                -40%
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setBilling("monthly")}
-              style={{
-                padding: "8px 20px",
-                borderRadius: 9,
-                border: "none",
-                background: billing === "monthly" ? "#161616" : "transparent",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-                color: billing === "monthly" ? colors.text : colors.textMuted,
-                boxShadow:
-                  billing === "monthly" ? "0 1px 8px rgba(0,0,0,0.3)" : "none",
-                transition: "all 0.2s",
-              }}
-            >
-              Mensuel
-            </button>
+          <div style={{
+            display: "inline-flex", background: "rgba(255,255,255,0.04)",
+            borderRadius: 10, padding: 4, gap: 4,
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}>
+            {(["monthly", "yearly"] as const).map((b) => (
+              <button key={b} onClick={() => setBilling(b)} style={{
+                padding: "8px 20px", borderRadius: 8, border: "none",
+                background: billing === b ? "rgba(255,255,255,0.1)" : "transparent",
+                fontWeight: 600, fontSize: 13, cursor: "pointer",
+                color: billing === b ? "#fff" : "rgba(255,255,255,0.4)",
+                fontFamily: "inherit",
+              }}>
+                {b === "monthly" ? "Mensuel" : "Annuel -40%"}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 12,
-          }}
-        >
-          {PLANS.map((plan) => (
-            (() => {
-              const order = ["free", "starter", "pro", "business"];
-              const isCurrentPlan = plan.id === currentPlan;
-              const isDowngrade =
-                order.indexOf(plan.id) < order.indexOf(currentPlan);
-              const disabled = isCurrentPlan || isDowngrade || loading === plan.id;
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+          {plans.map((plan) => {
+            const isCurrent = plan.id === currentPlan;
+            const isDowngrade = planOrder.indexOf(plan.id) < planOrder.indexOf(currentPlan);
+            const isDisabled = isCurrent || isDowngrade;
 
-              return (
-            <div
-              key={plan.id}
-              style={{
-                padding: "24px",
-                borderRadius: 20,
-                background: "#161616",
-                border: plan.highlight ? "1px solid rgba(16,185,129,0.48)" : "1px solid rgba(255,255,255,0.08)",
-                color: "#ffffff",
-                position: "relative",
-                boxShadow: plan.highlight
-                  ? "0 0 24px rgba(16,185,129,0.24), 0 16px 48px rgba(0,0,0,0.4)"
-                  : "0 12px 30px rgba(0,0,0,0.28)",
-              }}
-            >
-              {plan.highlight && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -11,
-                    left: "50%",
+            return (
+              <div key={plan.id} style={{
+                borderRadius: 20, padding: "28px",
+                background: plan.popular ? accent : "#161616",
+                border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.08)",
+                color: "#fff", position: "relative",
+                boxShadow: plan.popular ? `0 20px 60px ${accent}44` : "none",
+                transition: "transform 0.2s",
+              }}>
+                {plan.popular && (
+                  <div style={{
+                    position: "absolute", top: -12, left: "50%",
                     transform: "translateX(-50%)",
-                    padding: "3px 14px",
-                    background: accent,
-                    borderRadius: 100,
-                    fontSize: 10,
-                    fontWeight: 800,
-                    color: "#fff",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  ✦ POPULAIRE
-                </div>
-              )}
-
-              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4 }}>{plan.name}</div>
-              <div
-                style={{
-                  fontSize: 11,
-                  marginBottom: 20,
-                color: colors.textMuted,
-                }}
-              >
-                {plan.videos === 999 ? "Illimité" : `${plan.videos} vidéos/mois`}
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <span
-                  style={{
-                    fontSize: 44,
-                    fontWeight: 900,
-                    letterSpacing: "-0.04em",
-                  }}
-                >
-                  {billing === "yearly" ? plan.yearly : plan.monthly}€
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    marginLeft: 4,
-                    color: colors.textMuted,
-                  }}
-                >
-                  /mois
-                </span>
-                {billing === "yearly" && plan.id !== "free" && (
-                  <div
-                    style={{
-                      fontSize: 10,
-                      marginTop: 2,
-                      color: colors.textMuted,
-                    }}
-                  >
-                    Facturé {plan.yearly * 12}€/an
-                  </div>
+                    background: "#ffd60a", color: "#0a0a0a",
+                    borderRadius: 100, padding: "4px 14px",
+                    fontSize: 11, fontWeight: 800, whiteSpace: "nowrap",
+                  }}>⭐ POPULAIRE</div>
                 )}
+                {isCurrent && (
+                  <div style={{
+                    position: "absolute", top: -12, left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "rgba(255,255,255,0.1)",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    color: "#fff", borderRadius: 100,
+                    padding: "4px 14px", fontSize: 11,
+                    fontWeight: 700, whiteSpace: "nowrap",
+                  }}>✓ Plan actuel</div>
+                )}
+
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{plan.name}</div>
+                <div style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 4 }}>
+                  {plan.price[billing] === 0 ? "0€" : `${plan.price[billing]}€`}
+                  <span style={{ fontSize: 14, opacity: 0.6 }}>/mois</span>
+                </div>
+                <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 24 }}>{plan.videos}</div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 28 }}>
+                  {plan.features.map((f, j) => (
+                    <div key={j} style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ color: plan.popular ? "#fff" : accent }}>✓</span>{f}
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  disabled={isDisabled || loading}
+                  onClick={() => handlePlan(plan.id)}
+                  style={{
+                    display: "block", width: "100%",
+                    textAlign: "center", padding: "12px",
+                    borderRadius: 10, border: "none",
+                    background: isDisabled ? "rgba(255,255,255,0.1)" : plan.popular ? "#fff" : accent,
+                    color: isDisabled ? "rgba(255,255,255,0.3)" : plan.popular ? accent : "#fff",
+                    fontWeight: 700, fontSize: 14,
+                    cursor: isDisabled ? "not-allowed" : "pointer",
+                    fontFamily: "inherit", opacity: isDisabled ? 0.5 : 1,
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {isCurrent ? "Plan actuel ✓" : isDowngrade ? "Non disponible" : plan.cta}
+                </button>
               </div>
-
-              <div style={{ marginBottom: 24 }}>
-                {plan.features.map((f) => (
-                  <div
-                    key={f}
-                    style={{
-                      fontSize: 12,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 7,
-                      marginBottom: 7,
-                      color: "rgba(255,255,255,0.88)",
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: accent,
-                        flexShrink: 0,
-                      }}
-                    >
-                      ✓
-                    </span>
-                    {f}
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleCheckout(plan.id)}
-                disabled={disabled}
-                style={{
-                  width: "100%",
-                  padding: "11px",
-                  background: accent,
-                  color: "#ffffff",
-                  borderRadius: 10,
-                  fontSize: 13,
-                  fontWeight: 700,
-                  border: "none",
-                  cursor: disabled ? "not-allowed" : "pointer",
-                  boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
-                  opacity: disabled ? 0.4 : 1,
-                  transition: "all 0.2s",
-                }}
-              >
-                {loading === plan.id
-                  ? "..."
-                  : isCurrentPlan
-                    ? "Plan actuel ✓"
-                    : isDowngrade
-                      ? "Non disponible"
-                      : plan.cta}
-              </button>
-            </div>
-              );
-            })()
-          ))}
-        </div>
-
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: 48,
-            color: colors.textMuted,
-            fontSize: 13,
-          }}
-        >
-          Sans carte bancaire pour le plan gratuit · Annulation en 1 clic · Support par email
+            );
+          })}
         </div>
       </div>
     </div>
