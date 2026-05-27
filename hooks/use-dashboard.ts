@@ -13,7 +13,6 @@ import { generateFromPrompt, generateFromScreenshot, generateFromScript } from "
 import type {
   DashboardScreen,
   DashboardVideo,
-  InputTab,
   QualityMode,
   ScriptMode,
 } from "@/lib/dashboard/types";
@@ -38,8 +37,6 @@ export function useDashboard() {
   const [videoUrl, setVideoUrl] = useState("");
   const [error, setError] = useState("");
   const [formatDetected, setFormatDetected] = useState("");
-  const [activeTab, setActiveTab] = useState<InputTab>("prompt");
-
   const [showDurationMenu, setShowDurationMenu] = useState(false);
   const [showFormatMenu, setShowFormatMenu] = useState(false);
   const [showVoices, setShowVoices] = useState(false);
@@ -52,7 +49,6 @@ export function useDashboard() {
 
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState("");
-  const [screenshotIntent, setScreenshotIntent] = useState("");
   const [screenshotLoading, setScreenshotLoading] = useState(false);
 
   const [videos, setVideos] = useState<DashboardVideo[]>([]);
@@ -139,6 +135,9 @@ export function useDashboard() {
     setQuestions([]);
     setAnswers({});
     setOtherDetails({});
+    setScreenshotFile(null);
+    setScreenshotPreview("");
+    setScreenshotLoading(false);
   }, []);
 
   const generatePrompt = useCallback(
@@ -186,6 +185,27 @@ export function useDashboard() {
   }, [prompt, generatePrompt]);
 
   const submit = useCallback(async () => {
+    if (screenshotFile) {
+      if (!prompt.trim()) return;
+      setScreenshotLoading(true);
+      try {
+        await generateFromScreenshot({
+          file: screenshotFile,
+          intent: prompt.trim(),
+          duration,
+          format,
+          quality,
+          selectedVoiceId,
+          musicEnabled,
+          pollRef,
+          ...generationCallbacks,
+        });
+      } finally {
+        setScreenshotLoading(false);
+      }
+      return;
+    }
+
     if (mode === "ai") {
       if (!prompt.trim()) return;
       await fetchQuestions();
@@ -207,6 +227,7 @@ export function useDashboard() {
   }, [
     mode,
     prompt,
+    screenshotFile,
     customScript,
     duration,
     format,
@@ -228,35 +249,6 @@ export function useDashboard() {
     setScreenshotFile(null);
     setScreenshotPreview("");
   }, []);
-
-  const submitScreenshot = useCallback(async () => {
-    if (!screenshotFile || !screenshotIntent.trim()) return;
-    setScreenshotLoading(true);
-    try {
-      await generateFromScreenshot({
-        file: screenshotFile,
-        intent: screenshotIntent,
-        duration,
-        format,
-        quality,
-        selectedVoiceId,
-        musicEnabled,
-        pollRef,
-        ...generationCallbacks,
-      });
-    } finally {
-      setScreenshotLoading(false);
-    }
-  }, [
-    screenshotFile,
-    screenshotIntent,
-    duration,
-    format,
-    quality,
-    selectedVoiceId,
-    musicEnabled,
-    loadVideos,
-  ]);
 
   const finishQuestions = useCallback(() => {
     const enriched = buildEnrichedPrompt(prompt, questions, answers, otherDetails);
@@ -326,8 +318,6 @@ export function useDashboard() {
     videoUrl,
     error,
     formatDetected,
-    activeTab,
-    setActiveTab,
     showDurationMenu,
     setShowDurationMenu,
     showFormatMenu,
@@ -341,8 +331,6 @@ export function useDashboard() {
     setCurrentQ,
     loadingQ,
     screenshotPreview,
-    screenshotIntent,
-    setScreenshotIntent,
     screenshotLoading,
     handleScreenshotFile,
     clearScreenshot,
@@ -355,7 +343,6 @@ export function useDashboard() {
     resetCreation,
     submit,
     fetchQuestions,
-    submitScreenshot,
     finishQuestions,
     skipQuestions,
     selectAnswer,

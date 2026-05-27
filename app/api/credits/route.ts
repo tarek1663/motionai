@@ -52,14 +52,19 @@ export async function GET() {
       business: "Business",
     };
 
+    const plan = sub?.plan || "free";
+    const hasActiveSubscription = Boolean(sub?.stripe_subscription_id);
+
     return NextResponse.json({
-      plan: sub?.plan || "free",
-      planName: planNames[sub?.plan || "free"],
+      plan,
+      planName: planNames[plan],
       videos_used: sub?.videos_used || 0,
       videos_limit: sub?.videos_limit || 3,
       videos_remaining: Math.max(0, (sub?.videos_limit || 3) - (sub?.videos_used || 0)),
       reset_date: sub?.reset_date,
       period_end: sub?.period_end,
+      has_active_subscription: hasActiveSubscription,
+      eligible_for_trial_offer: plan === "free" && !hasActiveSubscription,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur crédits";

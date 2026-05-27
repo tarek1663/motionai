@@ -4,25 +4,11 @@ import {
   Building2,
   Film,
   GraduationCap,
-  Image as ImageIcon,
   Newspaper,
-  Pencil,
   Rocket,
   Smartphone,
   Zap,
 } from "lucide-react";
-import { copy } from "@/lib/dashboard/copy";
-import type { InputTab } from "@/lib/dashboard/types";
-
-export const INPUT_TABS: {
-  id: InputTab;
-  Icon: LucideIcon;
-  label: string;
-  hint: string;
-}[] = [
-  { id: "prompt", Icon: Pencil, label: copy.tabPrompt, hint: copy.tabPromptHint },
-  { id: "screenshot", Icon: ImageIcon, label: copy.tabImage, hint: copy.tabImageHint },
-];
 
 export const PROMPT_SUGGESTIONS: { Icon: LucideIcon; label: string }[] = [
   { Icon: Rocket, label: "Produit & Démo" },

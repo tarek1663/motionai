@@ -42,7 +42,7 @@ export function DashboardViewingScreen({ video, onBack, onRegenerate }: Props) {
             overflow: "hidden",
             border: "1.5px solid #e8e8e8",
             boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-            background: "#0a0a0a",
+            background: "#f3f2f0",
           }}
         >
           <video

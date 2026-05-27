@@ -1,21 +1,16 @@
-/** Micro-copy dashboard — court et orientant */
+/** Micro-copy dashboard — aligné landing Motionr */
 export const copy = {
-  heroTitle: "Nouvelle vidéo",
-  heroHint: "Décris ton idée ou importe une capture. On s’occupe du reste.",
+  heroTitle: "Crée ta prochaine vidéo",
+  heroHint: "Décris ton idée ou ajoute une image depuis le bloc ci-dessous.",
 
-  tabPrompt: "Prompt",
-  tabPromptHint: "Texte libre",
-  tabImage: "Image",
-  tabImageHint: "Interface, landing…",
-
-  promptPlaceholder: "Ex. Présente Spotify en 30 secondes…",
-  promptHelper: "Entrée pour lancer · réglages en bas",
+  promptPlaceholder: "Décris ta vidéo — ex. Présente Spotify en 30 secondes…",
+  promptPlaceholderImage: "Que doit montrer la vidéo à partir de cette image ?",
+  promptHelper: "Entrée pour lancer",
   suggestionsLabel: "Suggestions",
 
-  uploadLabel: "Importer une capture",
-  uploadHint: "PNG ou JPG",
-  screenshotPlaceholder: "Que doit montrer la vidéo ?",
-  screenshotSubmit: "Générer",
+  attachImage: "Image",
+  attachImageHint: "PNG, JPG",
+  removeImage: "Retirer l’image",
 
   voicesLabel: "Voix",
   voicesPreviewHint: "▶ pour écouter un aperçu",
@@ -32,8 +27,8 @@ export const copy = {
   newVideo: "Nouvelle",
 
   sidebarNew: "Nouvelle vidéo",
-  sidebarRecent: "Récentes",
-  sidebarEmpty: "Tes vidéos apparaîtront ici",
+  sidebarRecent: "Vidéos récentes",
+  sidebarEmpty: "Aucune vidéo pour l’instant",
   settings: "Paramètres",
 
   back: "Retour",

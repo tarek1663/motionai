@@ -8,6 +8,8 @@ export type CreditsInfo = {
   videos_remaining: number;
   reset_date?: string;
   period_end?: string;
+  has_active_subscription?: boolean;
+  eligible_for_trial_offer?: boolean;
 };
 
 export async function fetchCredits(): Promise<CreditsInfo | null> {

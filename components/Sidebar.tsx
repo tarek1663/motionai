@@ -83,12 +83,12 @@ export function Sidebar({ active, credits }: SidebarProps) {
       <div style={{ marginTop: "auto", width: "100%", padding: "0 8px", textAlign: "center" }}>
         <div
           style={{
-            background: "#161616",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 12,
+            background: "#fff",
+            border: "1px solid #ebeae8",
+            borderRadius: 10,
             padding: "8px 4px",
             fontSize: 10,
-            color: "rgba(255,255,255,0.65)",
+            color: "#a39e98",
             marginBottom: 8,
             lineHeight: 1.4,
           }}

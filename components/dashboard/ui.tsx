@@ -9,17 +9,17 @@ export const CREATE_LAYOUT_CLASS =
 
 /** Carte principale — fond léger, sans bloc blanc massif */
 export const CREATE_CARD =
-  "rounded-[18px] border border-black/[0.04] bg-[#f5f5f7]/80 overflow-visible";
+  "rounded-[22px] border border-[#ebeae8] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_40px_rgba(15,23,42,0.05)] overflow-visible";
 
 /** Padding intérieur carte — profil plat */
 export const CREATE_CARD_BODY = "px-8 sm:px-10 py-5 sm:py-6";
 
 /** Surface secondaire — léger relief */
-export const CREATE_SURFACE = "rounded-[14px] bg-white/55 border border-black/[0.03]";
+export const CREATE_SURFACE = "rounded-[14px] bg-[#f8f7f5] border border-[#ebeae8]";
 
 /** Carte modale / état (génération, succès) */
 export const STATUS_CARD =
-  "rounded-[20px] border border-black/[0.04] bg-[#f5f5f7]/90 px-10 py-12";
+  "rounded-[22px] border border-[#ebeae8] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_16px_48px_rgba(15,23,42,0.06)] px-10 py-12";
 
 export function SectionLabel({
   children,
@@ -31,7 +31,7 @@ export function SectionLabel({
   return (
     <p
       className={cn(
-        "text-[13px] font-medium text-[#86868b] text-center",
+        "text-[12px] font-medium tracking-wide text-[#a39e98] text-center uppercase",
         className
       )}
     >
@@ -62,9 +62,9 @@ export function DashboardToolbarButton({
         onClick();
       }}
       className={cn(
-        "inline-flex items-center gap-2 h-10 px-4 rounded-full text-[14px] text-[#1d1d1f]",
-        "bg-white/70 transition-colors cursor-pointer select-none",
-        active ? "bg-white/90 shadow-[0_1px_2px_rgba(0,0,0,0.05)]" : "opacity-90 hover:bg-white/80",
+        "inline-flex items-center gap-2 h-9 px-3.5 rounded-[10px] text-[13px] text-[#12110f]",
+        "bg-[#f3f2f0] transition-all cursor-pointer select-none",
+        active ? "bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] ring-1 ring-[#ebeae8]" : "hover:bg-[#ebeae8]/60",
         className
       )}
     >
@@ -90,10 +90,10 @@ export function DashboardPrimaryButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "w-full h-11 rounded-full text-[15px] font-medium transition-colors",
+        "w-full h-11 rounded-[11px] text-[14px] font-semibold transition-all",
         disabled
-          ? "bg-[#e8e8ed] text-[#86868b] cursor-not-allowed"
-          : "bg-[#1d1d1f] text-white hover:bg-black active:scale-[0.99]",
+          ? "bg-[#ebeae8] text-[#a39e98] cursor-not-allowed"
+          : "bg-[#12110f] text-white hover:bg-[#0a0908] shadow-[0_1px_2px_rgba(15,23,42,0.08)] active:scale-[0.995]",
         className
       )}
     >

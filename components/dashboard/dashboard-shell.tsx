@@ -99,8 +99,8 @@ export function DashboardShell(state: UseDashboardReturn) {
             position: "fixed",
             inset: 0,
             zIndex: 1000,
-            background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(8px)",
+            background: "rgba(18,17,15,0.32)",
+            backdropFilter: "blur(12px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -110,30 +110,29 @@ export function DashboardShell(state: UseDashboardReturn) {
         >
           <div
             style={{
-              background: "#161616",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 20,
-              padding: "40px",
-              maxWidth: 480,
+              background: "#fff",
+              border: "1px solid #ebeae8",
+              borderRadius: 22,
+              padding: "44px 40px",
+              maxWidth: 440,
               width: "100%",
-              boxShadow: "0 40px 100px rgba(0,0,0,0.3)",
+              boxShadow: "0 1px 2px rgba(15,23,42,0.04), 0 24px 64px rgba(15,23,42,0.1)",
               textAlign: "center",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🚀</div>
             <h2
               style={{
-                fontSize: 28,
-                fontWeight: 800,
-                color: "#ffffff",
-                letterSpacing: "-0.03em",
-                marginBottom: 8,
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#12110f",
+                letterSpacing: "-0.035em",
+                marginBottom: 10,
               }}
             >
               Limite atteinte
             </h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", marginBottom: 32, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: "#a39e98", marginBottom: 28, lineHeight: 1.55 }}>
               {upgradeReason}. Upgrade ton plan pour continuer à générer des vidéos.
             </p>
 
@@ -157,10 +156,10 @@ export function DashboardShell(state: UseDashboardReturn) {
                   }}
                   style={{
                     padding: "14px 20px",
-                    background: plan.popular ? accent : "rgba(255,255,255,0.04)",
-                    color: "#ffffff",
-                    border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 12,
+                    background: plan.popular ? accent : "#f8f7f5",
+                    color: plan.popular ? "#fff" : "#12110f",
+                    border: plan.popular ? "none" : "1px solid #ebeae8",
+                    borderRadius: 11,
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -187,10 +186,10 @@ export function DashboardShell(state: UseDashboardReturn) {
                 width: "100%",
                 padding: "12px",
                 background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)",
+                border: "1px solid #e8e8e8",
                 borderRadius: 10,
                 fontSize: 13,
-                color: "rgba(255,255,255,0.7)",
+                color: "#888",
                 cursor: "pointer",
               }}
             >

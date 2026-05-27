@@ -1,9 +1,58 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-export function GlobalAnnouncementBar() {
+type Props = {
+  onEligibleChange?: (visible: boolean) => void;
+};
+
+export function GlobalAnnouncementBar({ onEligibleChange }: Props) {
   const router = useRouter();
+  const { isLoaded, userId } = useAuth();
+  const [eligible, setEligible] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (!userId) {
+      setEligible(false);
+      setChecked(true);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/credits");
+        if (!res.ok) {
+          if (!cancelled) setEligible(false);
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) {
+          setEligible(Boolean(data.eligible_for_trial_offer));
+        }
+      } catch {
+        if (!cancelled) setEligible(false);
+      } finally {
+        if (!cancelled) setChecked(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoaded, userId]);
+
+  useEffect(() => {
+    onEligibleChange?.(eligible);
+  }, [eligible, onEligibleChange]);
+
+  if (!checked || !eligible) return null;
 
   const goToPricing = () => {
     router.push("/pricing");
