@@ -18,6 +18,8 @@ export default function AccountPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
+  const planOrder = ["free", "starter", "pro", "business"];
+  const currentPlanIdx = planOrder.indexOf(credits?.plan || "free");
 
   useEffect(() => {
     if (!user) return;
@@ -343,68 +345,65 @@ export default function AccountPage() {
                   price: "120€/mois",
                   videos: "Illimité",
                 },
-              ].map((plan) => (
-                (() => {
-                  const order = ["free", "starter", "pro", "business"];
-                  const currentPlan = credits?.plan || "free";
-                  const isCurrentPlan = plan.id === currentPlan;
-                  const isDowngrade =
-                    order.indexOf(plan.id) < order.indexOf(currentPlan);
-                  const disabled = isCurrentPlan || isDowngrade;
+              ].map((plan) => {
+                const planOrder = ["free", "starter", "pro", "business"];
+                const planIdx = planOrder.indexOf(plan.id);
+                const isCurrent = plan.id === credits?.plan;
+                const isDowngrade = planIdx < currentPlanIdx;
+                const isDisabled = isCurrent || isDowngrade;
 
-                  return (
-                    <button
-                      key={plan.id}
-                      type="button"
-                      disabled={disabled}
-                      onClick={async () => {
-                        if (disabled) return;
-                        const res = await fetch("/api/stripe/checkout", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ planId: plan.id, billing: "monthly" }),
-                        });
-                        const data = await res.json();
-                        if (data.url) window.location.href = data.url;
-                      }}
-                      style={{
-                        padding: "14px 18px",
-                        background: plan.popular ? colors.accent : "rgba(255,255,255,0.03)",
-                        color: "#fff",
-                        border: plan.popular ? "none" : "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: 12,
-                        cursor: disabled ? "not-allowed" : "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        boxShadow: plan.popular ? "0 8px 24px rgba(16,185,129,0.28)" : "none",
-                        opacity: disabled ? 0.4 : 1,
-                      }}
-                    >
-                      <div style={{ textAlign: "left" }}>
-                        <div style={{ fontSize: 14, fontWeight: 700 }}>
-                          {plan.popular ? "⭐ " : ""}
-                          {plan.name}
-                        </div>
-                        <div style={{ fontSize: 11, opacity: 0.7 }}>
-                          {plan.videos}
-                          {plan.trial ? ` · ${plan.trial}` : ""}
-                        </div>
+                return (
+                  <button
+                    key={plan.id}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={async () => {
+                      if (isDisabled) return;
+                      const res = await fetch("/api/stripe/checkout", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ planId: plan.id, billing: "monthly" }),
+                      });
+                      const data = await res.json();
+                      if (data.url) window.location.href = data.url;
+                    }}
+                    style={{
+                      padding: "14px 18px",
+                      background: isCurrent
+                        ? "rgba(255,255,255,0.04)"
+                        : plan.popular
+                          ? colors.accent
+                          : "rgba(255,255,255,0.06)",
+                      color: isCurrent || isDowngrade ? "rgba(255,255,255,0.25)" : "#fff",
+                      border: isCurrent
+                        ? "1px solid rgba(255,255,255,0.08)"
+                        : plan.popular
+                          ? "none"
+                          : "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 12, cursor: isDisabled ? "not-allowed" : "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      opacity: isDowngrade ? 0.4 : 1,
+                      fontFamily: "inherit",
+                      boxShadow: plan.popular && !isDisabled ? `0 4px 16px ${colors.accent}44` : "none",
+                    }}
+                  >
+                    <div style={{ textAlign: "left" }}>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>
+                        {isCurrent ? "✓ " : plan.popular ? "⭐ " : ""}
+                        {plan.name}
+                        {isCurrent ? " — Plan actuel" : ""}
                       </div>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: 15, fontWeight: 800 }}>{plan.price}</div>
-                        <div style={{ fontSize: 11, opacity: 0.8 }}>
-                          {isCurrentPlan
-                            ? "Plan actuel ✓"
-                            : isDowngrade
-                              ? "Non disponible"
-                              : "Choisir"}
-                        </div>
+                      <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>
+                        {plan.videos}
+                        {plan.trial && !isCurrent ? ` · ${plan.trial}` : ""}
                       </div>
                     </div>
-                  );
-                })()
-              ))}
+                    <div style={{ fontSize: 15, fontWeight: 800, opacity: isDisabled ? 0.3 : 1 }}>
+                      {plan.price}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

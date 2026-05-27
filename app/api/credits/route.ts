@@ -1,12 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabase";
-
-function nextResetDate(): string {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString();
-}
 
 export async function GET() {
   try {
@@ -27,7 +21,7 @@ export async function GET() {
           plan: "free",
           videos_used: 0,
           videos_limit: 3,
-          reset_date: nextResetDate(),
+          reset_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         })
         .select()
         .single();
@@ -39,7 +33,7 @@ export async function GET() {
         .from("subscriptions")
         .update({
           videos_used: 0,
-          reset_date: nextResetDate(),
+          reset_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         })
         .eq("user_id", userId);
       if (sub) sub.videos_used = 0;
@@ -52,31 +46,31 @@ export async function GET() {
       business: "Business",
     };
 
-    const plan = sub?.plan || "free";
-    const hasActiveSubscription = Boolean(sub?.stripe_subscription_id);
-    const trialDaysLeft = sub?.period_end
-      ? Math.max(
-          0,
-          Math.ceil((new Date(sub.period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-        )
+    const now = new Date();
+    const periodEnd = sub?.period_end ? new Date(sub.period_end) : null;
+    const trialDaysLeft = periodEnd
+      ? Math.max(0, Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
       : null;
-    const isTrial = Boolean(
-      sub?.stripe_subscription_id?.includes("trial") ||
-        (sub?.period_end && trialDaysLeft !== null && trialDaysLeft <= 4)
-    );
+    const plan = sub?.plan || "free";
+    const isTrial = trialDaysLeft !== null && trialDaysLeft <= 4 && plan !== "free";
+    const planOrder = ["free", "starter", "pro", "business"];
+    const hasActiveSubscription = plan !== "free";
 
     return NextResponse.json({
-      plan,
+      plan: plan,
       planName: planNames[plan],
+      planOrder: planOrder.indexOf(plan),
       videos_used: sub?.videos_used || 0,
       videos_limit: sub?.videos_limit || 3,
       videos_remaining: Math.max(0, (sub?.videos_limit || 3) - (sub?.videos_used || 0)),
       reset_date: sub?.reset_date,
       period_end: sub?.period_end,
-      has_active_subscription: hasActiveSubscription,
-      eligible_for_trial_offer: plan === "free" && !hasActiveSubscription,
       trialDaysLeft,
       isTrial,
+      stripe_customer_id: sub?.stripe_customer_id,
+      hasActiveSubscription,
+      has_active_subscription: hasActiveSubscription,
+      eligible_for_trial_offer: plan === "free" && !hasActiveSubscription,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur crédits";
