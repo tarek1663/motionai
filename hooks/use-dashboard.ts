@@ -353,6 +353,35 @@ export function useDashboard() {
     lastGenerationTime,
   ]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (screen === "generating") {
+        e.preventDefault();
+        e.returnValue = "Une video est en cours de generation. Veux-tu vraiment quitter ?";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [screen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && screen === "input") {
+        e.preventDefault();
+        void submit();
+      }
+
+      if (e.key === "Escape" && screen === "questions") {
+        e.preventDefault();
+        setScreen("input");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [screen, submit]);
+
   const deleteVideo = useCallback(
     async (videoId: string) => {
       try {

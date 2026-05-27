@@ -1,3 +1,5 @@
+import BackButton from "@/components/BackButton";
+
 export default function CancelPage() {
   return (
     <div
@@ -44,21 +46,17 @@ export default function CancelPage() {
         >
           Voir les tarifs
         </a>
-        <a
-          href="/dashboard"
+        <div
           style={{
-            padding: "14px 32px",
-            background: "transparent",
+            padding: "6px 16px",
             border: "1px solid rgba(255,255,255,0.15)",
-            color: "rgba(255,255,255,0.7)",
             borderRadius: 10,
-            fontSize: 15,
-            fontWeight: 600,
-            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          Dashboard
-        </a>
+          <BackButton href="/dashboard" label="Dashboard" />
+        </div>
       </div>
       </div>
     </div>

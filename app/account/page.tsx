@@ -3,6 +3,7 @@
 import { useClerk, useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { colors } from "@/lib/colors";
+import BackButton from "@/components/BackButton";
 import { Sidebar } from "@/components/Sidebar";
 
 export default function AccountPage() {
@@ -31,6 +32,10 @@ export default function AccountPage() {
       });
   }, [user]);
 
+  useEffect(() => {
+    document.title = "Mon compte — Motionr";
+  }, []);
+
   const openPortal = async () => {
     setPortalLoading(true);
     try {
@@ -55,18 +60,7 @@ export default function AccountPage() {
     <div style={{ minHeight: "calc(100vh - 44px)", background: colors.bg, fontFamily: "inherit", display: "flex" }}>
       <Sidebar active="account" credits={credits} />
       <div style={{ flex: 1, padding: "32px 40px", maxWidth: 860 }}>
-        <a
-          href="/dashboard"
-          style={{
-            display: "inline-flex",
-            marginBottom: 14,
-            color: colors.textMuted,
-            textDecoration: "none",
-            fontSize: 13,
-          }}
-        >
-          ← Dashboard
-        </a>
+        <BackButton href="/dashboard" />
         <h1
           style={{
             fontSize: 28,

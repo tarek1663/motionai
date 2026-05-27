@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import BackButton from "@/components/BackButton";
 
 export default function SuccessPage() {
   const router = useRouter();
@@ -26,28 +27,15 @@ export default function SuccessPage() {
     >
       <div style={{ background: "#161616", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: "36px 32px", maxWidth: 520, textAlign: "center" }}>
       <div style={{ fontSize: 64 }}>🎉</div>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+        <BackButton href="/dashboard" label="Dashboard" />
+      </div>
       <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.04em" }}>
         Bienvenue sur Motionr !
       </h1>
       <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 15, textAlign: "center", maxWidth: 400, margin: "12px auto 24px" }}>
         Ton abonnement est actif. Tu vas être redirigé vers le dashboard dans quelques secondes.
       </p>
-      <button
-        onClick={() => router.push("/dashboard")}
-        style={{
-          border: "none",
-          padding: "14px 32px",
-          background: "#10B981",
-          color: "#fff",
-          borderRadius: 10,
-          fontSize: 14,
-          fontWeight: 700,
-          cursor: "pointer",
-          fontFamily: "inherit",
-        }}
-      >
-        Aller au dashboard →
-      </button>
       <p style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 12 }}>
         Redirection automatique dans 5 secondes...
       </p>

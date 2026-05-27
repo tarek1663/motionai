@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ADMIN_EMAIL, isAdminEmail } from "@/lib/admin";
 import { colors } from "@/lib/colors";
+import BackButton from "@/components/BackButton";
 import { Sidebar } from "@/components/Sidebar";
 
 type AdminStats = {
@@ -49,6 +50,10 @@ export default function AdminPage() {
     loadStats();
   }, [isLoaded, user, router, loadStats]);
 
+  useEffect(() => {
+    document.title = "Admin — Motionr";
+  }, []);
+
   if (!isLoaded || loading) {
     return (
       <div
@@ -91,12 +96,7 @@ export default function AdminPage() {
       <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
       <Sidebar active="account" />
       <div style={{ flex: 1, maxWidth: 1060, padding: "32px 40px" }}>
-        <a
-          href="/dashboard"
-          style={{ display: "inline-flex", marginBottom: 14, color: colors.textMuted, textDecoration: "none", fontSize: 13 }}
-        >
-          ← Dashboard
-        </a>
+        <BackButton href="/dashboard" />
         <h1
           style={{
             fontSize: 28,

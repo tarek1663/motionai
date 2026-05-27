@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import BackButton from "@/components/BackButton";
 
 const accent = "#10B981";
 
@@ -23,6 +24,10 @@ export default function PricingPage() {
         });
     }
   }, [user]);
+
+  useEffect(() => {
+    document.title = "Tarifs — Motionr";
+  }, []);
 
   const plans = [
     {
@@ -96,8 +101,12 @@ export default function PricingPage() {
         right: 0,
         zIndex: 50,
       }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
-          onClick={() => router.push("/")}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <BackButton href="/dashboard" />
+        <div
+          style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+          onClick={() => router.push("/")}
+        >
           <div style={{
             width: 28, height: 28, borderRadius: 7, background: accent,
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -115,6 +124,7 @@ export default function PricingPage() {
             Motionr
           </span>
         </div>
+      </div>
         <button onClick={() => router.push(user ? "/dashboard" : "/login")} style={{
           background: "rgba(23,19,17,0.03)",
           border: "1px solid rgba(23,19,17,0.08)",

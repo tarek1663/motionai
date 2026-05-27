@@ -4,12 +4,29 @@ import { dark } from "@clerk/themes";
 import { GeistSans } from "geist/font/sans";
 import { colors } from "@/lib/colors";
 import { AppBodyShell } from "@/components/ui/app-body-shell";
+import ScrollToTop from "@/components/ScrollToTop";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MotionAI — Génère des vidéos motion design en secondes",
+  title: "Motionr — L'IA qui transforme tes mots en vidéos",
   description:
-    "Tape un prompt. MotionAI génère le script, la voix, la musique et les animations automatiquement.",
+    "Crée des vidéos motion design professionnelles en quelques minutes grâce à l'IA. Script, animations, voix — tout est automatique.",
+  keywords: "motion design, vidéo IA, générateur vidéo, motion video, AI video",
+  openGraph: {
+    title: "Motionr — L'IA qui transforme tes mots en vidéos",
+    description: "Crée des vidéos motion design professionnelles en quelques minutes.",
+    url: "https://motionr.app",
+    siteName: "Motionr",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Motionr — L'IA qui transforme tes mots en vidéos",
+    description: "Crée des vidéos motion design professionnelles en quelques minutes.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -44,7 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             MozOsxFontSmoothing: "grayscale",
           }}
         >
-          <AppBodyShell>{children}</AppBodyShell>
+          <AppBodyShell>
+            <ScrollToTop />
+            {children}
+          </AppBodyShell>
         </body>
       </html>
     </ClerkProvider>
