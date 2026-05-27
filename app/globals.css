@@ -18,7 +18,7 @@
   --font-size-5xl: 80px;
 
   /* Premium dashboard — neutre, accent discret */
-  --dash-bg: #f8f7f5;
+  --dash-bg: #ffffff;
   --dash-surface: #ffffff;
   --dash-surface-muted: #f3f2f0;
   --dash-surface-elevated: #ffffff;
@@ -36,7 +36,7 @@
   --dash-shadow-lg: 0 2px 4px rgba(15, 23, 42, 0.04), 0 24px 64px rgba(15, 23, 42, 0.08);
   --dash-focus: 0 0 0 3px rgba(13, 150, 104, 0.18);
 
-  --background: #f8f7f5;
+  --background: #ffffff;
   --foreground: #12110f;
 }
 
@@ -876,9 +876,7 @@ video:-moz-full-screen {
   justify-content: center;
   min-height: 100vh;
   padding: 32px 48px 72px;
-  background:
-    radial-gradient(ellipse 70% 45% at 50% -8%, rgba(13, 150, 104, 0.04), transparent 55%),
-    var(--dash-bg);
+  background: var(--dash-bg);
 }
 
 .dash-content {

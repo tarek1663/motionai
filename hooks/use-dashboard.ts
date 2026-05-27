@@ -58,8 +58,16 @@ export function useDashboard() {
   const [credits, setCredits] = useState<CreditsInfo | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState("");
+  const [renderNotif, setRenderNotif] = useState<{
+    jobId: string;
+    progress: number;
+    status: "rendering" | "done" | "error";
+    videoUrl?: string;
+    prompt?: string;
+  } | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const notifPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadCredits = useCallback(async () => {
     const data = await fetchCredits();
@@ -91,6 +99,48 @@ export function useDashboard() {
       setUpgradeReason(reason);
       setShowUpgrade(true);
     },
+    onRenderStarted: ({ jobId, prompt: notifPrompt }: { jobId: string; prompt: string }) => {
+      setRenderNotif({
+        jobId,
+        progress: 0,
+        status: "rendering",
+        prompt: notifPrompt,
+      });
+
+      if (notifPollRef.current) clearInterval(notifPollRef.current);
+
+      notifPollRef.current = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/render/${jobId}`, { cache: "no-store" });
+          const data = await res.json();
+
+          if (typeof data.progress === "number") {
+            setRenderNotif((prev) =>
+              prev && prev.jobId === jobId ? { ...prev, progress: data.progress } : prev
+            );
+          }
+
+          if (data.status === "done") {
+            if (notifPollRef.current) clearInterval(notifPollRef.current);
+            notifPollRef.current = null;
+            setRenderNotif((prev) =>
+              prev && prev.jobId === jobId
+                ? { ...prev, status: "done", progress: 100, videoUrl: data.videoUrl }
+                : prev
+            );
+            loadVideos();
+          } else if (data.status === "error") {
+            if (notifPollRef.current) clearInterval(notifPollRef.current);
+            notifPollRef.current = null;
+            setRenderNotif((prev) =>
+              prev && prev.jobId === jobId ? { ...prev, status: "error" } : prev
+            );
+          }
+        } catch {
+          // silent retry
+        }
+      }, 3000);
+    },
   };
 
   useEffect(() => {
@@ -107,6 +157,7 @@ export function useDashboard() {
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      if (notifPollRef.current) clearInterval(notifPollRef.current);
     };
   }, []);
 
@@ -293,6 +344,14 @@ export function useDashboard() {
     }
   }, [currentQ]);
 
+  const dismissRenderNotif = useCallback(() => {
+    if (notifPollRef.current) {
+      clearInterval(notifPollRef.current);
+      notifPollRef.current = null;
+    }
+    setRenderNotif(null);
+  }, []);
+
   return {
     user,
     mode,
@@ -353,6 +412,8 @@ export function useDashboard() {
     showUpgrade,
     setShowUpgrade,
     upgradeReason,
+    renderNotif,
+    dismissRenderNotif,
   };
 }
 

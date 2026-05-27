@@ -85,7 +85,9 @@ export function DashboardSidebar({
             </div>
           ) : (
             <>
-              <div className="dash-eyebrow">{copy.sidebarRecent}</div>
+              <div id="recent-videos">
+                <div className="dash-eyebrow">{copy.sidebarRecent}</div>
+              </div>
               {videos.map((video) => (
                 <VideoListItem
                   key={video.id}

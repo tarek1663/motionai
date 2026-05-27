@@ -24,9 +24,10 @@ export function DashboardDoneScreen({ videoUrl, format, resetCreation }: Props) 
             width: frameWidth,
             borderRadius: 14,
             overflow: "hidden",
-            border: "1.5px solid #e8e8e8",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-            background: "#f3f2f0",
+            border: "1.5px solid rgba(16,185,129,0.22)",
+            boxShadow:
+              "0 0 0 1px rgba(16,185,129,0.1), 0 12px 32px rgba(15,23,42,0.08)",
+            background: "#ffffff",
           }}
         >
           <video

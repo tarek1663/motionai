@@ -15,6 +15,7 @@ type GenerationCallbacks = {
   onVideosRefresh: () => void;
   onCreditsRefresh?: () => void;
   onUpgradeRequired?: (reason: string) => void;
+  onRenderStarted?: (payload: { jobId: string; prompt: string }) => void;
 };
 
 function handleRenderError(
@@ -192,6 +193,7 @@ export async function generateFromPrompt(params: PromptParams) {
     });
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
+    cb.onRenderStarted?.({ jobId: renderData.jobId, prompt: finalPrompt });
 
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
@@ -297,6 +299,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     });
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
+    cb.onRenderStarted?.({ jobId: renderData.jobId, prompt: analyzeData.productName || intent });
 
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
@@ -425,6 +428,10 @@ export async function generateFromScript(params: ScriptParams) {
     });
     const renderData = await renderRes.json();
     if (handleRenderError(renderRes, renderData, cb)) return;
+    cb.onRenderStarted?.({
+      jobId: renderData.jobId,
+      prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
+    });
 
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {

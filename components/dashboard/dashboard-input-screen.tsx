@@ -1,5 +1,17 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+import {
+  BarChart3,
+  BookOpenText,
+  BriefcaseBusiness,
+  GraduationCap,
+  Newspaper,
+  PenSquare,
+  Rocket,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn;
@@ -28,15 +40,15 @@ export function DashboardInputScreen(props: Props) {
   const currentValue = mode === "ai" ? prompt : customScript;
   const canSubmit = currentValue.trim().length > 0 && !isBusy;
 
-  const suggestions = [
-    { icon: "🚀", label: "Produit & Démo" },
-    { icon: "🏢", label: "Brand & Marque" },
-    { icon: "🎓", label: "Educatif" },
-    { icon: "📊", label: "Data & Stats" },
-    { icon: "📱", label: "Reseaux sociaux" },
-    { icon: "📖", label: "Storytelling" },
-    { icon: "📰", label: "News" },
-    { icon: "⚡", label: "Motivation" },
+  const suggestions: Array<{ icon: LucideIcon; label: string }> = [
+    { icon: Rocket, label: "Produit & Demo" },
+    { icon: BriefcaseBusiness, label: "Brand & Marque" },
+    { icon: GraduationCap, label: "Educatif" },
+    { icon: BarChart3, label: "Data & Stats" },
+    { icon: Sparkles, label: "Reseaux sociaux" },
+    { icon: BookOpenText, label: "Storytelling" },
+    { icon: Newspaper, label: "News" },
+    { icon: Zap, label: "Motivation" },
   ] as const;
 
   return (
@@ -48,7 +60,7 @@ export function DashboardInputScreen(props: Props) {
         justifyContent: "center",
         minHeight: "100vh",
         padding: "0 40px",
-        background: "#0a0a0a",
+        background: "#ffffff",
       }}
     >
       <div style={{ textAlign: "center", marginBottom: 40 }}>
@@ -56,8 +68,8 @@ export function DashboardInputScreen(props: Props) {
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: "rgba(255,255,255,0.25)",
-            letterSpacing: "0.15em",
+            color: "#10B981",
+            letterSpacing: "0.12em",
             textTransform: "uppercase",
             marginBottom: 12,
           }}
@@ -68,14 +80,14 @@ export function DashboardInputScreen(props: Props) {
           style={{
             fontSize: 36,
             fontWeight: 700,
-            color: "#ffffff",
+            color: "#171311",
             letterSpacing: "-0.04em",
             marginBottom: 8,
           }}
         >
           Cree ta prochaine video
         </h1>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.35)", fontWeight: 400 }}>
+        <p style={{ fontSize: 14, color: "#7b746d", fontWeight: 400 }}>
           Decris ton idee ou ecris ton script directement.
         </p>
       </div>
@@ -83,17 +95,17 @@ export function DashboardInputScreen(props: Props) {
       <div
         style={{
           display: "flex",
-          background: "rgba(255,255,255,0.04)",
+          background: "#f3f2f0",
           borderRadius: 12,
           padding: 4,
           marginBottom: 12,
-          border: "1px solid rgba(255,255,255,0.06)",
+          border: "1px solid #e5e5ea",
           gap: 2,
         }}
       >
         {[
-          { id: "ai", label: "✦ Mode IA" },
-          { id: "script", label: "✍️ Mon script" },
+          { id: "ai", label: "Mode IA", Icon: Sparkles },
+          { id: "script", label: "Mon script", Icon: PenSquare },
         ].map((m) => (
           <button
             key={m.id}
@@ -102,19 +114,23 @@ export function DashboardInputScreen(props: Props) {
             style={{
               padding: "8px 24px",
               borderRadius: 9,
-              background: mode === m.id ? "rgba(255,255,255,0.08)" : "transparent",
-              color: mode === m.id ? "#ffffff" : "rgba(255,255,255,0.35)",
+              background: mode === m.id ? "#ffffff" : "transparent",
+              color: mode === m.id ? "#171311" : "#8e8680",
               border:
                 mode === m.id
-                  ? "1px solid rgba(255,255,255,0.1)"
+                  ? "1px solid rgba(23,19,17,0.1)"
                   : "1px solid transparent",
               fontSize: 13,
               fontWeight: mode === m.id ? 600 : 400,
               cursor: "pointer",
               fontFamily: "inherit",
               transition: "all 0.15s",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
             }}
           >
+            <m.Icon size={14} strokeWidth={1.9} />
             {m.label}
           </button>
         ))}
@@ -124,10 +140,11 @@ export function DashboardInputScreen(props: Props) {
         style={{
           width: "100%",
           maxWidth: 720,
-          background: "#161616",
+          background: "#ffffff",
           borderRadius: 20,
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+          border: "1.5px solid rgba(16,185,129,0.26)",
+          boxShadow:
+            "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.16), 0 18px 44px rgba(15,23,42,0.08)",
           overflow: "hidden",
         }}
       >
@@ -149,7 +166,7 @@ export function DashboardInputScreen(props: Props) {
             outline: "none",
             padding: "20px 20px 12px",
             fontSize: 15,
-            color: "rgba(255,255,255,0.85)",
+            color: "#625b55",
             fontFamily: "inherit",
             resize: "none",
             lineHeight: 1.65,
@@ -170,19 +187,19 @@ export function DashboardInputScreen(props: Props) {
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#f7f7f7",
+                border: "1px solid #e8e8e8",
                 borderRadius: 8,
                 padding: "5px 10px",
                 fontSize: 12,
-                color: "rgba(255,255,255,0.55)",
+                color: "#7b746d",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 outline: "none",
               }}
             >
               {["15s", "30s", "45s", "60s"].map((d) => (
-                <option key={d} value={d} style={{ background: "#161616" }}>
+                <option key={d} value={d} style={{ background: "#ffffff" }}>
                   {d}
                 </option>
               ))}
@@ -192,7 +209,7 @@ export function DashboardInputScreen(props: Props) {
               style={{
                 width: 1,
                 height: 16,
-                background: "rgba(255,255,255,0.08)",
+                background: "#e5e5ea",
                 margin: "0 4px",
               }}
             />
@@ -201,12 +218,12 @@ export function DashboardInputScreen(props: Props) {
               value={format}
               onChange={(e) => setFormat(e.target.value)}
               style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#f7f7f7",
+                border: "1px solid #e8e8e8",
                 borderRadius: 8,
                 padding: "5px 10px",
                 fontSize: 12,
-                color: "rgba(255,255,255,0.55)",
+                color: "#7b746d",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 outline: "none",
@@ -217,7 +234,7 @@ export function DashboardInputScreen(props: Props) {
                 { value: "16:9", label: "16:9 · YouTube" },
                 { value: "1:1", label: "1:1 · Feed" },
               ].map((f) => (
-                <option key={f.value} value={f.value} style={{ background: "#161616" }}>
+                <option key={f.value} value={f.value} style={{ background: "#ffffff" }}>
                   {f.label}
                 </option>
               ))}
@@ -227,7 +244,7 @@ export function DashboardInputScreen(props: Props) {
               style={{
                 width: 1,
                 height: 16,
-                background: "rgba(255,255,255,0.08)",
+                background: "#e5e5ea",
                 margin: "0 4px",
               }}
             />
@@ -235,15 +252,15 @@ export function DashboardInputScreen(props: Props) {
             <div
               style={{
                 display: "flex",
-                background: "rgba(255,255,255,0.04)",
+                background: "#f7f7f7",
                 borderRadius: 8,
                 overflow: "hidden",
-                border: "1px solid rgba(255,255,255,0.08)",
+                border: "1px solid #e8e8e8",
               }}
             >
               {[
-                { id: "fast", label: "⚡ Rapide" },
-                { id: "high", label: "✨ HD" },
+                { id: "fast", label: "Rapide", Icon: Zap },
+                { id: "high", label: "HD", Icon: Sparkles },
               ].map((q) => (
                 <button
                   key={q.id}
@@ -252,15 +269,19 @@ export function DashboardInputScreen(props: Props) {
                   style={{
                     padding: "5px 12px",
                     border: "none",
-                    background: quality === q.id ? "rgba(255,255,255,0.1)" : "transparent",
-                    color: quality === q.id ? "#fff" : "rgba(255,255,255,0.35)",
+                    background: quality === q.id ? "#ffffff" : "transparent",
+                    color: quality === q.id ? "#171311" : "#8e8680",
                     fontSize: 11,
                     fontWeight: quality === q.id ? 600 : 400,
                     cursor: "pointer",
                     fontFamily: "inherit",
                     transition: "all 0.15s",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 5,
                   }}
                 >
+                  <q.Icon size={12} strokeWidth={2} />
                   {q.label}
                 </button>
               ))}
@@ -276,15 +297,15 @@ export function DashboardInputScreen(props: Props) {
             style={{
               width: 36,
               height: 36,
-              borderRadius: 10,
-              background: canSubmit ? "#10B981" : "rgba(255,255,255,0.06)",
-              border: "none",
+              borderRadius: 12,
+              background: canSubmit ? "#10B981" : "#ecebea",
+              border: "1px solid transparent",
               cursor: canSubmit ? "pointer" : "not-allowed",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 16,
-              color: canSubmit ? "#fff" : "rgba(255,255,255,0.2)",
+              color: canSubmit ? "#fff" : "#c3c3c3",
               transition: "all 0.15s",
               flexShrink: 0,
               boxShadow: canSubmit ? "0 4px 12px rgba(16,185,129,0.3)" : "none",
@@ -299,7 +320,7 @@ export function DashboardInputScreen(props: Props) {
         <div
           style={{
             fontSize: 11,
-            color: "rgba(255,255,255,0.2)",
+            color: "#a39e98",
             marginBottom: 10,
             letterSpacing: "0.06em",
             textTransform: "uppercase",
@@ -327,11 +348,11 @@ export function DashboardInputScreen(props: Props) {
               }}
               style={{
                 padding: "7px 14px",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                background: "#ffffff",
+                border: "1px solid #e8e8e8",
                 borderRadius: 100,
                 fontSize: 12,
-                color: "rgba(255,255,255,0.45)",
+                color: "#7b746d",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 transition: "all 0.15s",
@@ -340,17 +361,17 @@ export function DashboardInputScreen(props: Props) {
                 gap: 6,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.7)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.background = "rgba(16,185,129,0.08)";
+                e.currentTarget.style.color = "#0d9668";
+                e.currentTarget.style.borderColor = "rgba(16,185,129,0.22)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                e.currentTarget.style.color = "rgba(255,255,255,0.45)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                e.currentTarget.style.background = "#ffffff";
+                e.currentTarget.style.color = "#7b746d";
+                e.currentTarget.style.borderColor = "#e8e8e8";
               }}
             >
-              <span>{s.icon}</span>
+              <s.icon size={13} strokeWidth={1.9} />
               <span>{s.label}</span>
             </button>
           ))}
