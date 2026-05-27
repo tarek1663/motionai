@@ -105,6 +105,12 @@ export default function LandingPage() {
     }
   };
 
+  const scrollToSection = (sectionId: string, align: ScrollLogicalPosition = "start") => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth", block: align });
+  };
+
   const steps = [
     { num: "01", title: "Décris ton message" },
     { num: "02", title: "L'IA crée ta vidéo" },
@@ -374,12 +380,75 @@ export default function LandingPage() {
         .plan-card { transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
         .plan-card:hover { transform: translateY(-6px); }
         .faq-item { border-bottom: 1px solid #f0f0f0; }
+        .footer-link { text-decoration: none; font-size: 13px; font-weight: 500; color: #888; transition: color 0.15s; }
+        .footer-link:hover { color: #171311; }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .shimmer-bar {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+          animation: shimmer 3s infinite;
+        }
       `}</style>
+
+      {/* ── BARRE D'ANNONCE ── */}
+      <div
+        style={{
+          background: "#0a0a0a",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          padding: "10px 0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 101,
+        }}
+        onClick={() => router.push("/pricing")}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            router.push("/pricing");
+          }
+        }}
+      >
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 100,
+            padding: "5px 16px",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div className="shimmer-bar" aria-hidden="true" />
+          <span style={{ fontSize: 13, color: "#10B981", fontWeight: 700 }}>✨ Offre limitée</span>
+          <span style={{ width: 1, height: 12, background: "rgba(255,255,255,0.1)" }} />
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: 400 }}>
+            Essaie le plan Starter
+            <span style={{ color: "#ffffff", fontWeight: 600 }}> 4 jours gratuitement</span>
+            {" "}— sans carte bancaire
+          </span>
+          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.4)" }}>→</span>
+        </div>
+      </div>
 
       <header
         style={{
           position: "fixed",
-          top: 0,
+          top: 44,
           left: 0,
           right: 0,
           zIndex: 100,
@@ -802,7 +871,7 @@ export default function LandingPage() {
             width: "100%",
             maxWidth: 1180,
             margin: "0 auto",
-            paddingTop: 108,
+            paddingTop: 152,
             paddingBottom: 8,
           }}
         >
@@ -1046,6 +1115,10 @@ export default function LandingPage() {
                 </button>
                 <a
                   href="#how"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection("how", "center");
+                  }}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -2077,80 +2150,45 @@ export default function LandingPage() {
       {/* ── MOCKUP FINAL ── */}
       <section
         style={{
-          padding: "120px 60px",
-          background: "#0a0a0a",
+          padding: "108px 60px 100px",
+          background: "#ffffff",
           overflow: "hidden",
         }}
       >
         <div
           style={{
-            maxWidth: 1100,
+            maxWidth: 1060,
             margin: "0 auto",
             display: "flex",
             alignItems: "center",
-            gap: 80,
+            gap: 56,
           }}
         >
           {/* Gauche — texte */}
-          <div style={{ flex: 1, maxWidth: 420 }}>
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#10B981",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                marginBottom: 16,
-              }}
-            >
-              Disponible partout
-            </div>
+          <div style={{ flex: 1, maxWidth: 440 }}>
             <h2
               style={{
-                fontSize: 52,
-                fontWeight: 900,
-                letterSpacing: "-0.04em",
-                lineHeight: 1.05,
-                color: "#ffffff",
-                marginBottom: 20,
+                ...sectionTitleStyle,
+                fontSize: 48,
+                color: "#171311",
+                marginBottom: 18,
               }}
             >
               Crée des vidéos pro depuis n&apos;importe où.
             </h2>
-            <p
-              style={{
-                fontSize: 16,
-                color: "rgba(255,255,255,0.4)",
-                lineHeight: 1.7,
-                marginBottom: 40,
-              }}
-            >
+            <p style={{ ...sectionBodyStyle, marginBottom: 36, color: "#6F6862" }}>
               Accède à Motionr depuis ton ordinateur ou ton téléphone. Génère, télécharge et publie
               en quelques minutes.
             </p>
             <button
+              type="button"
               onClick={() => router.push("/signup")}
-              style={{
-                background: "#10B981",
-                color: "#ffffff",
-                border: "none",
-                borderRadius: 12,
-                padding: "14px 32px",
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
+              className="btn-primary"
+              style={{ fontSize: 15, padding: "14px 32px" }}
             >
               Commencer gratuitement →
             </button>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 12 }}>
-              Aucune carte requise · 3 vidéos offertes
-            </div>
+            <div style={{ ...mutedMetaStyle, marginTop: 14 }}>Aucune carte requise · 3 vidéos offertes</div>
           </div>
 
           {/* Droite — mockups */}
@@ -2158,7 +2196,8 @@ export default function LandingPage() {
             style={{
               flex: 1,
               position: "relative",
-              height: 520,
+              width: "100%",
+              alignSelf: "stretch",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -2167,31 +2206,32 @@ export default function LandingPage() {
             {/* Mockup PC */}
             <div
               style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                width: 520,
+                position: "relative",
+                width: "100%",
+                maxWidth: 480,
+                marginRight: 48,
               }}
             >
               {/* Ecran */}
               <div
                 style={{
-                  background: "#1a1a1a",
-                  borderRadius: "16px 16px 0 0",
-                  border: "2px solid #333",
+                  background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
+                  borderRadius: 16,
+                  border: "1px solid rgba(16,185,129,0.28)",
                   overflow: "hidden",
-                  boxShadow: "0 40px 80px rgba(0,0,0,0.6)",
+                  boxShadow:
+                    "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 20px rgba(16,185,129,0.16), 0 24px 48px rgba(15,23,42,0.12)",
                 }}
               >
                 {/* Barre navigateur */}
                 <div
                   style={{
-                    background: "#222",
+                    background: "rgba(255,255,255,0.04)",
                     padding: "8px 14px",
                     display: "flex",
                     alignItems: "center",
                     gap: 6,
-                    borderBottom: "1px solid #333",
+                    borderBottom: "1px solid rgba(16,185,129,0.18)",
                   }}
                 >
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f56" }} />
@@ -2200,13 +2240,14 @@ export default function LandingPage() {
                   <div
                     style={{
                       flex: 1,
-                      background: "#2a2a2a",
+                      background: "rgba(255,255,255,0.06)",
                       borderRadius: 4,
                       padding: "3px 10px",
                       fontSize: 10,
-                      color: "#555",
+                      color: "rgba(255,255,255,0.35)",
                       marginLeft: 8,
                       textAlign: "center",
+                      border: "1px solid rgba(16,185,129,0.12)",
                     }}
                   >
                     app.motionr.app
@@ -2215,9 +2256,9 @@ export default function LandingPage() {
                 {/* Contenu — mini hero */}
                 <div
                   style={{
-                    background: "#0a0a0a",
+                    background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
                     padding: "24px 28px",
-                    minHeight: 280,
+                    minHeight: 260,
                   }}
                 >
                   {/* Mini nav */}
@@ -2235,7 +2276,8 @@ export default function LandingPage() {
                           width: 16,
                           height: 16,
                           borderRadius: 4,
-                          background: "#10B981",
+                          background: accent,
+                          boxShadow: `0 2px 8px ${accent}55`,
                         }}
                       />
                       <span style={{ fontSize: 10, fontWeight: 800, color: "#fff" }}>Motionr</span>
@@ -2249,12 +2291,13 @@ export default function LandingPage() {
                     </div>
                     <div
                       style={{
-                        background: "#10B981",
+                        background: accent,
                         borderRadius: 4,
                         padding: "3px 8px",
                         fontSize: 8,
                         color: "#fff",
                         fontWeight: 700,
+                        boxShadow: `0 2px 8px ${accent}44`,
                       }}
                     >
                       Commencer
@@ -2282,10 +2325,11 @@ export default function LandingPage() {
                     {/* Mini prompt box */}
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.06)",
+                        background: "rgba(255,255,255,0.04)",
                         borderRadius: 8,
                         padding: "10px 12px",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        border: "1px solid rgba(16,185,129,0.22)",
+                        boxShadow: "0 0 12px rgba(16,185,129,0.12)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
@@ -2304,7 +2348,7 @@ export default function LandingPage() {
                       </span>
                       <div
                         style={{
-                          background: "#10B981",
+                          background: accent,
                           borderRadius: 4,
                           padding: "3px 8px",
                           fontSize: 8,
@@ -2330,8 +2374,8 @@ export default function LandingPage() {
                           width: v.w,
                           height: v.h,
                           borderRadius: 6,
-                          background: "rgba(255,255,255,0.05)",
-                          border: "1px solid rgba(255,255,255,0.08)",
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(16,185,129,0.16)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -2344,50 +2388,30 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              {/* Pied écran */}
-              <div
-                style={{
-                  background: "#252525",
-                  height: 16,
-                  borderRadius: "0 0 4px 4px",
-                  border: "2px solid #333",
-                  borderTop: "none",
-                }}
-              />
-              {/* Pied de mac */}
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <div
-                  style={{
-                    width: 120,
-                    height: 8,
-                    background: "#2a2a2a",
-                    borderRadius: "0 0 8px 8px",
-                  }}
-                />
-              </div>
             </div>
 
             {/* Mockup iPhone */}
             <div
               style={{
                 position: "absolute",
-                right: -20,
-                bottom: 0,
-                width: 130,
-                background: "#1a1a1a",
-                borderRadius: 28,
-                border: "2px solid #333",
+                right: 8,
+                bottom: 12,
+                width: 124,
+                background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
+                borderRadius: 26,
+                border: "1px solid rgba(16,185,129,0.28)",
                 padding: "10px 4px",
-                boxShadow: "0 40px 80px rgba(0,0,0,0.6)",
+                boxShadow:
+                  "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 16px rgba(16,185,129,0.2), 0 20px 40px rgba(15,23,42,0.14)",
                 zIndex: 2,
               }}
             >
               {/* Notch */}
               <div
                 style={{
-                  width: 50,
-                  height: 8,
-                  background: "#111",
+                  width: 46,
+                  height: 7,
+                  background: "rgba(0,0,0,0.35)",
                   borderRadius: 10,
                   margin: "0 auto 8px",
                 }}
@@ -2395,9 +2419,9 @@ export default function LandingPage() {
               {/* Ecran */}
               <div
                 style={{
-                  background: "#0a0a0a",
-                  borderRadius: 20,
-                  height: 220,
+                  background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
+                  borderRadius: 18,
+                  height: 200,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -2407,16 +2431,17 @@ export default function LandingPage() {
               >
                 <div
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: "#10B981",
+                    width: 34,
+                    height: 34,
+                    borderRadius: 9,
+                    background: accent,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: 900,
                     color: "#fff",
+                    boxShadow: `0 4px 12px ${accent}44`,
                   }}
                 >
                   M
@@ -2436,9 +2461,9 @@ export default function LandingPage() {
               {/* Home indicator */}
               <div
                 style={{
-                  width: 40,
+                  width: 36,
                   height: 3,
-                  background: "#333",
+                  background: "rgba(255,255,255,0.18)",
                   borderRadius: 10,
                   margin: "8px auto 0",
                 }}
@@ -2451,119 +2476,97 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer
         style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          padding: "40px 60px",
+          background: "#ffffff",
+          borderTop: "1px solid #f0f0f0",
+          padding: "48px 60px 40px",
         }}
       >
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          {/* Top footer */}
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              marginBottom: 40,
+              marginBottom: 36,
+              gap: 40,
             }}
           >
-            {/* Logo + desc */}
-            <div style={{ maxWidth: 260 }}>
+            <div style={{ maxWidth: 280 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                 <div
                   style={{
                     width: 26,
                     height: 26,
                     borderRadius: 7,
-                    background: "#10B981",
+                    background: accent,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: 12,
                     fontWeight: 900,
                     color: "#fff",
+                    boxShadow: `0 2px 8px ${accent}44`,
                   }}
                 >
                   M
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 800, color: "#fff", letterSpacing: "-0.04em" }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#0a0a0a", letterSpacing: "-0.04em" }}>
                   Motionr
                 </span>
               </div>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", lineHeight: 1.6 }}>
+              <p style={{ ...cardBodyStyle, fontSize: 13, lineHeight: 1.65 }}>
                 L&apos;IA qui transforme tes mots en vidéos motion design professionnelles.
               </p>
             </div>
 
-            {/* Liens */}
-            <div style={{ display: "flex", gap: 60 }}>
+            <div style={{ display: "flex", gap: 64 }}>
               <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    marginBottom: 14,
-                  }}
-                >
-                  Produit
-                </div>
-                {["Fonctionnalités", "Tarifs", "FAQ", "Dashboard"].map((l) => (
-                  <div key={l} style={{ marginBottom: 10 }}>
-                    <a href="#" style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
-                      {l}
+                <div style={{ ...featureTagStyle, marginBottom: 14 }}>Produit</div>
+                {[
+                  { label: "Fonctionnalités", href: "#features" },
+                  { label: "Tarifs", href: "#pricing" },
+                  { label: "FAQ", href: "#faq" },
+                  { label: "Dashboard", href: "/dashboard" },
+                ].map((l) => (
+                  <div key={l.label} style={{ marginBottom: 10 }}>
+                    <a href={l.href} className="footer-link">
+                      {l.label}
                     </a>
                   </div>
                 ))}
               </div>
               <div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    marginBottom: 14,
-                  }}
-                >
-                  Légal
-                </div>
+                <div style={{ ...featureTagStyle, marginBottom: 14 }}>Légal</div>
                 {[
                   { label: "Confidentialité", href: "/privacy" },
                   { label: "CGU", href: "/terms" },
                   { label: "Mentions légales", href: "/mentions" },
                 ].map((l) => (
                   <div key={l.label} style={{ marginBottom: 10 }}>
-                    <a
-                      href={l.href}
-                      style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "none" }}
-                    >
+                    <Link href={l.href} className="footer-link">
                       {l.label}
-                    </a>
+                    </Link>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Bottom footer */}
           <div
             style={{
-              borderTop: "1px solid rgba(255,255,255,0.06)",
-              paddingTop: 24,
+              borderTop: "1px solid #f0f0f0",
+              paddingTop: 22,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              gap: 20,
+              flexWrap: "wrap",
             }}
           >
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)" }}>
-              © 2024 Motionr. Tous droits réservés.
-            </div>
+            <div style={{ ...mutedMetaStyle }}>© 2024 Motionr. Tous droits réservés.</div>
             <div style={{ display: "flex", gap: 20 }}>
               {["Instagram", "Twitter / X", "LinkedIn"].map((s) => (
-                <a key={s} href="#" style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", textDecoration: "none" }}>
+                <a key={s} href="#" className="footer-link" style={{ fontSize: 12 }}>
                   {s}
                 </a>
               ))}
