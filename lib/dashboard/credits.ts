@@ -10,6 +10,8 @@ export type CreditsInfo = {
   period_end?: string;
   has_active_subscription?: boolean;
   eligible_for_trial_offer?: boolean;
+  trialDaysLeft?: number | null;
+  isTrial?: boolean;
 };
 
 export async function fetchCredits(): Promise<CreditsInfo | null> {
@@ -28,7 +30,7 @@ export async function checkCreditsBeforeGenerate(
 ): Promise<boolean> {
   const data = await fetchCredits();
   if (!data) return true;
-  if (data.videos_remaining <= 0) {
+  if (data.plan !== "business" && data.videos_remaining <= 0) {
     setError(
       "Tu as atteint ta limite de vidéos ce mois-ci. Upgrade ton plan pour continuer."
     );

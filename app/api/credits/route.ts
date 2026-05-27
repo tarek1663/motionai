@@ -54,6 +54,16 @@ export async function GET() {
 
     const plan = sub?.plan || "free";
     const hasActiveSubscription = Boolean(sub?.stripe_subscription_id);
+    const trialDaysLeft = sub?.period_end
+      ? Math.max(
+          0,
+          Math.ceil((new Date(sub.period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        )
+      : null;
+    const isTrial = Boolean(
+      sub?.stripe_subscription_id?.includes("trial") ||
+        (sub?.period_end && trialDaysLeft !== null && trialDaysLeft <= 4)
+    );
 
     return NextResponse.json({
       plan,
@@ -65,6 +75,8 @@ export async function GET() {
       period_end: sub?.period_end,
       has_active_subscription: hasActiveSubscription,
       eligible_for_trial_offer: plan === "free" && !hasActiveSubscription,
+      trialDaysLeft,
+      isTrial,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur crédits";

@@ -59,6 +59,30 @@ export async function POST(req: NextRequest) {
           { onConflict: "user_id" }
         );
 
+        try {
+          if (session.customer_details?.email || session.customer_email) {
+            await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: "Motionr <hello@motionr.app>",
+                to: session.customer_details?.email || session.customer_email,
+                subject: "Bienvenue sur Motionr ! 🎬",
+                html: `
+                  <h1>Bienvenue sur Motionr !</h1>
+                  <p>Ton abonnement est actif. Tu peux maintenant générer des vidéos motion design professionnelles.</p>
+                  <a href="https://motionai-two.vercel.app/dashboard">Créer ma première vidéo →</a>
+                `,
+              }),
+            });
+          }
+        } catch (emailErr) {
+          console.error("Email error:", emailErr);
+        }
+
         console.log("Plan activé:", planId, "pour", userId);
         break;
       }

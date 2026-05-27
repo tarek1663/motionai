@@ -18,6 +18,7 @@ import type {
 } from "@/lib/dashboard/types";
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
+const COOLDOWN_MS = 30000;
 
 export function useDashboard() {
   const { user } = useUser();
@@ -58,6 +59,11 @@ export function useDashboard() {
   const [credits, setCredits] = useState<CreditsInfo | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState("");
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+  const [lastGenerationTime, setLastGenerationTime] = useState(0);
   const [renderNotif, setRenderNotif] = useState<{
     jobId: string;
     progress: number;
@@ -68,6 +74,13 @@ export function useDashboard() {
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notifPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" | "info" = "info") => {
+      setToast({ message, type });
+    },
+    []
+  );
 
   const loadCredits = useCallback(async () => {
     const data = await fetchCredits();
@@ -128,6 +141,7 @@ export function useDashboard() {
                 ? { ...prev, status: "done", progress: 100, videoUrl: data.videoUrl }
                 : prev
             );
+            showToast("Video generee avec succes !", "success");
             loadVideos();
           } else if (data.status === "error") {
             if (notifPollRef.current) clearInterval(notifPollRef.current);
@@ -135,6 +149,7 @@ export function useDashboard() {
             setRenderNotif((prev) =>
               prev && prev.jobId === jobId ? { ...prev, status: "error" } : prev
             );
+            showToast("Erreur de rendu — reessaie", "error");
           }
         } catch {
           // silent retry
@@ -160,6 +175,16 @@ export function useDashboard() {
       if (notifPollRef.current) clearInterval(notifPollRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (credits?.videos_remaining === 1) {
+      showToast("Plus qu'une video ce mois-ci — pense a upgrader !", "info");
+    }
+    if (credits?.videos_remaining === 0 && credits.plan !== "business") {
+      setUpgradeReason("Tu as utilise toutes tes videos ce mois-ci. Upgrade pour continuer.");
+      setShowUpgrade(true);
+    }
+  }, [credits?.videos_remaining, credits?.plan, showToast]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -236,8 +261,35 @@ export function useDashboard() {
   }, [prompt, generatePrompt]);
 
   const submit = useCallback(async () => {
+    const now = Date.now();
+    const timeSinceLast = now - lastGenerationTime;
+    if (timeSinceLast < COOLDOWN_MS && lastGenerationTime > 0) {
+      const remaining = Math.ceil((COOLDOWN_MS - timeSinceLast) / 1000);
+      showToast(`Attends ${remaining}s avant de relancer une generation.`, "error");
+      return;
+    }
+
+    const creditsData = await fetchCredits();
+    if (creditsData && creditsData.plan !== "business" && creditsData.videos_remaining <= 0) {
+      setShowUpgrade(true);
+      setUpgradeReason("Tu as utilise toutes tes videos ce mois-ci.");
+      return;
+    }
+
+    const validatePrompt = (text: string): string | null => {
+      if (!text.trim()) return "Decris ta video avant de generer.";
+      if (text.trim().length < 10) return "Decris ton idee en au moins 10 caracteres.";
+      if (text.trim().length > 2000) return "Le prompt est trop long — max 2000 caracteres.";
+      return null;
+    };
+
     if (screenshotFile) {
-      if (!prompt.trim()) return;
+      const validationError = validatePrompt(prompt);
+      if (validationError) {
+        showToast(validationError, "error");
+        return;
+      }
+      setLastGenerationTime(now);
       setScreenshotLoading(true);
       try {
         await generateFromScreenshot({
@@ -258,12 +310,22 @@ export function useDashboard() {
     }
 
     if (mode === "ai") {
-      if (!prompt.trim()) return;
+      const validationError = validatePrompt(prompt);
+      if (validationError) {
+        showToast(validationError, "error");
+        return;
+      }
+      setLastGenerationTime(now);
       await fetchQuestions();
       return;
     }
 
-    if (!customScript.trim()) return;
+    const validationError = validatePrompt(customScript);
+    if (validationError) {
+      showToast(validationError, "error");
+      return;
+    }
+    setLastGenerationTime(now);
 
     await generateFromScript({
       script: customScript,
@@ -287,7 +349,31 @@ export function useDashboard() {
     musicEnabled,
     fetchQuestions,
     loadVideos,
+    showToast,
+    lastGenerationTime,
   ]);
+
+  const deleteVideo = useCallback(
+    async (videoId: string) => {
+      try {
+        const res = await fetch(`/api/videos/${videoId}`, { method: "DELETE" });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: "Suppression impossible" }));
+          showToast(data.error || "Suppression impossible", "error");
+          return;
+        }
+        await loadVideos();
+        if (selectedVideo?.id === videoId) {
+          setSelectedVideo(null);
+          setScreen("input");
+        }
+        showToast("Video supprimee", "success");
+      } catch {
+        showToast("Erreur lors de la suppression", "error");
+      }
+    },
+    [loadVideos, selectedVideo?.id, showToast]
+  );
 
   const handleScreenshotFile = useCallback((file: File) => {
     setScreenshotFile(file);
@@ -414,6 +500,10 @@ export function useDashboard() {
     upgradeReason,
     renderNotif,
     dismissRenderNotif,
+    toast,
+    setToast,
+    showToast,
+    deleteVideo,
   };
 }
 

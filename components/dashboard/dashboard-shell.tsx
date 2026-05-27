@@ -6,6 +6,7 @@ import { DashboardQuestionsScreen } from "@/components/dashboard/dashboard-quest
 import { DashboardGeneratingScreen } from "@/components/dashboard/dashboard-generating-screen";
 import { DashboardDoneScreen } from "@/components/dashboard/dashboard-done-screen";
 import { DashboardViewingScreen } from "@/components/dashboard/dashboard-viewing-screen";
+import Toast from "@/components/Toast";
 import { CheckCircle2, Clapperboard, CircleX, X } from "lucide-react";
 import { colors } from "@/lib/colors";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
@@ -24,6 +25,8 @@ export function DashboardShell(state: UseDashboardReturn) {
     upgradeReason,
     renderNotif,
     dismissRenderNotif,
+    toast,
+    setToast,
   } = state;
 
   const accent = colors.accent;
@@ -41,6 +44,7 @@ export function DashboardShell(state: UseDashboardReturn) {
         setSidebarCollapsed={state.setSidebarCollapsed}
         resetCreation={state.resetCreation}
         credits={state.credits}
+        deleteVideo={state.deleteVideo}
       />
 
       <main className="dash-main">
@@ -376,6 +380,13 @@ export function DashboardShell(state: UseDashboardReturn) {
             )}
           </div>
         </div>
+      )}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

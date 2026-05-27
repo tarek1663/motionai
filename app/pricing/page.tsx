@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { colors } from "@/lib/colors";
 
@@ -71,6 +71,18 @@ export default function PricingPage() {
   const { isSignedIn } = useUser();
   const [billing, setBilling] = useState<"yearly" | "monthly">("yearly");
   const [loading, setLoading] = useState<string | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<string>("free");
+
+  useEffect(() => {
+    fetch("/api/credits")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.plan) setCurrentPlan(d.plan);
+      })
+      .catch(() => {
+        // ignore
+      });
+  }, []);
 
   const handleCheckout = async (planId: string) => {
     if (!isSignedIn) {
@@ -236,6 +248,14 @@ export default function PricingPage() {
           }}
         >
           {PLANS.map((plan) => (
+            (() => {
+              const order = ["free", "starter", "pro", "business"];
+              const isCurrentPlan = plan.id === currentPlan;
+              const isDowngrade =
+                order.indexOf(plan.id) < order.indexOf(currentPlan);
+              const disabled = isCurrentPlan || isDowngrade || loading === plan.id;
+
+              return (
             <div
               key={plan.id}
               style={{
@@ -342,7 +362,7 @@ export default function PricingPage() {
               <button
                 type="button"
                 onClick={() => handleCheckout(plan.id)}
-                disabled={loading === plan.id}
+                disabled={disabled}
                 style={{
                   width: "100%",
                   padding: "11px",
@@ -352,15 +372,23 @@ export default function PricingPage() {
                   fontSize: 13,
                   fontWeight: 700,
                   border: "none",
-                  cursor: "pointer",
+                  cursor: disabled ? "not-allowed" : "pointer",
                   boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
-                  opacity: loading === plan.id ? 0.7 : 1,
+                  opacity: disabled ? 0.4 : 1,
                   transition: "all 0.2s",
                 }}
               >
-                {loading === plan.id ? "..." : plan.cta}
+                {loading === plan.id
+                  ? "..."
+                  : isCurrentPlan
+                    ? "Plan actuel ✓"
+                    : isDowngrade
+                      ? "Non disponible"
+                      : plan.cta}
               </button>
             </div>
+              );
+            })()
           ))}
         </div>
 
