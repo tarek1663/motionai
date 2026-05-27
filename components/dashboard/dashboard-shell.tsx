@@ -48,6 +48,7 @@ export function DashboardShell(state: UseDashboardReturn) {
       />
 
       <main className="dash-main">
+        <div className="dash-main-inner">
         {screen === "viewing" && selectedVideo && (
           <DashboardViewingScreen
             video={selectedVideo}
@@ -88,6 +89,7 @@ export function DashboardShell(state: UseDashboardReturn) {
             status={state.status}
             formatDetected={state.formatDetected}
             quality={state.quality}
+            onBack={() => setScreen("input")}
           />
         )}
 
@@ -98,6 +100,7 @@ export function DashboardShell(state: UseDashboardReturn) {
             resetCreation={state.resetCreation}
           />
         )}
+        </div>
       </main>
 
       {showUpgrade && (
@@ -206,7 +209,7 @@ export function DashboardShell(state: UseDashboardReturn) {
         </div>
       )}
 
-      {renderNotif && screen !== "generating" && (
+      {renderNotif && (
         <div
           style={{
             position: "fixed",

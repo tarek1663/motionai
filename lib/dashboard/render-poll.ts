@@ -9,7 +9,8 @@ export function startRenderPoll(
   setScreen: (screen: DashboardScreen) => void,
   setError: (msg: string) => void,
   onDone?: () => void,
-  onCreditsRefresh?: () => void
+  onCreditsRefresh?: () => void,
+  onPipelineEnd?: () => void
 ) {
   if (pollRef.current) clearInterval(pollRef.current);
   pollRef.current = setInterval(async () => {
@@ -34,12 +35,14 @@ export function startRenderPoll(
         setProgress(100);
         setVideoUrl(statusData.videoUrl);
         setScreen("done");
+        onPipelineEnd?.();
         onCreditsRefresh?.();
         onDone?.();
       } else if (statusData.status === "error") {
         if (pollRef.current) clearInterval(pollRef.current);
         pollRef.current = null;
         setError(statusData.error || "Erreur de rendu");
+        onPipelineEnd?.();
         setScreen("input");
       }
     } catch (err) {

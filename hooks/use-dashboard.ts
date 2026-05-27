@@ -64,6 +64,7 @@ export function useDashboard() {
     type: "success" | "error" | "info";
   } | null>(null);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [renderNotif, setRenderNotif] = useState<{
     jobId: string;
     progress: number;
@@ -112,6 +113,8 @@ export function useDashboard() {
       setUpgradeReason(reason);
       setShowUpgrade(true);
     },
+    onPipelineStart: () => setIsGenerating(true),
+    onPipelineEnd: () => setIsGenerating(false),
     onRenderStarted: ({ jobId, prompt: notifPrompt }: { jobId: string; prompt: string }) => {
       setRenderNotif({
         jobId,
@@ -124,37 +127,49 @@ export function useDashboard() {
 
       notifPollRef.current = setInterval(async () => {
         try {
-          const res = await fetch(`/api/render/${jobId}`, { cache: "no-store" });
-          const data = await res.json();
+          const statusRes = await fetch(`/api/render/${jobId}`, { cache: "no-store" });
+          if (!statusRes.ok) return;
+          const statusData = await statusRes.json();
 
-          if (typeof data.progress === "number") {
+          if (statusData.progress !== undefined && statusData.progress > 0) {
             setRenderNotif((prev) =>
-              prev && prev.jobId === jobId ? { ...prev, progress: data.progress } : prev
+              prev ? { ...prev, progress: statusData.progress } : null
             );
           }
 
-          if (data.status === "done") {
+          if (statusData.status === "done") {
             if (notifPollRef.current) clearInterval(notifPollRef.current);
             notifPollRef.current = null;
             setRenderNotif((prev) =>
-              prev && prev.jobId === jobId
-                ? { ...prev, status: "done", progress: 100, videoUrl: data.videoUrl }
-                : prev
+              prev
+                ? {
+                    ...prev,
+                    status: "done",
+                    progress: 100,
+                    videoUrl: statusData.videoUrl,
+                  }
+                : null
             );
             showToast("Video generee avec succes !", "success");
             loadVideos();
-          } else if (data.status === "error") {
+            setScreen("input");
+            setProgress(0);
+            setIsGenerating(false);
+          } else if (statusData.status === "error") {
             if (notifPollRef.current) clearInterval(notifPollRef.current);
             notifPollRef.current = null;
-            setRenderNotif((prev) =>
-              prev && prev.jobId === jobId ? { ...prev, status: "error" } : prev
-            );
+            setRenderNotif((prev) => (prev ? { ...prev, status: "error" } : null));
             showToast("Erreur de rendu — reessaie", "error");
+            setScreen("input");
+            setProgress(0);
+            setIsGenerating(false);
           }
         } catch {
           // silent retry
         }
       }, 3000);
+
+      setScreen("generating");
     },
   };
 
@@ -533,6 +548,7 @@ export function useDashboard() {
     setToast,
     showToast,
     deleteVideo,
+    isGenerating,
   };
 }
 

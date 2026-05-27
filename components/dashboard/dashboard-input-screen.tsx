@@ -36,7 +36,7 @@ export function DashboardInputScreen(props: Props) {
     error,
   } = props;
 
-  const isBusy = loadingQ || screenshotLoading;
+  const isBusy = loadingQ || screenshotLoading || props.isGenerating;
   const currentValue = mode === "ai" ? prompt : customScript;
   const canSubmit = currentValue.trim().length > 0 && !isBusy;
 
@@ -54,12 +54,14 @@ export function DashboardInputScreen(props: Props) {
   return (
     <div
       style={{
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "100vh",
         padding: "0 40px",
+        overflow: "hidden",
         background: "#ffffff",
       }}
     >
