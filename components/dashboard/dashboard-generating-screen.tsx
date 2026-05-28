@@ -7,43 +7,37 @@ import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = Pick<
   UseDashboardReturn,
-  "progress" | "status" | "formatDetected" | "quality"
-> & {
-  onBack: () => void;
-};
+  "progress" | "status" | "formatDetected" | "quality" | "setScreen"
+>;
 
 export function DashboardGeneratingScreen({
   progress,
   status,
   formatDetected,
   quality,
-  onBack,
+  setScreen,
 }: Props) {
   return (
-    <div
-      className="dash-state-card dash-state-card--minimal"
-      style={{ position: "relative", width: "100%", height: "100%" }}
-    >
+    <div className="dash-state-card dash-state-card--minimal" style={{ position: "relative" }}>
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => setScreen("input")}
         style={{
           position: "absolute",
           top: 20,
           left: 20,
-          background: "rgba(23,19,17,0.04)",
-          border: "1px solid rgba(23,19,17,0.1)",
+          background: "rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.1)",
           borderRadius: 8,
           padding: "8px 14px",
           fontSize: 12,
-          color: "rgba(23,19,17,0.55)",
+          color: "rgba(255,255,255,0.5)",
           cursor: "pointer",
           fontFamily: "inherit",
         }}
       >
         ← Retour
       </button>
-
       <Film
         size={32}
         strokeWidth={1.5}

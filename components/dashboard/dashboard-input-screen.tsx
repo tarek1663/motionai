@@ -36,7 +36,7 @@ export function DashboardInputScreen(props: Props) {
     error,
   } = props;
 
-  const isBusy = loadingQ || screenshotLoading || props.isGenerating;
+  const isBusy = loadingQ || screenshotLoading;
   const currentValue = mode === "ai" ? prompt : customScript;
   const canSubmit = currentValue.trim().length > 0 && !isBusy;
 
@@ -54,30 +54,16 @@ export function DashboardInputScreen(props: Props) {
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        minHeight: "100vh",
         padding: "0 40px",
-        overflow: "hidden",
         background: "#ffffff",
       }}
     >
       <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "#10B981",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
-          Studio
-        </div>
         <h1
           style={{
             fontSize: 36,
@@ -87,54 +73,55 @@ export function DashboardInputScreen(props: Props) {
             marginBottom: 8,
           }}
         >
-          Cree ta prochaine video
+          Cree ta video
         </h1>
-        <p style={{ fontSize: 14, color: "#7b746d", fontWeight: 400 }}>
-          Decris ton idee ou ecris ton script directement.
-        </p>
       </div>
 
       <div
         style={{
           display: "flex",
-          background: "#f3f2f0",
-          borderRadius: 12,
-          padding: 4,
-          marginBottom: 12,
-          border: "1px solid #e5e5ea",
-          gap: 2,
+          alignItems: "center",
+          marginBottom: 14,
+          gap: 10,
         }}
       >
         {[
           { id: "ai", label: "Mode IA", Icon: Sparkles },
           { id: "script", label: "Mon script", Icon: PenSquare },
-        ].map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            onClick={() => setMode(m.id as "ai" | "script")}
-            style={{
-              padding: "8px 24px",
-              borderRadius: 9,
-              background: mode === m.id ? "#ffffff" : "transparent",
-              color: mode === m.id ? "#171311" : "#8e8680",
-              border:
-                mode === m.id
-                  ? "1px solid rgba(23,19,17,0.1)"
-                  : "1px solid transparent",
-              fontSize: 13,
-              fontWeight: mode === m.id ? 600 : 400,
-              cursor: "pointer",
-              fontFamily: "inherit",
-              transition: "all 0.15s",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <m.Icon size={14} strokeWidth={1.9} />
-            {m.label}
-          </button>
+        ].map((m, index) => (
+          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => setMode(m.id as "ai" | "script")}
+              style={{
+                padding: 0,
+                border: "none",
+                background: "transparent",
+                color: mode === m.id ? "#171311" : "#8e8680",
+                fontSize: 14,
+                fontWeight: mode === m.id ? 600 : 500,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "color 0.15s",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <m.Icon size={14} strokeWidth={1.9} />
+              {m.label}
+            </button>
+            {index === 0 && (
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 1,
+                  height: 16,
+                  background: "#d6d3d1",
+                }}
+              />
+            )}
+          </div>
         ))}
       </div>
 
@@ -160,13 +147,13 @@ export function DashboardInputScreen(props: Props) {
               ? "Decris ta video - ex. Presente Spotify en 30 secondes..."
               : "Ecris ton texte librement. L'IA le mettra en scene..."
           }
-          rows={mode === "script" ? 8 : 4}
+          rows={mode === "script" ? 5 : 2}
           style={{
             width: "100%",
             background: "none",
             border: "none",
             outline: "none",
-            padding: "20px 20px 12px",
+            padding: "10px 14px 6px",
             fontSize: 15,
             color: "#625b55",
             fontFamily: "inherit",
@@ -181,7 +168,7 @@ export function DashboardInputScreen(props: Props) {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "10px 14px 14px",
+            padding: "6px 10px 8px",
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
@@ -349,17 +336,6 @@ export function DashboardInputScreen(props: Props) {
       </div>
 
       <div style={{ marginTop: 20, textAlign: "center" }}>
-        <div
-          style={{
-            fontSize: 11,
-            color: "#a39e98",
-            marginBottom: 10,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-          }}
-        >
-          Suggestions
-        </div>
         <div
           style={{
             display: "flex",

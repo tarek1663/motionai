@@ -15,15 +15,8 @@ type GenerationCallbacks = {
   onVideosRefresh: () => void;
   onCreditsRefresh?: () => void;
   onUpgradeRequired?: (reason: string) => void;
-  onPipelineStart?: () => void;
-  onPipelineEnd?: () => void;
   onRenderStarted?: (payload: { jobId: string; prompt: string }) => void;
 };
-
-function failPipeline(cb: GenerationCallbacks) {
-  cb.onPipelineEnd?.();
-  cb.setScreen("input");
-}
 
 function handleRenderError(
   res: Response,
@@ -32,12 +25,12 @@ function handleRenderError(
 ): boolean {
   if (res.status === 403 && data.upgrade) {
     cb.onUpgradeRequired?.(data.error || "Limite atteinte");
-    failPipeline(cb);
+    cb.setScreen("input");
     return true;
   }
   if (!res.ok) {
     cb.setError(data.error || "Erreur de rendu");
-    failPipeline(cb);
+    cb.setScreen("input");
     return true;
   }
   return false;
@@ -87,8 +80,7 @@ async function pollRender(
     cb.setScreen,
     cb.setError,
     cb.onVideosRefresh,
-    cb.onCreditsRefresh,
-    cb.onPipelineEnd
+    cb.onCreditsRefresh
   );
 }
 
@@ -99,7 +91,7 @@ export async function generateFromPrompt(params: PromptParams) {
 
   if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
 
-  cb.onPipelineStart?.();
+  cb.setScreen("generating");
   cb.setError("");
   cb.setProgress(5);
   cb.setStatus("scripting");
@@ -115,7 +107,7 @@ export async function generateFromPrompt(params: PromptParams) {
     const voiceTextData = await voiceTextRes.json();
     if (!voiceTextRes.ok) {
       cb.setError(voiceTextData.error);
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
     cb.setFormatDetected(voiceTextData.formatName || "");
@@ -130,7 +122,7 @@ export async function generateFromPrompt(params: PromptParams) {
     const voiceData = await voiceRes.json();
     if (!voiceRes.ok) {
       cb.setError(voiceData.error);
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
     cb.setProgress(40);
@@ -169,7 +161,7 @@ export async function generateFromPrompt(params: PromptParams) {
     const scenesData = await scenesRes.json();
     if (!scenesRes.ok) {
       cb.setError(scenesData.error);
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
     cb.setProgress(70);
@@ -206,7 +198,7 @@ export async function generateFromPrompt(params: PromptParams) {
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
-    failPipeline(cb);
+    cb.setScreen("input");
   }
 }
 
@@ -216,7 +208,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
 
   if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
 
-  cb.onPipelineStart?.();
+  cb.setScreen("generating");
   cb.setError("");
   cb.setProgress(5);
   cb.setStatus("scripting");
@@ -232,7 +224,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     const analyzeData = await analyzeRes.json();
     if (!analyzeRes.ok) {
       cb.setError(analyzeData.error);
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
     cb.setProgress(20);
@@ -247,7 +239,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     const voiceData = await voiceRes.json();
     if (!voiceRes.ok) {
       cb.setError(voiceData.error);
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
     cb.setProgress(40);
@@ -312,7 +304,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
-    failPipeline(cb);
+    cb.setScreen("input");
   }
 }
 
@@ -323,7 +315,7 @@ export async function generateFromScript(params: ScriptParams) {
 
   if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
 
-  cb.onPipelineStart?.();
+  cb.setScreen("generating");
   cb.setError("");
   cb.setProgress(5);
   cb.setStatus("scripting");
@@ -347,7 +339,7 @@ export async function generateFromScript(params: ScriptParams) {
     console.log("🎬 scenesData complet:", JSON.stringify(scenesData).slice(0, 500));
     if (!scenesRes.ok) {
       cb.setError(scenesData.error || "Erreur d'analyse du script");
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
 
@@ -374,7 +366,7 @@ export async function generateFromScript(params: ScriptParams) {
     console.log("⏱️ voiceData complet:", JSON.stringify(voiceData).slice(0, 500));
     if (!voiceRes.ok) {
       cb.setError(voiceData.error || "Erreur de voix");
-      failPipeline(cb);
+      cb.setScreen("input");
       return;
     }
 
@@ -444,6 +436,6 @@ export async function generateFromScript(params: ScriptParams) {
     await pollRender(renderData.jobId, pollRef, cb);
   } catch (err: unknown) {
     cb.setError(err instanceof Error ? err.message : "Une erreur est survenue");
-    failPipeline(cb);
+    cb.setScreen("input");
   }
 }
