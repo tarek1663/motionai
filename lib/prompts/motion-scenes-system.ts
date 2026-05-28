@@ -34,36 +34,33 @@ RÈGLES ABSOLUES — NE JAMAIS VIOLER
    Acte 3 — CTA (20%) : Scène émotionnelle + appel à l'action fort
 
 ═══════════════════════════════════════
-NOUVELLES SCÈNES PREMIUM — À UTILISER EN PRIORITÉ
+SCÈNES PRIORITAIRES — UTILISER EN PREMIER
 ═══════════════════════════════════════
 
-- cleantext: texte centré simple et propre (le plus utilisé)
-- highlightword: mot important surligné avec animation
-- phototext: photo plein écran + texte par dessus (photoUrl requis)
-- icontext: icône + titre + sous-titre
-- stat: grand chiffre animé + label (counterTo pour la valeur)
-- cleanlist: liste de points avec checkmarks (text: "item1|item2|item3", text2: titre optionnel)
-- cleanquote: citation avec ligne accent
-- cleancta: appel à l'action premium avec bouton
-- underline: texte avec underline animé
-- splittext: texte gauche + description droite
+- puretext: texte centré pur sur fond avec grille — LA PLUS UTILISÉE
+- accentfirstword: premier mot en couleur accent, reste en noir/blanc (ex: "Un raccourci tentant.")
+- bignumber: grand chiffre en accent + label en gris (ex: "40" + counterTo: 40, text: "ANS")
+- photocard: texte au-dessus + photo limitée en dessous avec ombre (photoUrl requis)
+- stat: chiffre animé + label
+- cleantext: texte simple centré
+- cleancta: appel à l'action
 
-RÈGLES DE SÉLECTION :
-- Pour tout texte court et fort → cleantext, underline ou highlightword
-- Pour chiffres et stats → stat (ou counter si besoin de style punch)
-- Pour listes et bénéfices → cleanlist
-- Pour témoignages → cleanquote
-- Pour appel à l'action → cleancta
-- Quand le sujet est visuel (lieu, produit, personne, nourriture) → phototext + photoUrl
-- Pour features avec icône → icontext
-- Pour comparaisons → splittext
+RÈGLES ABSOLUES :
+- Texte TOUJOURS centré
+- JAMAIS de barres ou lignes décoratives sans raison
+- Beaucoup d'espace vide — ne pas remplir l'écran
+- 2 à 3 photos maximum par vidéo via photocard (jamais plein écran)
+- Fond : blanc (#ffffff) ou noir (#0a0a0a) ou couleur accent
+- Alterner blanc et noir entre les scènes
+- Scènes simples : fond + grille discrète + texte centré
+- RIEN D'AUTRE sauf si vraiment utile (cleanlist, cleanquote, underline en second choix)
 
 ÉVITER sauf si VRAIMENT pertinent :
-- matrix, ascii, squiggle, fire, snow, aurora
+- matrix, ascii, squiggle, fire, snow, aurora, phototext plein écran
 - glitch sur du contenu sérieux
-- Tout ce qui est illisible ou bizarre
+- Effets flashy, barres décoratives, écrans remplis
 
-Privilégie 50%+ de scènes cleantext/highlightword/underline/stat/cleanlist/cleancta dans chaque vidéo.
+Privilégie 70%+ de scènes puretext/accentfirstword/bignumber/photocard/stat/cleantext/cleancta.
 
 ═══════════════════════════════════════
 CATALOGUE COMPLET DES SCÈNES

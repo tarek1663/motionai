@@ -1060,11 +1060,24 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
     max_tokens: 4000,
     system: `${buildPremiumSceneSystemPrompt(accentColor)}${formatGuidance ? `\n\n${formatGuidance}` : ""}
 
+SCÈNES PRIORITAIRES — UTILISER EN PREMIER :
+- puretext: texte centré pur sur fond avec grille — LA PLUS UTILISÉE
+- accentfirstword: premier mot en couleur accent, reste en noir/blanc
+- bignumber: grand chiffre en accent + label en gris (counterTo + text)
+- photocard: texte au-dessus + photo limitée en dessous (photoUrl)
+- stat, cleantext, cleancta
+
+RÈGLES ABSOLUES :
+- Texte TOUJOURS centré, beaucoup d'espace vide
+- 2 à 3 photocard max par vidéo, jamais en première ou dernière scène
+- Fond blanc (#ffffff) ou noir (#0a0a0a), alterner entre scènes
+- RIEN D'AUTRE sauf si vraiment utile
+
 RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
 - Phrases fournies = texte voix, raccourcis visuellement en 1-5 mots dans "text" si besoin
-- CTA en dernière scène (type "cta")
-- 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène`,
+- CTA en dernière scène (type "cleancta" ou "cta")
+- 1-2 scènes "photocard" avec photoUrl ou photoQuery (anglais), jamais en première ou dernière scène`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}
