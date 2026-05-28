@@ -109,16 +109,17 @@ app.post("/voice", async (req, res) => {
     const audioUrl = `${process.env.RENDER_SERVER_URL}/audio/${audioFileName}`;
 
     const fps = 60;
-    const characters = data.alignment?.characters || [];
     const charTimes = data.alignment?.character_start_times_seconds || [];
     const charEndTimes = data.alignment?.character_end_times_seconds || [];
+    const characters = data.alignment?.characters || [];
 
-    const sentences = text.split(/(?<=[.!?,\n])\s+/).filter((s) => s.trim().length > 0);
+    const rawSentences = text
+      .split(/\n/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
     let charIndex = 0;
-
-    const phraseTimestamps = sentences.map((sentence, i) => {
-      const trimmed = sentence.trim();
-
+    const phraseTimestamps = rawSentences.map((sentence) => {
       while (
         charIndex < characters.length &&
         typeof characters[charIndex] === "string" &&
@@ -128,22 +129,29 @@ app.post("/voice", async (req, res) => {
       }
 
       const startTime = charTimes[charIndex] || 0;
-      const endCharIndex = Math.min(charIndex + trimmed.length - 1, charEndTimes.length - 1);
+      const endCharIndex = Math.min(
+        charIndex + Math.max(0, sentence.length - 1),
+        charEndTimes.length - 1,
+      );
       const endTime = charEndTimes[endCharIndex] || startTime + 2;
-      const adjustedEndTime = i < sentences.length - 1 ? endTime + 0.1 : endTime + 0.3;
 
-      charIndex += trimmed.length + 1;
+      charIndex += sentence.length + 1;
 
       const startFrame = Math.round(startTime * fps);
-      const endFrame = Math.round(adjustedEndTime * fps);
+      const durationFrames = Math.max(60, Math.round((endTime - startTime) * fps));
 
       return {
-        phrase: trimmed,
+        phrase: sentence,
         startFrame,
-        endFrame,
-        durationFrames: Math.max(30, endFrame - startFrame),
+        endFrame: startFrame + durationFrames,
+        durationFrames,
       };
     });
+
+    console.log(
+      "📝 Phrases synced:",
+      phraseTimestamps.map((p) => `"${p.phrase}" [${p.startFrame}-${p.endFrame}]`),
+    );
 
     const durationSeconds = charEndTimes[charEndTimes.length - 1] || 30;
 
