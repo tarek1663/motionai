@@ -19,6 +19,13 @@ export default function AccountPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [accentColor, setAccentColor] = useState("#10B981");
+  const [stats, setStats] = useState<{
+    total: number;
+    totalDuration: number;
+    topFormat: string;
+    thisMonth: number;
+  } | null>(null);
   const planOrder = ["free", "starter", "pro", "business"];
   const currentPlanIdx = planOrder.indexOf(credits?.plan || "free");
 
@@ -36,6 +43,23 @@ export default function AccountPage() {
     document.title = "Mon compte — Motionr";
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    const saved = localStorage.getItem(`motionr_accent_${user.id}`);
+    if (saved) setAccentColor(saved);
+  }, [user]);
+
+  useEffect(() => {
+    fetch("/api/user/stats")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d?.error) setStats(d);
+      })
+      .catch(() => {
+        /* ignore */
+      });
+  }, []);
+
   const openPortal = async () => {
     setPortalLoading(true);
     try {
@@ -46,6 +70,13 @@ export default function AccountPage() {
       /* ignore */
     } finally {
       setPortalLoading(false);
+    }
+  };
+
+  const saveAccent = (color: string) => {
+    setAccentColor(color);
+    if (user?.id) {
+      localStorage.setItem(`motionr_accent_${user.id}`, color);
     }
   };
 
@@ -141,6 +172,122 @@ export default function AccountPage() {
                 Modifier
               </button>
             </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 20,
+            padding: "24px",
+            border: "1.5px solid #e8e8e8",
+            marginBottom: 16,
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#9b938c",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: 16,
+            }}
+          >
+            Couleur accent par defaut
+          </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+            {[
+              "#10B981", "#7C3AED", "#3B82F6", "#F59E0B",
+              "#EF4444", "#EC4899", "#06B6D4", "#ffffff",
+            ].map((color) => (
+              <button
+                key={color}
+                onClick={() => saveAccent(color)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  background: color,
+                  border: accentColor === color ? "3px solid #171311" : "3px solid transparent",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  boxShadow: accentColor === color ? `0 0 12px ${color}66` : "none",
+                }}
+              />
+            ))}
+            <input
+              type="color"
+              value={accentColor}
+              onChange={(e) => saveAccent(e.target.value)}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                border: "none",
+                cursor: "pointer",
+                background: "none",
+                padding: 0,
+              }}
+              title="Couleur personnalisee"
+            />
+          </div>
+          <div style={{ fontSize: 12, color: colors.textMuted, marginTop: 10 }}>
+            Cette couleur sera utilisee par defaut pour toutes tes videos.
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 20,
+            padding: "24px",
+            border: "1.5px solid #e8e8e8",
+            marginBottom: 16,
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#9b938c",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: 16,
+            }}
+          >
+            Mes statistiques
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+            {[
+              { label: "Videos totales", value: stats?.total || 0, icon: "🎬" },
+              { label: "Ce mois", value: stats?.thisMonth || 0, icon: "📅" },
+              { label: "Format favori", value: stats?.topFormat || "—", icon: "📱" },
+              {
+                label: "Duree totale",
+                value: stats ? `${Math.round((stats.totalDuration || 0) / 60)}min` : "—",
+                icon: "⏱️",
+              },
+            ].map((s) => (
+              <div
+                key={s.label}
+                style={{
+                  background: "rgba(23,19,17,0.03)",
+                  borderRadius: 12,
+                  padding: "16px",
+                  border: "1px solid rgba(23,19,17,0.08)",
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: accentColor, letterSpacing: "-0.04em" }}>
+                  {s.value}
+                </div>
+                <div style={{ fontSize: 11, color: colors.textMuted, marginTop: 4 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
 

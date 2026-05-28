@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, type KeyboardEvent } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -67,6 +67,10 @@ export function useDashboard() {
   } | null>(null);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
   const [cooldown, setCooldown] = useState(0);
+  const [accentColor, setAccentColor] = useState("#10B981");
+  const [promptHistory, setPromptHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [draftRestored, setDraftRestored] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
@@ -124,6 +128,8 @@ export function useDashboard() {
     },
     onRenderStarted: ({ jobId, prompt: notifPrompt }: { jobId: string; prompt: string }) => {
       saveRenderToStorage(jobId, notifPrompt);
+      clearDraft();
+      setDraftRestored(false);
     },
   };
 
@@ -137,6 +143,50 @@ export function useDashboard() {
     loadVideos();
     loadCredits();
   }, [user, router, loadVideos, loadCredits]);
+
+  useEffect(() => {
+    if (!user) return;
+    const savedAccent = localStorage.getItem(`motionr_accent_${user.id}`);
+    if (savedAccent) setAccentColor(savedAccent);
+
+    const savedHistory = localStorage.getItem(`motionr_prompts_${user.id}`);
+    if (savedHistory) {
+      try {
+        setPromptHistory(JSON.parse(savedHistory) as string[]);
+      } catch {
+        setPromptHistory([]);
+      }
+    }
+
+    const savedDraft = localStorage.getItem(`motionr_draft_${user.id}`);
+    if (savedDraft) {
+      try {
+        const data = JSON.parse(savedDraft) as {
+          mode?: ScriptMode;
+          prompt?: string;
+          customScript?: string;
+        };
+        setMode(data.mode || "ai");
+        setPrompt(data.prompt || "");
+        setCustomScript(data.customScript || "");
+        if ((data.prompt || data.customScript || "").trim()) {
+          setDraftRestored(true);
+        }
+      } catch {
+        // ignore invalid draft
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    if (prompt.trim() || customScript.trim()) {
+      localStorage.setItem(
+        `motionr_draft_${user.id}`,
+        JSON.stringify({ mode, prompt, customScript })
+      );
+    }
+  }, [prompt, customScript, mode, user]);
 
   useEffect(() => {
     const videoUrlParam = searchParams.get("videoUrl");
@@ -207,11 +257,12 @@ export function useDashboard() {
         quality,
         selectedVoiceId,
         musicEnabled,
+        userAccentColor: accentColor,
         pollRef,
         ...generationCallbacks,
       });
     },
-    [prompt, duration, format, quality, selectedVoiceId, musicEnabled, loadVideos]
+    [prompt, duration, format, quality, selectedVoiceId, musicEnabled, accentColor, loadVideos]
   );
 
   const fetchQuestions = useCallback(async () => {
@@ -239,6 +290,21 @@ export function useDashboard() {
       setLoadingQ(false);
     }
   }, [prompt, generatePrompt]);
+
+  const savePromptToHistory = useCallback(
+    (text: string) => {
+      if (!text.trim() || !user) return;
+      const updated = [text, ...promptHistory.filter((p) => p !== text)].slice(0, 20);
+      setPromptHistory(updated);
+      localStorage.setItem(`motionr_prompts_${user.id}`, JSON.stringify(updated));
+      setHistoryIndex(-1);
+    },
+    [promptHistory, user]
+  );
+
+  const clearDraft = useCallback(() => {
+    if (user) localStorage.removeItem(`motionr_draft_${user.id}`);
+  }, [user]);
 
   const submit = useCallback(async () => {
     const now = Date.now();
@@ -270,6 +336,7 @@ export function useDashboard() {
         return;
       }
       setLastGenerationTime(now);
+      savePromptToHistory(prompt);
       setScreenshotLoading(true);
       try {
         await generateFromScreenshot({
@@ -280,9 +347,12 @@ export function useDashboard() {
           quality,
           selectedVoiceId,
           musicEnabled,
+          userAccentColor: accentColor,
           pollRef,
           ...generationCallbacks,
         });
+        clearDraft();
+        setDraftRestored(false);
       } finally {
         setScreenshotLoading(false);
       }
@@ -296,6 +366,7 @@ export function useDashboard() {
         return;
       }
       setLastGenerationTime(now);
+      savePromptToHistory(prompt);
       await fetchQuestions();
       return;
     }
@@ -306,6 +377,7 @@ export function useDashboard() {
       return;
     }
     setLastGenerationTime(now);
+    savePromptToHistory(customScript);
 
     await generateFromScript({
       script: customScript,
@@ -314,9 +386,12 @@ export function useDashboard() {
       quality,
       selectedVoiceId,
       musicEnabled,
+      userAccentColor: accentColor,
       pollRef,
       ...generationCallbacks,
     });
+    clearDraft();
+    setDraftRestored(false);
   }, [
     mode,
     prompt,
@@ -331,6 +406,9 @@ export function useDashboard() {
     loadVideos,
     showToast,
     lastGenerationTime,
+    accentColor,
+    savePromptToHistory,
+    clearDraft,
   ]);
 
   useEffect(() => {
@@ -437,6 +515,42 @@ export function useDashboard() {
     setScreenshotPreview("");
   }, []);
 
+  const clearDraftContent = useCallback(() => {
+    setPrompt("");
+    setCustomScript("");
+    clearDraft();
+    setDraftRestored(false);
+  }, [clearDraft]);
+
+  const handlePromptKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        void submit();
+        return;
+      }
+      if (e.key === "ArrowUp" && !e.shiftKey) {
+        e.preventDefault();
+        const newIndex = Math.min(historyIndex + 1, promptHistory.length - 1);
+        setHistoryIndex(newIndex);
+        if (promptHistory[newIndex]) {
+          mode === "ai" ? setPrompt(promptHistory[newIndex]) : setCustomScript(promptHistory[newIndex]);
+        }
+      }
+      if (e.key === "ArrowDown" && !e.shiftKey) {
+        e.preventDefault();
+        const newIndex = Math.max(historyIndex - 1, -1);
+        setHistoryIndex(newIndex);
+        if (newIndex === -1) {
+          mode === "ai" ? setPrompt("") : setCustomScript("");
+        } else if (promptHistory[newIndex]) {
+          mode === "ai" ? setPrompt(promptHistory[newIndex]) : setCustomScript(promptHistory[newIndex]);
+        }
+      }
+    },
+    [submit, historyIndex, promptHistory, mode]
+  );
+
   const finishQuestions = useCallback(() => {
     const durationOptionId = answers.duration || "duration_30";
     const durationMap: Record<string, string> = {
@@ -520,6 +634,11 @@ export function useDashboard() {
     status,
     videoUrl,
     error,
+    accentColor,
+    promptHistory,
+    draftRestored,
+    handlePromptKeyDown,
+    clearDraftContent,
     formatDetected,
     showDurationMenu,
     setShowDurationMenu,

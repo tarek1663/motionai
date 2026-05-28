@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { userId } = await auth();
+    let plan = "free";
 
     // Vérifier les crédits
     if (userId) {
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
           limit: sub.videos_limit,
         }, { status: 403 });
       }
+      plan = sub?.plan || "free";
     }
 
     let RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
@@ -33,7 +35,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(`${RENDER_URL}/render`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, plan }),
     });
 
     const data = await res.json();

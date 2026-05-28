@@ -187,9 +187,6 @@ export function DashboardSidebar({
                 <span className="dash-credits-plan">
                   {credits.planName || (credits.plan === "free" ? "Gratuit" : credits.plan)}
                 </span>
-                <a href="/pricing" className="dash-credits-upgrade">
-                  Upgrade
-                </a>
               </div>
               <div className="dash-credits-track">
                 <div

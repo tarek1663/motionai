@@ -43,6 +43,7 @@ type PromptParams = GenerationCallbacks & {
   quality: QualityMode;
   selectedVoiceId: string;
   musicEnabled: boolean;
+  userAccentColor?: string;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
 };
 
@@ -54,6 +55,7 @@ type ScreenshotParams = GenerationCallbacks & {
   quality: QualityMode;
   selectedVoiceId: string;
   musicEnabled: boolean;
+  userAccentColor?: string;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
 };
 
@@ -64,6 +66,7 @@ type ScriptParams = GenerationCallbacks & {
   quality: QualityMode;
   selectedVoiceId: string;
   musicEnabled: boolean;
+  userAccentColor?: string;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
 };
 
@@ -85,7 +88,7 @@ async function pollRender(
 }
 
 export async function generateFromPrompt(params: PromptParams) {
-  const { prompt, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
+  const { prompt, duration, format, quality, selectedVoiceId, musicEnabled, userAccentColor, pollRef, ...cb } = params;
   const finalPrompt = prompt.trim();
   if (!finalPrompt) return;
 
@@ -150,7 +153,7 @@ export async function generateFromPrompt(params: PromptParams) {
         voiceoverText: voiceTextData.voiceoverText,
         audioDuration: voiceData.durationSeconds || parseInt(durationSeconds),
         format,
-        accentColor: voiceTextData.accentColor,
+        accentColor: userAccentColor || voiceTextData.accentColor,
         bgDark: voiceTextData.bgDark,
         bgLight: voiceTextData.bgLight,
         bgAccent: voiceTextData.bgAccent,
@@ -187,7 +190,7 @@ export async function generateFromPrompt(params: PromptParams) {
         musicVolume: 0.07,
         prompt: finalPrompt,
         duration: parseInt(durationSeconds),
-        accentColor: voiceTextData.accentColor,
+        accentColor: userAccentColor || voiceTextData.accentColor,
         formatName: voiceTextData.formatName,
       }),
     });
@@ -203,7 +206,7 @@ export async function generateFromPrompt(params: PromptParams) {
 }
 
 export async function generateFromScreenshot(params: ScreenshotParams) {
-  const { file, intent, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } =
+  const { file, intent, duration, format, quality, selectedVoiceId, musicEnabled, userAccentColor, pollRef, ...cb } =
     params;
 
   if (!(await checkCreditsBeforeGenerate(cb.setError, cb.setScreen))) return;
@@ -293,7 +296,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
         musicVolume: 0.07,
         prompt: analyzeData.productName,
         duration: parseInt(durationSeconds),
-        accentColor: analyzeData.accentColor,
+        accentColor: userAccentColor || analyzeData.accentColor,
         formatName: "UI Reconstruit",
       }),
     });
@@ -309,7 +312,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
 }
 
 export async function generateFromScript(params: ScriptParams) {
-  const { script, duration, format, quality, selectedVoiceId, musicEnabled, pollRef, ...cb } = params;
+  const { script, duration, format, quality, selectedVoiceId, musicEnabled, userAccentColor, pollRef, ...cb } = params;
   const finalScript = script.trim();
   if (!finalScript) return;
 
@@ -323,7 +326,7 @@ export async function generateFromScript(params: ScriptParams) {
 
   try {
     const requestedDurationSeconds = durationToSeconds(duration);
-    const accentColor = colors.accent;
+    const accentColor = userAccentColor || colors.accent;
 
     const scenesRes = await fetch("/api/script-scenes", {
       method: "POST",

@@ -38,6 +38,10 @@ export function DashboardInputScreen(props: Props) {
     loadingQ,
     screenshotLoading,
     cooldown,
+    promptHistory,
+    draftRestored,
+    handlePromptKeyDown,
+    clearDraftContent,
     error,
   } = props;
 
@@ -149,6 +153,7 @@ export function DashboardInputScreen(props: Props) {
           onChange={(e) =>
             mode === "ai" ? setPrompt(e.target.value) : setCustomScript(e.target.value)
           }
+          onKeyDown={handlePromptKeyDown}
           placeholder={
             mode === "ai"
               ? "Decris ta video - ex. Presente Spotify en 30 secondes..."
@@ -318,6 +323,52 @@ export function DashboardInputScreen(props: Props) {
           </div>
         )}
       </div>
+
+      {(draftRestored || prompt.trim() || customScript.trim()) && (
+        <div
+          style={{
+            marginTop: 8,
+            fontSize: 10,
+            color: "rgba(23,19,17,0.35)",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <span>📝</span> Brouillon restaure ·
+          <button
+            type="button"
+            onClick={clearDraftContent}
+            style={{
+              background: "none",
+              border: "none",
+              color: "rgba(23,19,17,0.45)",
+              cursor: "pointer",
+              fontSize: 10,
+              fontFamily: "inherit",
+              padding: 0,
+              textDecoration: "underline",
+            }}
+          >
+            Effacer
+          </button>
+        </div>
+      )}
+
+      {promptHistory.length > 0 && (
+        <div
+          style={{
+            fontSize: 10,
+            color: "rgba(23,19,17,0.3)",
+            marginTop: 4,
+            textAlign: "right",
+            width: "100%",
+            maxWidth: 720,
+          }}
+        >
+          ↑↓ pour naviguer dans l'historique
+        </div>
+      )}
 
       <div id="tour-suggestions" style={{ marginTop: 20, textAlign: "center" }}>
         <div

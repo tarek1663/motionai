@@ -52,6 +52,15 @@ export default function DashboardPage() {
     }
   }, [state.user]);
 
+  useEffect(() => {
+    if (!state.user) return;
+    const isEmailVerified =
+      state.user.emailAddresses?.[0]?.verification?.status === "verified";
+    if (!isEmailVerified) {
+      state.showToast("Verifie ton email pour activer toutes les fonctionnalites.", "info");
+    }
+  }, [state.user, state.showToast]);
+
   const dismissTour = () => {
     if (state.user) localStorage.setItem(`motionr_tour_${state.user.id}`, "done");
     setShowTour(false);
@@ -59,6 +68,91 @@ export default function DashboardPage() {
 
   return (
     <>
+      {state.credits?.videos_remaining === 1 && state.credits?.plan !== "business" && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 998,
+            background:
+              "linear-gradient(90deg, rgba(245,158,11,0.15), rgba(245,158,11,0.08))",
+            borderBottom: "1px solid rgba(245,158,11,0.2)",
+            padding: "10px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 16 }}>⚠️</span>
+            <span style={{ fontSize: 13, color: "#f59e0b", fontWeight: 500 }}>
+              Plus qu'une video ce mois-ci — <strong>upgrade pour continuer a creer</strong>
+            </span>
+          </div>
+          <button
+            onClick={() => router.push("/pricing")}
+            style={{
+              background: "#f59e0b",
+              color: "#0a0a0a",
+              border: "none",
+              borderRadius: 8,
+              padding: "6px 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Upgrader →
+          </button>
+        </div>
+      )}
+
+      {state.credits?.videos_remaining === 0 && state.credits?.plan !== "business" && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 998,
+            background:
+              "linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08))",
+            borderBottom: "1px solid rgba(239,68,68,0.2)",
+            padding: "10px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 16 }}>🚫</span>
+            <span style={{ fontSize: 13, color: "#ef4444", fontWeight: 500 }}>
+              Tu as utilise toutes tes videos ce mois-ci —{" "}
+              <strong>upgrade pour continuer</strong>
+            </span>
+          </div>
+          <button
+            onClick={() => router.push("/pricing")}
+            style={{
+              background: "#ef4444",
+              color: "#fff",
+              border: "none",
+              borderRadius: 8,
+              padding: "6px 14px",
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Upgrader →
+          </button>
+        </div>
+      )}
+
       <DashboardShell
         {...state}
         onStartTour={() => {
@@ -80,7 +174,6 @@ export default function DashboardPage() {
               dismissTour();
             }
           }}
-          onSkip={dismissTour}
         />
       )}
     </>
@@ -91,14 +184,12 @@ function TourTooltip({
   step,
   targetId,
   onNext,
-  onSkip,
   current,
   total,
 }: {
   step: TourStep;
   targetId: string;
   onNext: () => void;
-  onSkip: () => void;
   current: number;
   total: number;
 }) {
@@ -139,10 +230,9 @@ function TourTooltip({
           inset: 0,
           zIndex: 9998,
           background: "rgba(0,0,0,0.5)",
-          backdropFilter: "blur(2px)",
         }}
-        onClick={onSkip}
       />
+      <TourCutout targetId={targetId} />
       <TargetHighlight targetId={targetId} />
       <div
         style={{
@@ -150,12 +240,13 @@ function TourTooltip({
           top: pos.top,
           left: pos.left,
           zIndex: 10000,
-          width: 300,
-          background: "#1a1a1a",
-          border: "1px solid rgba(16,185,129,0.3)",
-          borderRadius: 16,
-          padding: 18,
-          boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+          width: 292,
+          background: "rgba(18,18,18,0.94)",
+          border: "1px solid rgba(255,255,255,0.09)",
+          borderRadius: 14,
+          padding: 16,
+          boxShadow: "0 18px 48px rgba(0,0,0,0.45)",
+          backdropFilter: "blur(8px)",
         }}
       >
         <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
@@ -171,44 +262,17 @@ function TourTooltip({
             />
           ))}
         </div>
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "#10B981",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 6,
-          }}
-        >
-          {current + 1} / {total}
-        </div>
-        <div style={{ fontSize: 15, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
           {step.title}
         </div>
-        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", lineHeight: 1.55, marginBottom: 14 }}>
           {step.desc}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
-            onClick={onSkip}
-            style={{
-              flex: 1,
-              padding: 8,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 8,
-              fontSize: 12,
-              color: "rgba(255,255,255,0.5)",
-              cursor: "pointer",
-            }}
-          >
-            Passer
-          </button>
-          <button
             onClick={onNext}
             style={{
-              flex: 2,
+              flex: 1,
               padding: 8,
               background: "#10B981",
               border: "none",
@@ -217,6 +281,8 @@ function TourTooltip({
               fontWeight: 700,
               color: "#fff",
               cursor: "pointer",
+              fontFamily: "inherit",
+              boxShadow: "0 6px 16px rgba(16,185,129,0.28)",
             }}
           >
             {current === total - 1 ? "Terminer ✓" : "Suivant →"}
@@ -227,12 +293,56 @@ function TourTooltip({
   );
 }
 
+function TourCutout({ targetId }: { targetId: string }) {
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    const updateRect = () => {
+      const el = document.getElementById(targetId);
+      if (el) setRect(el.getBoundingClientRect());
+    };
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    window.addEventListener("scroll", updateRect, true);
+    return () => {
+      window.removeEventListener("resize", updateRect);
+      window.removeEventListener("scroll", updateRect, true);
+    };
+  }, [targetId]);
+
+  if (!rect) return null;
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: rect.top - 6,
+        left: rect.left - 6,
+        width: rect.width + 12,
+        height: rect.height + 12,
+        borderRadius: 10,
+        boxShadow: "0 0 0 9999px rgba(0,0,0,0.5)",
+        zIndex: 9998,
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
 function TargetHighlight({ targetId }: { targetId: string }) {
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
-    const el = document.getElementById(targetId);
-    if (el) setRect(el.getBoundingClientRect());
+    const updateRect = () => {
+      const el = document.getElementById(targetId);
+      if (el) setRect(el.getBoundingClientRect());
+    };
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    window.addEventListener("scroll", updateRect, true);
+    return () => {
+      window.removeEventListener("resize", updateRect);
+      window.removeEventListener("scroll", updateRect, true);
+    };
   }, [targetId]);
 
   if (!rect) return null;
