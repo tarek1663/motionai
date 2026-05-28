@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { PhraseTimestamp } from "@/lib/elevenlabs";
+import { buildMotionScenesSystemPrompt } from "@/lib/prompts/motion-scenes-system";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -1033,16 +1034,16 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
 
   // Ajuster les durées pour que la somme - overlaps = totalFrames
   const rawDurations = phraseTimestamps && phraseTimestamps.length === nbScenes
-    ? phraseTimestamps.map(pt => Math.max(80, Math.min(300, pt.durationFrames)))
+    ? phraseTimestamps.map(pt => Math.max(90, Math.min(300, pt.durationFrames)))
     : (() => {
         const wordCounts = phrases.map(p => p.split(" ").filter(w => w.length > 0).length);
         const totalWords = wordCounts.reduce((a, b) => a + b, 0);
         const totalFrames = Math.round(audioDuration * fps);
         if (totalWords === 0) {
-          return phrases.map(() => Math.max(80, Math.round(totalFrames / nbScenes)));
+          return phrases.map(() => Math.max(90, Math.round(totalFrames / nbScenes)));
         }
         return wordCounts.map(wc =>
-          Math.min(300, Math.max(80, Math.round((wc / totalWords) * totalFrames))),
+          Math.min(300, Math.max(90, Math.round((wc / totalWords) * totalFrames))),
         );
       })();
 
@@ -1050,259 +1051,24 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
   const targetTotal = Math.round(audioDuration * fps) + (nbScenes - 1) * FADE_FRAMES;
   const currentSum  = rawDurations.reduce((a, b) => a + b, 0);
   const ratio = currentSum > 0 ? targetTotal / currentSum : 1;
-  const sceneDurations = rawDurations.map(d => Math.max(80, Math.round(d * ratio)));
+  const sceneDurations = rawDurations.map(d => Math.max(90, Math.round(d * ratio)));
 
   const durationPerScene = Math.round(sceneDurations.reduce((a, b) => a + b, 0) / nbScenes);
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 4000,
-    system: `Tu es un directeur artistique Apple.
-Tu reçois un script voix et tu crées UNE scène visuelle par phrase.
-RETOURNE UNIQUEMENT DU JSON VALIDE.
+    system: `${buildMotionScenesSystemPrompt({
+      formatGuidance,
+      accentColor,
+      bgAccent,
+    })}
 
-TYPES DE SCÈNES DISPONIBLES (utilise tous ces types, jamais les mêmes en séquence):
-
-TEXTE SIMPLE:
-- "word": 1-3 mots massifs impactants — pour les titres forts
-- "reveal": texte surgit d'un masque — pour les révélations
-- "split": bold + light — pour les faits avec contexte
-- "sentence": phrase mot par mot — pour les accroches narratives
-
-MOTION DESIGN RICHE (utiliser au moins 40% du temps):
-- "particles": texte + explosion de particules — pour les moments d'impact
-- "glitch": aberration chromatique RGB — pour les marques tech
-- "kinetic": mots en rafale — pour l'énergie et la dynamisme
-- "zoompunch": zoom depuis l'infini — pour les révélations finales
-- "highlight": mot illuminé dans une phrase — pour les concepts clés
-- "icon": icône SVG animée + texte — pour les concepts, valeurs, features
-  text: "texte court (1-4 mots)"
-  text2: "sous-texte optionnel"
-  iconType: "search|lightning|globe|rocket|bulb|trendUp|trophy|network|music|leaf|run|brain|money|target|star|phone|fire"
-  → Utiliser pour: features d'un produit, valeurs d'une marque, concepts clés
-  → Au moins 1 scène icon par vidéo
-
-DATA VISUALIZATION:
-- "counter": chiffre animé + barre de progression — pour les stats
-- "chart": courbe SVG qui se dessine — pour les données évolution
-- "floatstats": 3 stats en 3D — pour les métriques comparables
-- "numbers": 4 chiffres en cascade — pour les bilans chiffrés
-- "timeline": frise chronologique — pour les histoires avec dates
-  text: "2010|Fondée|2015|Milestone|2020|Record|2024|Aujourd'hui"
-
-COMPOSITION:
-- "card": carte UI 3D flottante — pour les faits qualitatifs
-
-ACTION:
-- "cta": appel à l'action — TOUJOURS la dernière scène
-
-NOUVEAUX TYPES DISPONIBLES:
-- "typewriter": texte qui se tape lettre par lettre
-- "scramble": lettres mélangées avant révélation
-- "neonglow": texte néon qui pulse (fond sombre uniquement)
-- "stamp": texte tamponné avec bordure
-- "wavetext": mots qui ondulent
-- "outlinefill": texte contour qui se remplit
-- "odometer": compteur style tableau d'affichage
-- "progressring": cercle de progression avec %
-- "gauge": jauge avec aiguille
-- "bubblechart": graphique à bulles
-- "notification": pile de notifications animées
-- "successcheck": coche de succès animée
-- "featurehighlight": highlights sur screenshot
-- "likeexplosion": explosion de cœurs avec compteur
-- "followercounter": compteur d'abonnés
-- "starfield": champ d'étoiles avec texte
-- "aurora": effet aurore boréale
-- "matrix": pluie de caractères Matrix
-- "countdownring": compte à rebours circulaire
-- "xpbar": barre d'expérience gaming
-- "flightboard": tableau d'affichage aéroport
-- "stockchart": graphique boursier
-- "hologram": effet hologramme avec scan line
-- "moneyrain": pluie de billets
-- "titlecard": carte de titre style cinéma
-
-NOUVELLES SCÈNES BATCH 2:
-- "magnetic": mots qui arrivent depuis les côtés
-- "gradientslide": dégradé qui traverse le texte
-- "cascade": lettres qui tombent en décalé
-- "blurfocus": texte qui passe de flou à net
-- "particlerain": pluie de particules colorées
-- "fire": particules de feu (fonds sombres)
-- "snow": flocons de neige
-- "sunray": rayons de soleil depuis le centre
-- "funnel": entonnoir de conversion animé
-- "comparisonbars": barres avant/après
-- "roi": retour sur investissement animé
-- "achievement": badge achievement unlocked
-- "circuit": circuit imprimé animé
-- "glitchscreen": écran glitché avec scan lines
-- "pollresults": résultats de sondage
-- "commentthread": fil de commentaires qui arrivent
-- "endcredits": générique de fin qui scroll
-- "wipe": révélation par balayage
-- "dollyzoom": effet Hitchcock zoom/dezoom
-- "steps": étapes numérotées avec progression
-- "compare": comparaison sans/avec côte à côte
-- "quotereveal": citation avec auteur
-- "benefits": liste de bénéfices avec icônes
-- "moodboard": grille de couleurs/formes
-- "minimalist": design épuré fond blanc
-- "gradientbg": fond dégradé animé
-- "pricereveal": révélation de prix barré
-
-BATCH 3 — 20 nouvelles scènes:
-- "logoreveal": logo qui apparaît avec ripple
-- "brandintro": intro de marque avec ligne horizontale
-- "colorpalette": palette de couleurs animée
-- "property": présentation immobilier avec photo
-- "scoreboard": tableau de score sportif
-- "playerstat": stats d'un joueur avec barres
-- "menuitem": plat de restaurant avec photo
-- "heartbeat": ECG avec battement de cœur
-- "geometric": formes géométriques rotatives
-- "liquid": remplissage liquide animé
-- "morphshape": forme qui morphe cercle/carré
-- "dna": hélice ADN animée
-- "swipe": indicateur de glissement
-- "click": bouton avec ripple au clic
-- "loading": skeleton loading animé
-- "audiowaveform": visualiseur audio (barres animées)
-- "vinyl": disque vinyle qui tourne
-- "magazinecover": couverture magazine avec photo
-- "pullquote": citation avec ligne verticale
-- "infographic": grille infographique 2x2
-
-- "worldmap": carte du monde avec points lumineux — pour sujets mondiaux/géographiques
-  text: "titre" text2: "sous-titre"
-- "waveform": onde sonore animée — pour musique/podcast/son
-  text: "titre" text2: "sous-titre"
-- "progressbars": barres de progression multiples — pour comparaisons %
-  text: "Label1 95%|Label2 88%|Label3 72%|Label4 91%"
-  text2: "titre de la section"
-- "quote": citation dans une bulle élégante — pour témoignages/citations
-  text: "la citation complète"
-  text2: "— Auteur, Titre"
-- "countdown": compte à rebours explosif — pour lancements/événements
-  text: "5" (chiffre de départ), text2: "GO!" (texte final)
-- "mirror": texte avec reflet miroir — effet luxe premium
-  text: "titre" text2: "sous-titre"
-- "datascroll": chiffres qui défilent en arrière-plan — pour tech/finance
-  text: "titre" text2: "sous-titre"
-- "burst": explosion de lignes depuis le centre — pour impacts forts
-  text: "titre" text2: "sous-titre"
-- "morphshapes": formes géométriques qui morphent — pour transformation/évolution
-  text: "titre" text2: "sous-titre"
-- "text3d": texte en perspective 3D — pour titres cinématographiques
-  text: "titre" text2: "sous-titre"
-- "splitscreen": 2-3 panneaux qui arrivent de directions différentes
-  text: "Panneau1|Panneau2|Panneau3"
-- "photo": texte + vraie photo dans un cadre — pour illustrer visuellement
-  text: "titre de la scène"
-  text2: "sous-titre optionnel"
-  photoQuery: "2-3 mots anglais précis pour Pexels"
-
-RÈGLE STRICTE DE VARIÉTÉ:
-- JAMAIS 2x le même type consécutif
-- JAMAIS plus de 2 scènes "word" ou "sentence" par vidéo
-- TOUJOURS au moins 1 scène "particles" ou "glitch"
-- TOUJOURS au moins 1 scène "floatstats", "numbers" ou "chart"
-- TOUJOURS au moins 1 scène "timeline" si le sujet a des dates
-- TOUJOURS au moins 1 scène "highlight" par vidéo
-- TOUJOURS au moins 1 scène "icon" par vidéo
-
-RÈGLE PHOTOS — OBLIGATOIRE:
-- TOUJOURS inclure 1 à 2 scènes "photo" par vidéo
-- La scène photo doit illustrer le sujet principal
-- photoQuery TOUJOURS en anglais, 2-3 mots très précis
-- Exemples de photoQuery:
-  "présente Google" → "google office technology"
-  "voyage au Japon" → "tokyo japan street"
-  "cuisine italienne" → "pasta carbonara food"
-  "sport football" → "football player stadium"
-  "histoire Rome" → "ancient rome colosseum"
-  "IA et futur" → "artificial intelligence technology"
-  "écologie" → "green nature forest"
-- Position idéale: scène 3 ou 4, et scène 7 ou 8
-- JAMAIS en première ou dernière scène
-
-POUR highlight:
-text: la phrase complète
-text2: LE MOT à illuminer (un seul mot)
-
-POUR numbers:
-text: "Stat1|Stat2|Stat3|Stat4"
-text2: "Label1|Label2|Label3|Label4"
-
-POUR icon:
-text: texte court (1-4 mots)
-text2: sous-texte optionnel
-iconType: un des types listés (ou omis → détection auto depuis text)
-
-${formatGuidance}
-CHAMPS:
-{
-  "type": "...",
-  "text": "MOT CLÉ (1-4 mots max)",
-  "text2": "contexte (2-4 mots)",
-  "bg": "#hex",
-  "accentColor": "#hex — couleur de marque déduite du sujet",
-  "counterFrom": 0, "counterTo": 0, "counterSuffix": "", "counterPrefix": "",
-  "chartValues": [], "chartLabel": "",
-  "cardMetric": "", "cardMetricLabel": "", "cardTitle": "", "cardSubtitle": "",
-  "iconType": "search",
-  "photoQuery": "english keywords for Pexels search"
-}
-
-COHÉRENCE VOIX/VISUEL:
-- "fondée en 2010" → reveal, text:"2010."
-- "500 millions" → counter, counterTo:500000000
-- "numéro un" → zoompunch, text:"N°1."
-- intro → sentence
-- 3 stats → floatstats, text:"A | B | C", text2:"lab1 | lab2 | lab3"
-- dernière → cta
-
-DESIGN — RÈGLES STRICTES COULEURS:
-RÈGLE ABSOLUE COULEURS:
-- Sur fond BLANC (#ffffff) → texte NOIR (#0a0a0a) ou accent FONCÉ
-- Sur fond ACCENT (couleur vive) → texte BLANC (#ffffff) ou NOIR selon luminosité
-- Sur fond NOIR (#0a0a0a) → texte BLANC ou accent
-- JAMAIS accent orange sur fond orange
-- JAMAIS accent clair sur fond clair
-- JAMAIS accent foncé sur fond foncé
-- Le contraste minimum doit être de 4.5:1
-
-RÈGLE ACCENT — Claude choisit la couleur:
-- Déduis accentColor (hex) de la marque ou du thème du sujet
-- Même valeur sur toutes les scènes (ex: Google → #4285f4, Netflix → #e50914)
-
-RÈGLE FONDS — 3 FONDS EN ROTATION STRICTE:
-1. NOIR → "#0a0a0a"
-2. COULEUR → "${bgAccent}" (couleur détectée automatiquement)
-3. BLANC → "#ffffff"
-
-ROTATION: noir → couleur → blanc → noir → couleur → blanc → ...
-CTA final: toujours "${bgAccent}"
-JAMAIS 2 fonds identiques consécutifs.
-JAMAIS d'autre fond que ces 3.
-
-RÈGLE TEXTE — TOUJOURS BLANC:
-- Sur fond sombre: color "#f5f5f0" (blanc cassé)
-- Sur fond coloré sombre: color "#f5f5f0" (blanc cassé)
-- Sur fond clair uniquement: color "#1d1d1f"
-- JAMAIS de texte coloré comme couleur principale
-- La couleur accent: UNIQUEMENT pour chiffres, highlights, lignes
-
-TYPOGRAPHIE — 3 POLICES MAX:
-- Titres/Headlines: Inter 900 (SF Pro style)
-- Corps/Sous-titres: Inter 200-300
-- Chiffres/Data: Inter 800 tabular-nums
-- JAMAIS de serif
-- JAMAIS de police décorative
-- letterSpacing très serré sur les grands titres (-0.06em minimum)
-
-FORMAT: { "scenes": [...] }`,
+RÈGLES COMPLÉMENTAIRES VOIX-OFF:
+- Une scène par phrase exactement (${nbScenes} scènes)
+- Phrases fournies = texte voix, raccourcis visuellement en 1-5 mots dans "text" si besoin
+- CTA en dernière scène (type "cta")
+- TOUJOURS 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}
