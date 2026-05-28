@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const state = useDashboard();
   const [showTour, setShowTour] = useState(false);
   const [tourStep, setTourStep] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     document.title = "Studio — Motionr";
@@ -61,6 +62,45 @@ export default function DashboardPage() {
     }
   }, [state.user, state.showToast]);
 
+  useEffect(() => {
+    const checkMultiTab = () => {
+      const saved = localStorage.getItem("motionr_render");
+      if (!saved) {
+        setIsGenerating(false);
+        return;
+      }
+      try {
+        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
+        if (data.status === "rendering" && Date.now() - (data.timestamp || 0) < 30 * 60 * 1000) {
+          setIsGenerating(true);
+          return;
+        }
+      } catch {
+        // ignore parse errors
+      }
+      setIsGenerating(false);
+    };
+    checkMultiTab();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "motionr_render") {
+        if (e.newValue) {
+          try {
+            const data = JSON.parse(e.newValue) as { status?: string };
+            setIsGenerating(data.status === "rendering");
+          } catch {
+            setIsGenerating(false);
+          }
+        } else {
+          setIsGenerating(false);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const dismissTour = () => {
     if (state.user) localStorage.setItem(`motionr_tour_${state.user.id}`, "done");
     setShowTour(false);
@@ -68,6 +108,27 @@ export default function DashboardPage() {
 
   return (
     <>
+      {isGenerating && state.screen === "input" && (
+        <div
+          style={{
+            position: "fixed",
+            top: 10,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 999,
+            background: "rgba(23,19,17,0.92)",
+            border: "1px solid rgba(255,255,255,0.14)",
+            borderRadius: 999,
+            padding: "6px 12px",
+            color: "rgba(255,255,255,0.86)",
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          Un rendu est deja en cours dans un autre onglet.
+        </div>
+      )}
+
       {state.credits?.videos_remaining === 1 && state.credits?.plan !== "business" && (
         <div
           style={{

@@ -87,24 +87,72 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      case "customer.subscription.deleted": {
-        const sub = event.data.object;
-        const userId = sub.metadata?.userId;
-        if (!userId) break;
+      case "customer.subscription.deleted":
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
 
-        await supabase.from("subscriptions").upsert(
-          {
-            user_id: userId,
-            plan: "free",
-            stripe_subscription_id: null,
-            videos_limit: 3,
-            videos_used: 0,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id" }
-        );
+        if (subscription.cancel_at_period_end) {
+          await supabase
+            .from("subscriptions")
+            .update({
+              cancel_at_period_end: true,
+              period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            })
+            .eq("stripe_subscription_id", subscription.id);
+        }
 
-        console.log("Subscription annulée pour", userId);
+        if (subscription.status === "canceled") {
+          const { data: subRecord } = await supabase
+            .from("subscriptions")
+            .select("user_id, stripe_customer_id")
+            .eq("stripe_subscription_id", subscription.id)
+            .maybeSingle();
+
+          await supabase
+            .from("subscriptions")
+            .update({
+              plan: "free",
+              videos_limit: 3,
+              stripe_subscription_id: null,
+              cancel_at_period_end: false,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("stripe_subscription_id", subscription.id);
+
+          try {
+            let customerEmail = "";
+            if (subscription.customer && typeof subscription.customer === "string") {
+              const customer = await getStripe().customers.retrieve(subscription.customer);
+              if (!("deleted" in customer)) {
+                customerEmail = customer.email || "";
+              }
+            }
+
+            if (customerEmail && process.env.RESEND_API_KEY) {
+              await fetch("https://api.resend.com/emails", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  from: "Motionr <hello@motionr.app>",
+                  to: customerEmail,
+                  subject: "Ton abonnement Motionr a ete annule",
+                  html: `
+                    <h2>Abonnement annule</h2>
+                    <p>Ton abonnement Motionr est maintenant termine. Tu es repasse sur le plan gratuit (3 videos/mois).</p>
+                    <p>Tu peux te reabonner a tout moment sur <a href="https://motionai-two.vercel.app/pricing">motionr.app/pricing</a></p>
+                  `,
+                }),
+              });
+            }
+          } catch {
+            // ignore email failure
+          }
+
+          console.log("Subscription annulee pour", subRecord?.user_id || "unknown");
+        }
         break;
       }
 

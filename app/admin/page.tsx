@@ -26,6 +26,7 @@ export default function AdminPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [logs, setLogs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const loadStats = useCallback(async () => {
@@ -38,6 +39,13 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/logs")
+      .then((r) => r.json())
+      .then(setLogs)
+      .catch(() => setLogs(null));
   }, []);
 
   useEffect(() => {
@@ -226,6 +234,113 @@ export default function AdminPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: 20,
+            padding: "24px",
+            border: "1.5px solid #e8e8e8",
+            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
+            marginBottom: 16,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: colors.textMuted,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: 16,
+            }}
+          >
+            Activite recente
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              ...(logs?.recentVideos || []).map((v: any) => ({
+                type: "video",
+                icon: "🎬",
+                color: "#10B981",
+                text: `Video generee — ${(v.prompt || "").slice(0, 40)}...`,
+                date: v.created_at,
+                status: v.status || "done",
+              })),
+              ...(logs?.recentSubs || []).map((s: any) => ({
+                type: "payment",
+                icon: "💳",
+                color: "#F59E0B",
+                text: `Nouveau ${s.plan} — user ${(s.user_id || "").slice(0, 8)}`,
+                date: s.created_at,
+                status: "paid",
+              })),
+              ...(logs?.failedVideos || []).map((v: any) => ({
+                type: "error",
+                icon: "❌",
+                color: "#EF4444",
+                text: `Erreur rendu — ${(v.prompt || "").slice(0, 40)}`,
+                date: v.created_at,
+                status: "error",
+              })),
+            ]
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .slice(0, 15)
+              .map((log, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "8px 0",
+                    borderBottom: "1px solid rgba(23,19,17,0.08)",
+                  }}
+                >
+                  <span style={{ fontSize: 14 }}>{log.icon}</span>
+                  <div style={{ flex: 1, fontSize: 12, color: "rgba(23,19,17,0.6)" }}>
+                    {log.text}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "rgba(23,19,17,0.35)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {new Date(log.date).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color:
+                        log.status === "error"
+                          ? "#ef4444"
+                          : log.status === "paid"
+                            ? "#f59e0b"
+                            : "#10B981",
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                      background:
+                        log.status === "error"
+                          ? "rgba(239,68,68,0.1)"
+                          : log.status === "paid"
+                            ? "rgba(245,158,11,0.1)"
+                            : "rgba(16,185,129,0.1)",
+                    }}
+                  >
+                    {log.status}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
 

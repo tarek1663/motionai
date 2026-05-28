@@ -71,6 +71,7 @@ export function useDashboard() {
   const [promptHistory, setPromptHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [draftRestored, setDraftRestored] = useState(false);
+  const [isGeneratingElsewhere, setIsGeneratingElsewhere] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
@@ -177,6 +178,48 @@ export function useDashboard() {
       }
     }
   }, [user]);
+
+  useEffect(() => {
+    const checkMultiTab = () => {
+      const saved = localStorage.getItem(RENDER_STORAGE_KEY);
+      if (!saved) {
+        setIsGeneratingElsewhere(false);
+        return;
+      }
+      try {
+        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
+        if (
+          data.status === "rendering" &&
+          typeof data.timestamp === "number" &&
+          Date.now() - data.timestamp < 30 * 60 * 1000
+        ) {
+          setIsGeneratingElsewhere(true);
+          return;
+        }
+      } catch {
+        // ignore parse errors
+      }
+      setIsGeneratingElsewhere(false);
+    };
+
+    checkMultiTab();
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key !== RENDER_STORAGE_KEY) return;
+      if (e.newValue) {
+        try {
+          const data = JSON.parse(e.newValue) as { status?: string };
+          setIsGeneratingElsewhere(data.status === "rendering");
+        } catch {
+          setIsGeneratingElsewhere(false);
+        }
+      } else {
+        setIsGeneratingElsewhere(false);
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -307,6 +350,23 @@ export function useDashboard() {
   }, [user]);
 
   const submit = useCallback(async () => {
+    const saved = localStorage.getItem(RENDER_STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
+        if (
+          data.status === "rendering" &&
+          typeof data.timestamp === "number" &&
+          Date.now() - data.timestamp < 30 * 60 * 1000
+        ) {
+          showToast("Une video est deja en cours de generation.", "error");
+          return;
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+
     const now = Date.now();
     const timeSinceLast = now - lastGenerationTime;
     if (timeSinceLast < COOLDOWN_MS && lastGenerationTime > 0) {
@@ -407,6 +467,7 @@ export function useDashboard() {
     showToast,
     lastGenerationTime,
     accentColor,
+    isGeneratingElsewhere,
     savePromptToHistory,
     clearDraft,
   ]);

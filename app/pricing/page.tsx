@@ -13,6 +13,7 @@ export default function PricingPage() {
   const [currentPlan, setCurrentPlan] = useState<string>("free");
   const [currentPlanOrder, setCurrentPlanOrder] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [wasSubscribed, setWasSubscribed] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -21,6 +22,7 @@ export default function PricingPage() {
         .then((d) => {
           setCurrentPlan(d.plan || "free");
           setCurrentPlanOrder(d.planOrder || 0);
+          setWasSubscribed(Boolean(d.stripe_customer_id) && (d.plan || "free") === "free");
         });
     }
   }, [user]);
@@ -138,6 +140,58 @@ export default function PricingPage() {
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "132px 40px 80px" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
+          {wasSubscribed && currentPlan === "free" && (
+            <div
+              style={{
+                background: "rgba(16,185,129,0.08)",
+                border: "1px solid rgba(16,185,129,0.2)",
+                borderRadius: 16,
+                padding: "20px 24px",
+                marginBottom: 32,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                textAlign: "left",
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#10B981", marginBottom: 4 }}>
+                  👋 Content de te revoir !
+                </div>
+                <div style={{ fontSize: 13, color: "rgba(23,19,17,0.6)" }}>
+                  Reprends la ou tu t'etais arrete — tes videos precedentes sont toujours disponibles.
+                </div>
+              </div>
+              <button
+                onClick={async () => {
+                  const res = await fetch("/api/stripe/checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ planId: "pro", billing: "monthly" }),
+                  });
+                  const data = await res.json();
+                  if (data.url) window.location.href = data.url;
+                }}
+                style={{
+                  background: "#10B981",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "10px 20px",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  whiteSpace: "nowrap",
+                  boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+                }}
+              >
+                Reprendre Pro →
+              </button>
+            </div>
+          )}
+
           <div style={{
             fontSize: 11, fontWeight: 700, color: accent,
             letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12,

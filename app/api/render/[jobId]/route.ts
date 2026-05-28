@@ -25,17 +25,42 @@ export async function GET(
         if (userId) {
           const metaRes = await fetch(`${RENDER_URL}/meta/${jobId}`, { cache: "no-store" });
           const meta = metaRes.ok ? await metaRes.json() : {};
+          const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+          const { data: renderingVideo } = await supabase
+            .from("videos")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("status", "rendering")
+            .gte("created_at", since)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .single();
 
-          await supabase.from("videos").insert({
-            user_id: userId,
-            prompt: meta.prompt || "Vidéo générée",
-            format: meta.format || "9:16",
-            duration: meta.duration || 30,
-            video_url: data.videoUrl,
-            accent_color: meta.accentColor || null,
-            format_name: meta.formatName || null,
-            status: "done",
-          });
+          if (renderingVideo?.id) {
+            await supabase
+              .from("videos")
+              .update({
+                prompt: meta.prompt || "Video generee",
+                format: meta.format || "9:16",
+                duration: meta.duration || 30,
+                video_url: data.videoUrl,
+                accent_color: meta.accentColor || null,
+                format_name: meta.formatName || null,
+                status: "done",
+              })
+              .eq("id", renderingVideo.id);
+          } else {
+            await supabase.from("videos").insert({
+              user_id: userId,
+              prompt: meta.prompt || "Video generee",
+              format: meta.format || "9:16",
+              duration: meta.duration || 30,
+              video_url: data.videoUrl,
+              accent_color: meta.accentColor || null,
+              format_name: meta.formatName || null,
+              status: "done",
+            });
+          }
 
           const { data: currentSub } = await supabase
             .from("subscriptions")
@@ -51,6 +76,19 @@ export async function GET(
         }
       } catch (saveErr: any) {
         console.error("Save error:", saveErr.message);
+      }
+    }
+
+    if (data.status === "error") {
+      const { userId } = await auth();
+      if (userId) {
+        const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+        await supabase
+          .from("videos")
+          .update({ status: "error" })
+          .eq("user_id", userId)
+          .eq("status", "rendering")
+          .gte("created_at", since);
       }
     }
 

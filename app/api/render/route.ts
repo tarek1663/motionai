@@ -8,8 +8,29 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
     let plan = "free";
 
+    if (!userId) {
+      return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+    }
+
+    const { data: activeRenders } = await supabase
+      .from("videos")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("status", "rendering")
+      .gte("created_at", new Date(Date.now() - 30 * 60 * 1000).toISOString());
+
+    if (activeRenders && activeRenders.length > 0) {
+      return NextResponse.json(
+        {
+          error: "Une video est deja en cours de generation. Attends qu'elle soit terminee.",
+          rendering: true,
+        },
+        { status: 429 }
+      );
+    }
+
     // Vérifier les crédits
-    if (userId) {
+    {
       const { data: sub } = await supabase
         .from("subscriptions")
         .select("*")
@@ -26,6 +47,13 @@ export async function POST(req: NextRequest) {
       }
       plan = sub?.plan || "free";
     }
+
+    await supabase.from("videos").insert({
+      user_id: userId,
+      status: "rendering",
+      prompt: body.prompt || "En cours...",
+      created_at: new Date().toISOString(),
+    });
 
     let RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
     if (!RENDER_URL.startsWith("http://") && !RENDER_URL.startsWith("https://")) {
