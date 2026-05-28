@@ -20,7 +20,6 @@ import type {
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
 const COOLDOWN_MS = 30000;
 const RENDER_STORAGE_KEY = "motionr_render";
-const RENDER_MAX_AGE_MS = 30 * 60 * 1000;
 
 export function useDashboard() {
   const { user } = useUser();
@@ -66,41 +65,7 @@ export function useDashboard() {
     type: "success" | "error" | "info";
   } | null>(null);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
-  const [renderNotif, setRenderNotif] = useState<{
-    jobId: string;
-    progress: number;
-    status: "rendering" | "done" | "error";
-    videoUrl?: string;
-    prompt?: string;
-  } | null>(null);
-
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const notifPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const clearRenderStorage = useCallback(() => {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem(RENDER_STORAGE_KEY);
-  }, []);
-
-  const updateRenderStorageProgress = useCallback((progressValue: number) => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = localStorage.getItem(RENDER_STORAGE_KEY);
-      if (!raw) return;
-      const data = JSON.parse(raw) as {
-        jobId: string;
-        prompt: string;
-        progress: number;
-        timestamp: number;
-      };
-      localStorage.setItem(
-        RENDER_STORAGE_KEY,
-        JSON.stringify({ ...data, progress: progressValue })
-      );
-    } catch {
-      localStorage.removeItem(RENDER_STORAGE_KEY);
-    }
-  }, []);
 
   const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
     if (typeof window === "undefined") return;
@@ -139,54 +104,6 @@ export function useDashboard() {
     }
   }, []);
 
-  const startNotifPolling = useCallback(
-    (jobId: string) => {
-      if (notifPollRef.current) clearInterval(notifPollRef.current);
-
-      notifPollRef.current = setInterval(async () => {
-        try {
-          const res = await fetch(`/api/render/${jobId}`, { cache: "no-store" });
-          if (!res.ok) return;
-          const data = await res.json();
-
-          if (typeof data.progress === "number" && data.progress > 0) {
-            setRenderNotif((prev) =>
-              prev && prev.jobId === jobId ? { ...prev, progress: data.progress } : prev
-            );
-            updateRenderStorageProgress(data.progress);
-          }
-
-          if (data.status === "done") {
-            if (notifPollRef.current) clearInterval(notifPollRef.current);
-            notifPollRef.current = null;
-            clearRenderStorage();
-            setRenderNotif((prev) =>
-              prev && prev.jobId === jobId
-                ? { ...prev, status: "done", progress: 100, videoUrl: data.videoUrl }
-                : prev
-            );
-            showToast("Video generee avec succes !", "success");
-            loadVideos();
-            setScreen("input");
-            setProgress(0);
-          } else if (data.status === "error") {
-            if (notifPollRef.current) clearInterval(notifPollRef.current);
-            notifPollRef.current = null;
-            clearRenderStorage();
-            setRenderNotif((prev) =>
-              prev && prev.jobId === jobId ? { ...prev, status: "error" } : prev
-            );
-            showToast("Erreur de rendu — reessaie", "error");
-            setScreen("input");
-          }
-        } catch {
-          // silent retry
-        }
-      }, 3000);
-    },
-    [clearRenderStorage, loadVideos, showToast, updateRenderStorageProgress]
-  );
-
   const generationCallbacks = {
     setProgress,
     setStatus,
@@ -202,13 +119,6 @@ export function useDashboard() {
     },
     onRenderStarted: ({ jobId, prompt: notifPrompt }: { jobId: string; prompt: string }) => {
       saveRenderToStorage(jobId, notifPrompt);
-      setRenderNotif({
-        jobId,
-        progress: 0,
-        status: "rendering",
-        prompt: notifPrompt,
-      });
-      startNotifPolling(jobId);
     },
   };
 
@@ -224,37 +134,8 @@ export function useDashboard() {
   }, [user, router, loadVideos, loadCredits]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const savedRender = localStorage.getItem(RENDER_STORAGE_KEY);
-    if (!savedRender) return;
-    try {
-      const data = JSON.parse(savedRender) as {
-        jobId: string;
-        prompt: string;
-        progress?: number;
-        timestamp: number;
-      };
-      const age = Date.now() - data.timestamp;
-      if (age < RENDER_MAX_AGE_MS && data.jobId) {
-        setRenderNotif({
-          jobId: data.jobId,
-          progress: data.progress || 0,
-          status: "rendering",
-          prompt: data.prompt,
-        });
-        startNotifPolling(data.jobId);
-      } else {
-        localStorage.removeItem(RENDER_STORAGE_KEY);
-      }
-    } catch {
-      localStorage.removeItem(RENDER_STORAGE_KEY);
-    }
-  }, [startNotifPolling]);
-
-  useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
-      if (notifPollRef.current) clearInterval(notifPollRef.current);
     };
   }, []);
 
@@ -541,15 +422,6 @@ export function useDashboard() {
     }
   }, [currentQ]);
 
-  const dismissRenderNotif = useCallback(() => {
-    setRenderNotif((prev) => {
-      if (!prev) return null;
-      if (prev.status === "rendering") return prev;
-      clearRenderStorage();
-      return null;
-    });
-  }, [clearRenderStorage]);
-
   return {
     user,
     mode,
@@ -610,8 +482,6 @@ export function useDashboard() {
     showUpgrade,
     setShowUpgrade,
     upgradeReason,
-    renderNotif,
-    dismissRenderNotif,
     toast,
     setToast,
     showToast,

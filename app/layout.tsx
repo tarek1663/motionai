@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import { colors } from "@/lib/colors";
 import { AppBodyShell } from "@/components/ui/app-body-shell";
 import ScrollToTop from "@/components/ScrollToTop";
+import RenderNotification from "@/components/RenderNotification";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <AppBodyShell>
             <ScrollToTop />
+            <RenderNotification />
             {children}
           </AppBodyShell>
         </body>
