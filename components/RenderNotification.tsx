@@ -134,6 +134,7 @@ export default function RenderNotification() {
 
   return (
     <div
+      id="tour-notification"
       style={{
         position: "fixed",
         top: 20,

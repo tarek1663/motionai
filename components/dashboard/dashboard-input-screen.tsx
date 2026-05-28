@@ -84,6 +84,7 @@ export function DashboardInputScreen(props: Props) {
       </div>
 
       <div
+        id="tour-mode"
         style={{
           display: "flex",
           alignItems: "center",
@@ -200,6 +201,7 @@ export function DashboardInputScreen(props: Props) {
               </select>
 
               <button
+                id="tour-voice"
                 type="button"
                 onClick={() => setShowVoicePanel((prev) => !prev)}
                 style={{
@@ -260,6 +262,7 @@ export function DashboardInputScreen(props: Props) {
           </div>
 
           <button
+            id="tour-generate"
             type="button"
             onClick={() => {
               void submit();
@@ -316,7 +319,7 @@ export function DashboardInputScreen(props: Props) {
         )}
       </div>
 
-      <div style={{ marginTop: 20, textAlign: "center" }}>
+      <div id="tour-suggestions" style={{ marginTop: 20, textAlign: "center" }}>
         <div
           style={{
             display: "flex",

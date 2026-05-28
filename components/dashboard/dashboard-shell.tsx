@@ -10,7 +10,11 @@ import Toast from "@/components/Toast";
 import { colors } from "@/lib/colors";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
-export function DashboardShell(state: UseDashboardReturn) {
+type Props = UseDashboardReturn & {
+  onStartTour?: () => void;
+};
+
+export function DashboardShell(state: Props) {
   const {
     screen,
     selectedVideo,
@@ -42,6 +46,7 @@ export function DashboardShell(state: UseDashboardReturn) {
         resetCreation={state.resetCreation}
         credits={state.credits}
         deleteVideo={state.deleteVideo}
+        onStartTour={state.onStartTour}
       />
 
       <main className="dash-main">

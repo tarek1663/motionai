@@ -52,11 +52,12 @@ export function DashboardDoneScreen({ videoUrl, format, resetCreation, showToast
         </div>
       </div>
       <div className="dash-btn-row dash-btn-row--labeled">
-        <a href={videoUrl} download className="dash-btn-primary">
+        <a id="tour-download" href={videoUrl} download className="dash-btn-primary">
           <Download size={16} strokeWidth={1.75} color="#fff" />
           {copy.download}
         </a>
         <button
+          id="tour-share"
           type="button"
           onClick={() => {
             void copyVideoLink();

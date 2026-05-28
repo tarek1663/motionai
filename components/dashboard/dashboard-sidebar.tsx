@@ -32,6 +32,9 @@ type Props = Pick<
   | "deleteVideo"
   | "renameVideo"
 >;
+type ExtraProps = {
+  onStartTour?: () => void;
+};
 
 export function DashboardSidebar({
   user,
@@ -46,7 +49,8 @@ export function DashboardSidebar({
   setScreen,
   deleteVideo,
   renameVideo,
-}: Props) {
+  onStartTour,
+}: Props & ExtraProps) {
   const accent = colors.accent;
   const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
 
@@ -127,7 +131,7 @@ export function DashboardSidebar({
           ) : (
             <>
               <div id="recent-videos">
-                <div className="dash-eyebrow">{copy.sidebarRecent}</div>
+                <div id="tour-history" className="dash-eyebrow">{copy.sidebarRecent}</div>
               </div>
               {videos.map((video) => (
                 <VideoListItem
@@ -176,6 +180,7 @@ export function DashboardSidebar({
             )}
 
             <div
+              id="tour-credits"
               className={`dash-credits-card${credits.videos_remaining <= 1 ? " dash-credits-card--low" : ""}`}
             >
               <div className="dash-credits-card-header">
@@ -204,6 +209,7 @@ export function DashboardSidebar({
 
         <div className="dash-sidebar-footer">
           <div
+            id="tour-server"
             style={{
               display: "flex",
               alignItems: "center",
@@ -238,6 +244,24 @@ export function DashboardSidebar({
               <Settings size={20} strokeWidth={1.75} />
               {copy.settings}
             </a>
+          <button
+            type="button"
+            onClick={onStartTour}
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: 11,
+              color: "rgba(255,255,255,0.2)",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              padding: "4px 0",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            ❓ Guide d'utilisation
+          </button>
           <div className="dash-sidebar-profile">
             <UserButton afterSignOutUrl="/" />
             <div className="dash-sidebar-profile-text">
