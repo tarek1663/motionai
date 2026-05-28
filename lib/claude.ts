@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { PhraseTimestamp } from "@/lib/elevenlabs";
-import { buildMotionScenesSystemPrompt } from "@/lib/prompts/motion-scenes-system";
+import { buildPremiumSceneSystemPrompt } from "@/lib/prompts/motion-scenes-system";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -1058,19 +1058,13 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
   const response = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 4000,
-    system: `${buildMotionScenesSystemPrompt({
-      formatGuidance,
-      accentColor,
-      bgAccent,
-    })}
+    system: `${buildPremiumSceneSystemPrompt(accentColor)}${formatGuidance ? `\n\n${formatGuidance}` : ""}
 
-RÈGLES COMPLÉMENTAIRES VOIX-OFF:
+RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
 - Phrases fournies = texte voix, raccourcis visuellement en 1-5 mots dans "text" si besoin
 - CTA en dernière scène (type "cta")
-- TOUJOURS 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène
-- BATCH 23 : utilise AU MOINS 3 scènes parmi terminal, toggle, financialchart, instagramprofile, netflixreveal, timer, githubstars, squiggletext, mcpanimation, glowtext, ascii, pricetag, musicvisualizer, splitreveal, counterpunch
-- Alterne scènes avec texte et scènes visuelles pures (text: "" pour laisser l'animation parler)`,
+- 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}

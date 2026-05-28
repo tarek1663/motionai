@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateScenesFromVoice } from "@/lib/claude";
+import { buildPremiumSceneSystemPrompt } from "@/lib/prompts/motion-scenes-system";
 import { getErrorMessage } from "@/lib/utils";
+
+/** Prompt système premium — utilisé via generateScenesFromVoice (lib/claude.ts) */
+export const scenesSystemPrompt = (accentColor = "#7C3AED") =>
+  buildPremiumSceneSystemPrompt(accentColor);
 
 type GeneratedScene = {
   type: string;
