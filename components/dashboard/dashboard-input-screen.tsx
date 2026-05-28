@@ -1,22 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
   BookOpenText,
   BriefcaseBusiness,
+  ChevronDown,
   GraduationCap,
+  Mic,
   Newspaper,
   PenSquare,
   Rocket,
   Sparkles,
   Zap,
 } from "lucide-react";
+import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
+import { VOICES } from "@/lib/dashboard/constants";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn;
 
 export function DashboardInputScreen(props: Props) {
+  const [showVoicePanel, setShowVoicePanel] = useState(false);
   const {
     mode,
     setMode,
@@ -24,17 +30,21 @@ export function DashboardInputScreen(props: Props) {
     setPrompt,
     customScript,
     setCustomScript,
+    format,
+    setFormat,
     selectedVoiceId,
     setSelectedVoiceId,
     submit,
     loadingQ,
     screenshotLoading,
+    cooldown,
     error,
   } = props;
 
   const isBusy = loadingQ || screenshotLoading;
   const currentValue = mode === "ai" ? prompt : customScript;
-  const canSubmit = currentValue.trim().length > 0 && !isBusy;
+  const canSubmit = currentValue.trim().length > 0 && !isBusy && cooldown === 0;
+  const selectedVoice = VOICES.find((voice) => voice.id === selectedVoiceId);
 
   const suggestions: Array<{ icon: LucideIcon; label: string }> = [
     { icon: Rocket, label: "Produit & Demo" },
@@ -121,19 +131,19 @@ export function DashboardInputScreen(props: Props) {
         ))}
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 720,
-          background: "#ffffff",
-          borderRadius: 20,
-          border: "1.5px solid rgba(16,185,129,0.26)",
-          boxShadow:
-            "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.16), 0 18px 44px rgba(15,23,42,0.08)",
-          overflow: "hidden",
-        }}
-      >
-        <textarea
+      <div style={{ width: "100%", maxWidth: 720, position: "relative" }}>
+        <div
+          style={{
+            width: "100%",
+            background: "#ffffff",
+            borderRadius: 20,
+            border: "1.5px solid rgba(16,185,129,0.26)",
+            boxShadow:
+              "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.16), 0 18px 44px rgba(15,23,42,0.08)",
+            overflow: "hidden",
+          }}
+        >
+          <textarea
           value={currentValue}
           onChange={(e) =>
             mode === "ai" ? setPrompt(e.target.value) : setCustomScript(e.target.value)
@@ -159,20 +169,19 @@ export function DashboardInputScreen(props: Props) {
           }}
         />
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "6px 10px 8px",
-          }}
-        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "6px 10px 8px",
+            }}
+          >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 11, color: "rgba(23,19,17,0.35)" }}>🎙️</span>
               <select
-                value={selectedVoiceId}
-                onChange={(e) => setSelectedVoiceId(e.target.value)}
+                value={format}
+                onChange={(e) => setFormat(e.target.value)}
                 style={{
                   background: "#f7f7f7",
                   border: "1px solid #e8e8e8",
@@ -185,15 +194,40 @@ export function DashboardInputScreen(props: Props) {
                   outline: "none",
                 }}
               >
-                <option value="21m00Tcm4TlvDq8ikWAM">Rachel</option>
-                <option value="AZnzlk1XvdvUeBnXmlld">Domi</option>
-                <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
-                <option value="ErXwobaYiN019PkySvjV">Antoni</option>
-                <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
-                <option value="TxGEqnHWrfWFTfGW9XjX">Josh</option>
-                <option value="VR6AewLTigWG4xSOukaG">Arnold</option>
-                <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+                <option value="9:16">9:16 · Reels</option>
+                <option value="16:9">16:9 · YouTube</option>
+                <option value="1:1">1:1 · Feed</option>
               </select>
+
+              <button
+                type="button"
+                onClick={() => setShowVoicePanel((prev) => !prev)}
+                style={{
+                  background: "#f7f7f7",
+                  border: "1px solid #e8e8e8",
+                  borderRadius: 10,
+                  padding: "6px 10px",
+                  fontSize: 12,
+                  color: "#625b55",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  outline: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                }}
+              >
+                <Mic size={13} strokeWidth={1.8} />
+                <span>{selectedVoice?.name || "Voix"}</span>
+                <ChevronDown
+                  size={13}
+                  strokeWidth={1.8}
+                  style={{
+                    transform: showVoicePanel ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.15s ease",
+                  }}
+                />
+              </button>
             </div>
 
             <div style={{ fontSize: 10, color: "rgba(23,19,17,0.35)", display: "flex", alignItems: "center", gap: 4 }}>
@@ -241,16 +275,45 @@ export function DashboardInputScreen(props: Props) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 16,
+              fontSize: cooldown > 0 ? 10 : 16,
+              fontWeight: 700,
               color: canSubmit ? "#fff" : "#c3c3c3",
               transition: "all 0.15s",
               flexShrink: 0,
               boxShadow: canSubmit ? "0 4px 12px rgba(16,185,129,0.3)" : "none",
             }}
           >
-            ↑
+            {cooldown > 0 ? `${cooldown}s` : "↑"}
           </button>
+          </div>
         </div>
+
+        {showVoicePanel && (
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 10px)",
+              left: 0,
+              right: 0,
+              background: "#ffffff",
+              border: "1px solid #e8e8e8",
+              borderRadius: 14,
+              padding: "12px 12px 10px",
+              boxShadow: "0 14px 30px rgba(15,23,42,0.08)",
+              zIndex: 20,
+            }}
+          >
+            <VoicePickerPanel
+              open={showVoicePanel}
+              onClose={() => setShowVoicePanel(false)}
+              voices={VOICES}
+              selectedId={selectedVoiceId}
+              onSelect={setSelectedVoiceId}
+              variant="dash"
+              hint="Choisis une voix et écoute un aperçu avant de générer."
+            />
+          </div>
+        )}
       </div>
 
       <div style={{ marginTop: 20, textAlign: "center" }}>

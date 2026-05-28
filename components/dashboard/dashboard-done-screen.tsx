@@ -1,13 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { copy } from "@/lib/dashboard/copy";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
-type Props = Pick<UseDashboardReturn, "videoUrl" | "format" | "resetCreation">;
+type Props = Pick<UseDashboardReturn, "videoUrl" | "format" | "resetCreation" | "showToast">;
 
-export function DashboardDoneScreen({ videoUrl, format, resetCreation }: Props) {
+export function DashboardDoneScreen({ videoUrl, format, resetCreation, showToast }: Props) {
+  const [copied, setCopied] = useState(false);
   const frameWidth = format === "16:9" ? 480 : format === "1:1" ? 320 : 220;
+
+  const copyVideoLink = async () => {
+    if (!videoUrl) return;
+    await navigator.clipboard.writeText(videoUrl);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+    showToast("Lien copie dans le presse-papiers !", "success");
+  };
 
   return (
     <div className="dash-state-card dash-state-card--narrow dash-state-card--minimal">
@@ -46,6 +56,30 @@ export function DashboardDoneScreen({ videoUrl, format, resetCreation }: Props) 
           <Download size={16} strokeWidth={1.75} color="#fff" />
           {copy.download}
         </a>
+        <button
+          type="button"
+          onClick={() => {
+            void copyVideoLink();
+          }}
+          style={{
+            padding: "8px 16px",
+            background: copied ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.06)",
+            border: `1px solid ${
+              copied ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"
+            }`,
+            borderRadius: 8,
+            fontSize: 12,
+            color: copied ? "#10B981" : "rgba(255,255,255,0.6)",
+            cursor: "pointer",
+            fontFamily: "inherit",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            transition: "all 0.15s",
+          }}
+        >
+          {copied ? "✓ Lien copie !" : "🔗 Partager"}
+        </button>
         <button type="button" className="dash-btn-secondary" onClick={resetCreation}>
           <Plus size={16} strokeWidth={1.75} />
           {copy.newVideo}

@@ -18,7 +18,7 @@ import type {
 } from "@/lib/dashboard/types";
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
-const COOLDOWN_MS = 30000;
+const COOLDOWN_MS = 45000;
 const RENDER_STORAGE_KEY = "motionr_render";
 
 export function useDashboard() {
@@ -66,6 +66,7 @@ export function useDashboard() {
     type: "success" | "error" | "info";
   } | null>(null);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
@@ -333,6 +334,23 @@ export function useDashboard() {
   ]);
 
   useEffect(() => {
+    if (!lastGenerationTime) {
+      setCooldown(0);
+      return;
+    }
+
+    const updateCooldown = () => {
+      const elapsed = Date.now() - lastGenerationTime;
+      const remaining = Math.max(0, Math.ceil((COOLDOWN_MS - elapsed) / 1000));
+      setCooldown(remaining);
+    };
+
+    updateCooldown();
+    const interval = window.setInterval(updateCooldown, 1000);
+    return () => window.clearInterval(interval);
+  }, [lastGenerationTime]);
+
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (screen === "generating") {
         e.preventDefault();
@@ -381,6 +399,30 @@ export function useDashboard() {
       }
     },
     [loadVideos, selectedVideo?.id, showToast]
+  );
+
+  const renameVideo = useCallback(
+    async (videoId: string, title: string) => {
+      const nextTitle = title.trim();
+      if (!nextTitle) return;
+      try {
+        const res = await fetch(`/api/videos/${videoId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: nextTitle }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: "Renommage impossible" }));
+          showToast(data.error || "Renommage impossible", "error");
+          return;
+        }
+        await loadVideos();
+        showToast("Titre mis a jour", "success");
+      } catch {
+        showToast("Erreur lors du renommage", "error");
+      }
+    },
+    [loadVideos, showToast]
   );
 
   const handleScreenshotFile = useCallback((file: File) => {
@@ -514,10 +556,12 @@ export function useDashboard() {
     showUpgrade,
     setShowUpgrade,
     upgradeReason,
+    cooldown,
     toast,
     setToast,
     showToast,
     deleteVideo,
+    renameVideo,
   };
 }
 

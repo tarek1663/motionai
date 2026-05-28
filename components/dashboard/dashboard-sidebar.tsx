@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import {
   ChevronLeft,
@@ -29,6 +30,7 @@ type Props = Pick<
   | "resetCreation"
   | "credits"
   | "deleteVideo"
+  | "renameVideo"
 >;
 
 export function DashboardSidebar({
@@ -43,8 +45,36 @@ export function DashboardSidebar({
   resetCreation,
   setScreen,
   deleteVideo,
+  renameVideo,
 }: Props) {
   const accent = colors.accent;
+  const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
+
+  useEffect(() => {
+    const checkServer = async () => {
+      try {
+        const baseUrl =
+          process.env.NEXT_PUBLIC_RENDER_SERVER_URL ||
+          "https://motionai-render-production.up.railway.app";
+        if (!baseUrl) {
+          setServerStatus("offline");
+          return;
+        }
+        const res = await fetch(`${baseUrl}/health`, {
+          cache: "no-store",
+        });
+        setServerStatus(res.ok ? "online" : "offline");
+      } catch {
+        setServerStatus("offline");
+      }
+    };
+
+    void checkServer();
+    const interval = window.setInterval(() => {
+      void checkServer();
+    }, 30000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -109,6 +139,7 @@ export function DashboardSidebar({
                     setScreen("viewing");
                   }}
                   onDelete={() => void deleteVideo(video.id)}
+                  onRename={(title) => void renameVideo(video.id, title)}
                 />
               ))}
             </>
@@ -172,6 +203,37 @@ export function DashboardSidebar({
         )}
 
         <div className="dash-sidebar-footer">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "8px 16px",
+              fontSize: 11,
+              color: "rgba(255,255,255,0.3)",
+            }}
+          >
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background:
+                  serverStatus === "online"
+                    ? "#10B981"
+                    : serverStatus === "offline"
+                      ? "#ef4444"
+                      : "#f59e0b",
+                boxShadow:
+                  serverStatus === "online" ? "0 0 6px rgba(16,185,129,0.5)" : "none",
+              }}
+            />
+            {serverStatus === "online"
+              ? "Serveur en ligne"
+              : serverStatus === "offline"
+                ? "Serveur hors ligne"
+                : "Verification..."}
+          </div>
           <a href="/account" className="dash-sidebar-footer-link">
               <Settings size={20} strokeWidth={1.75} />
               {copy.settings}
@@ -211,12 +273,17 @@ function VideoListItem({
   active,
   onSelect,
   onDelete,
+  onRename,
 }: {
   video: DashboardVideo;
   active: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onRename: (title: string) => void;
 }) {
+  const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+
   return (
     <div
       role="button"
@@ -251,8 +318,45 @@ function VideoListItem({
             <Clapperboard size={14} strokeWidth={1.8} color="rgba(255,255,255,0.45)" />
           )}
         </div>
-        <div className="dash-vid-item-content">
-          <div className="dash-vid-title dash-truncate">{video.prompt || "Vidéo générée"}</div>
+        <div
+          className="dash-vid-item-content"
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            setEditingVideoId(video.id);
+            setEditingTitle(video.prompt || "");
+          }}
+        >
+          {editingVideoId === video.id ? (
+            <input
+              autoFocus
+              value={editingTitle}
+              onChange={(e) => setEditingTitle(e.target.value)}
+              onBlur={() => {
+                if (editingTitle.trim() && editingTitle !== (video.prompt || "")) {
+                  onRename(editingTitle);
+                }
+                setEditingVideoId(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+                if (e.key === "Escape") setEditingVideoId(null);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(16,185,129,0.4)",
+                borderRadius: 6,
+                padding: "2px 6px",
+                fontSize: 11,
+                color: "#fff",
+                fontFamily: "inherit",
+                width: "100%",
+                outline: "none",
+              }}
+            />
+          ) : (
+            <div className="dash-vid-title dash-truncate">{video.prompt || "Video sans titre"}</div>
+          )}
           <div className="dash-vid-meta dash-truncate">
             {getVideoSummary(video)} · {formatRelativeDate(video.created_at)}
           </div>

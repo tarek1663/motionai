@@ -94,6 +94,7 @@ export function DashboardShell(state: UseDashboardReturn) {
             videoUrl={state.videoUrl}
             format={state.format}
             resetCreation={state.resetCreation}
+            showToast={state.showToast}
           />
         )}
       </main>
