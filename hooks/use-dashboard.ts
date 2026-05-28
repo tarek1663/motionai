@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildEnrichedPrompt,
   isOtherOption,
@@ -24,6 +24,7 @@ const RENDER_STORAGE_KEY = "motionr_render";
 export function useDashboard() {
   const { user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [prompt, setPrompt] = useState("");
   const [mode, setMode] = useState<ScriptMode>("ai");
@@ -135,6 +136,18 @@ export function useDashboard() {
     loadVideos();
     loadCredits();
   }, [user, router, loadVideos, loadCredits]);
+
+  useEffect(() => {
+    const videoUrlParam = searchParams.get("videoUrl");
+    if (!videoUrlParam || videos.length === 0) return;
+
+    const matchedVideo = videos.find((video) => video.video_url === videoUrlParam);
+    if (!matchedVideo) return;
+
+    setSelectedVideo(matchedVideo);
+    setScreen("viewing");
+    router.replace("/dashboard");
+  }, [searchParams, videos, router]);
 
   useEffect(() => {
     return () => {
@@ -383,12 +396,28 @@ export function useDashboard() {
   }, []);
 
   const finishQuestions = useCallback(() => {
-    const enriched = buildEnrichedPrompt(prompt, questions, answers, otherDetails);
+    const durationOptionId = answers.duration || "duration_30";
+    const durationMap: Record<string, string> = {
+      duration_15: "15s",
+      duration_30: "30s",
+      duration_45: "45s",
+      duration_60: "60s",
+      duration_90: "90s",
+    };
+    setDuration(durationMap[durationOptionId] || "30s");
+
+    const qualityOptionId = answers.quality || "quality_fast";
+    setQuality(qualityOptionId === "quality_high" ? "high" : "fast");
+
+    const contextualAnswers = Object.fromEntries(
+      Object.entries(answers).filter(([key]) => key !== "duration" && key !== "quality")
+    );
+    const enriched = buildEnrichedPrompt(prompt, questions, contextualAnswers, otherDetails);
     setPrompt(enriched);
     setScreen("input");
     setQuestions([]);
     setTimeout(() => generatePrompt(enriched), 100);
-  }, [prompt, questions, answers, otherDetails, generatePrompt]);
+  }, [prompt, questions, answers, otherDetails, generatePrompt, setDuration, setQuality]);
 
   const skipQuestions = useCallback(() => {
     setScreen("input");

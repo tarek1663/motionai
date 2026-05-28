@@ -24,12 +24,8 @@ export function DashboardInputScreen(props: Props) {
     setPrompt,
     customScript,
     setCustomScript,
-    duration,
-    setDuration,
-    format,
-    setFormat,
-    quality,
-    setQuality,
+    selectedVoiceId,
+    setSelectedVoiceId,
     submit,
     loadingQ,
     screenshotLoading,
@@ -172,10 +168,11 @@ export function DashboardInputScreen(props: Props) {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 11, color: "rgba(23,19,17,0.35)" }}>🎙️</span>
               <select
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                value={selectedVoiceId}
+                onChange={(e) => setSelectedVoiceId(e.target.value)}
                 style={{
                   background: "#f7f7f7",
                   border: "1px solid #e8e8e8",
@@ -188,94 +185,15 @@ export function DashboardInputScreen(props: Props) {
                   outline: "none",
                 }}
               >
-                {["15s", "30s", "45s", "60s"].map((d) => (
-                  <option key={d} value={d} style={{ background: "#ffffff" }}>
-                    {d}
-                  </option>
-                ))}
+                <option value="21m00Tcm4TlvDq8ikWAM">Rachel</option>
+                <option value="AZnzlk1XvdvUeBnXmlld">Domi</option>
+                <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
+                <option value="ErXwobaYiN019PkySvjV">Antoni</option>
+                <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
+                <option value="TxGEqnHWrfWFTfGW9XjX">Josh</option>
+                <option value="VR6AewLTigWG4xSOukaG">Arnold</option>
+                <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
               </select>
-
-              <div
-                style={{
-                  width: 1,
-                  height: 16,
-                  background: "#e5e5ea",
-                  margin: "0 4px",
-                }}
-              />
-
-              <select
-                value={format}
-                onChange={(e) => setFormat(e.target.value)}
-                style={{
-                  background: "#f7f7f7",
-                  border: "1px solid #e8e8e8",
-                  borderRadius: 8,
-                  padding: "5px 10px",
-                  fontSize: 12,
-                  color: "#7b746d",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  outline: "none",
-                }}
-              >
-                {[
-                  { value: "9:16", label: "9:16 · Reels" },
-                  { value: "16:9", label: "16:9 · YouTube" },
-                  { value: "1:1", label: "1:1 · Feed" },
-                ].map((f) => (
-                  <option key={f.value} value={f.value} style={{ background: "#ffffff" }}>
-                    {f.label}
-                  </option>
-                ))}
-              </select>
-
-              <div
-                style={{
-                  width: 1,
-                  height: 16,
-                  background: "#e5e5ea",
-                  margin: "0 4px",
-                }}
-              />
-
-              <div
-                style={{
-                  display: "flex",
-                  background: "#f7f7f7",
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  border: "1px solid #e8e8e8",
-                }}
-              >
-                {[
-                  { id: "fast", label: "Rapide", Icon: Zap },
-                  { id: "high", label: "HD", Icon: Sparkles },
-                ].map((q) => (
-                  <button
-                    key={q.id}
-                    type="button"
-                    onClick={() => setQuality(q.id as "fast" | "high")}
-                    style={{
-                      padding: "5px 12px",
-                      border: "none",
-                      background: quality === q.id ? "#ffffff" : "transparent",
-                      color: quality === q.id ? "#171311" : "#8e8680",
-                      fontSize: 11,
-                      fontWeight: quality === q.id ? 600 : 400,
-                      cursor: "pointer",
-                      fontFamily: "inherit",
-                      transition: "all 0.15s",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 5,
-                    }}
-                  >
-                    <q.Icon size={12} strokeWidth={2} />
-                    {q.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
             <div style={{ fontSize: 10, color: "rgba(23,19,17,0.35)", display: "flex", alignItems: "center", gap: 4 }}>

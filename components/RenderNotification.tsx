@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CheckCircle2, CircleX, Clapperboard } from "lucide-react";
 
 type RenderNotif = {
   jobId: string;
@@ -129,15 +130,6 @@ export default function RenderNotification() {
     };
   }, []);
 
-  const dismiss = () => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-    localStorage.removeItem(STORAGE_KEY);
-    setNotif(null);
-  };
-
   if (!notif) return null;
 
   return (
@@ -199,10 +191,21 @@ export default function RenderNotification() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 16,
+              color:
+                notif.status === "done"
+                  ? "#10B981"
+                  : notif.status === "error"
+                    ? "#ef4444"
+                    : "#ffffff",
             }}
           >
-            {notif.status === "done" ? "✅" : notif.status === "error" ? "❌" : "🎬"}
+            {notif.status === "done" ? (
+              <CheckCircle2 size={18} strokeWidth={2} />
+            ) : notif.status === "error" ? (
+              <CircleX size={18} strokeWidth={2} />
+            ) : (
+              <Clapperboard size={18} strokeWidth={2} />
+            )}
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -238,27 +241,15 @@ export default function RenderNotification() {
             </div>
           </div>
 
-          <button
-            onClick={dismiss}
-            style={{
-              background: "none",
-              border: "none",
-              color: "rgba(255,255,255,0.2)",
-              cursor: "pointer",
-              fontSize: 18,
-              padding: 0,
-              lineHeight: 1,
-              flexShrink: 0,
-            }}
-          >
-            ×
-          </button>
         </div>
 
         {notif.status === "done" && notif.videoUrl && (
           <a
-            href="/dashboard"
-            onClick={dismiss}
+            href={`/dashboard?videoUrl=${encodeURIComponent(notif.videoUrl)}`}
+            onClick={() => {
+              localStorage.removeItem(STORAGE_KEY);
+              setNotif(null);
+            }}
             style={{
               display: "flex",
               alignItems: "center",
@@ -279,24 +270,16 @@ export default function RenderNotification() {
         )}
 
         {notif.status === "error" && (
-          <button
-            onClick={dismiss}
+          <div
             style={{
-              width: "100%",
               marginTop: 10,
-              background: "rgba(239,68,68,0.15)",
-              color: "#ef4444",
-              border: "1px solid rgba(239,68,68,0.2)",
-              borderRadius: 8,
-              padding: "8px 0",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "inherit",
+              fontSize: 11,
+              color: "rgba(239,68,68,0.75)",
+              textAlign: "center",
             }}
           >
-            Fermer
-          </button>
+            Erreur de rendu.
+          </div>
         )}
       </div>
     </div>

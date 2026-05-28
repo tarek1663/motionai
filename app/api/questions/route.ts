@@ -4,6 +4,13 @@ import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
+type RawOption = { id?: string; label?: string; desc?: string };
+type RawQuestion = {
+  id?: string;
+  question?: string;
+  options?: Array<RawOption | string>;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const { prompt } = await req.json();
@@ -14,39 +21,29 @@ export async function POST(req: NextRequest) {
     const response = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 1000,
-      system: `Tu es un assistant qui aide à clarifier les demandes de vidéos motion design.
-Tu analyses un prompt et génères 2-3 questions de clarification avec des choix.
-RETOURNE UNIQUEMENT DU JSON VALIDE.
+      system: `Tu es un expert en motion design.
+Tu dois générer UNIQUEMENT une 3e question contextuelle (optionnelle) pour personnaliser la vidéo.
 
-FORMAT:
+RÈGLES IMPORTANTES :
+- Les questions 1 et 2 (durée et qualité) sont déjà imposées côté serveur, ne les regénère pas.
+- Génère au maximum UNE question supplémentaire utile au contexte.
+- Réponds UNIQUEMENT en JSON valide.
+
+Format attendu :
 {
   "questions": [
     {
-      "id": "q1",
-      "question": "C'est quel type de vidéo exactement ?",
-      "options": [
-        { "id": "o1", "label": "Intro de chaîne YouTube", "desc": "Un court générique d'ouverture" },
-        { "id": "o2", "label": "Présentation de la plateforme", "desc": "Explique ce qu'est YouTube" },
-        { "id": "o3", "label": "Teaser marketing", "desc": "Une vidéo promotionnelle percutante" },
-        { "id": "other", "label": "Autre", "desc": "Préciser toi-même" }
-      ]
+      "id": "custom",
+      "question": "...",
+      "options": ["...", "...", "..."]
     }
   ]
-}
-
-RÈGLES:
-- Maximum 3 questions
-- Maximum 4 options par question
-- Questions courtes et directes
-- Options avec descriptions courtes et claires
-- Toujours inclure "Autre" comme dernière option avec id exactement "other"
-- Les questions doivent vraiment aider à mieux générer la vidéo`,
+}`,
       messages: [
         {
           role: "user",
           content: `Prompt utilisateur: "${prompt}"
-
-Génère 2-3 questions de clarification pour mieux comprendre ce qu'il veut.`,
+Génère une question contextuelle supplémentaire (ou tableau vide si inutile).`,
         },
       ],
     });
@@ -58,14 +55,59 @@ Génère 2-3 questions de clarification pour mieux comprendre ce qu'il veut.`,
     const e = clean.lastIndexOf("}");
     if (s !== -1 && e !== -1) clean = clean.slice(s, e + 1);
 
-    let result: { questions?: unknown[] } = { questions: [] };
+    let result: { questions?: RawQuestion[] } = { questions: [] };
     try {
-      result = JSON.parse(clean) as { questions?: unknown[] };
+      result = JSON.parse(clean) as { questions?: RawQuestion[] };
     } catch {
       result = { questions: [] };
     }
+    const durationQuestion = {
+      id: "duration",
+      question: "Quelle durée pour ta vidéo ?",
+      options: [
+        { id: "duration_15", label: "15s" },
+        { id: "duration_30", label: "30s" },
+        { id: "duration_45", label: "45s" },
+        { id: "duration_60", label: "60s" },
+        { id: "duration_90", label: "90s" },
+      ],
+    };
 
-    return NextResponse.json(result);
+    const qualityQuestion = {
+      id: "quality",
+      question: "Quelle qualité de rendu ?",
+      options: [
+        { id: "quality_fast", label: "⚡ Rapide (2-3 min)" },
+        { id: "quality_high", label: "✨ Haute qualité (5-7 min)" },
+      ],
+    };
+
+    const rawCustom = (result.questions || [])[0];
+    const normalizedCustom =
+      rawCustom && rawCustom.question
+        ? {
+            id: rawCustom.id || "custom",
+            question: rawCustom.question,
+            options: (rawCustom.options || [])
+              .map((opt, idx) => {
+                if (typeof opt === "string") {
+                  return { id: `custom_${idx + 1}`, label: opt };
+                }
+                return {
+                  id: opt.id || `custom_${idx + 1}`,
+                  label: opt.label || `Option ${idx + 1}`,
+                  desc: opt.desc,
+                };
+              })
+              .slice(0, 4),
+          }
+        : null;
+
+    const questions = normalizedCustom
+      ? [durationQuestion, qualityQuestion, normalizedCustom]
+      : [durationQuestion, qualityQuestion];
+
+    return NextResponse.json({ questions });
   } catch (err: unknown) {
     console.error("Questions error:", getErrorMessage(err));
     return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });
