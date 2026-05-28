@@ -66,7 +66,31 @@ comparisonbars, roi, achievement, circuit, glitchscreen, pollresults, commentthr
 endcredits, wipe, dollyzoom, steps, compare, quotereveal, benefits, moodboard,
 minimalist, gradientbg, pricereveal, logoreveal, brandintro, colorpalette, property,
 scoreboard, playerstat, menuitem, heartbeat, geometric, liquid, morphshape, dna,
-swipe, click, loading, vinyl, magazinecover, pullquote, infographic
+swipe, click, loading, vinyl, magazinecover, pullquote, infographic,
+terminal, toggle, financialchart, instagramprofile, netflixreveal, timer,
+githubstars, squiggletext, mcpanimation, glowtext, ascii, pricetag,
+musicvisualizer, splitreveal, counterpunch
+
+NOUVELLES SCÈNES BATCH 23 — Utilise-les fréquemment pour varier :
+- terminal: code qui s'écrit dans un terminal
+- toggle: switch ON/OFF animé
+- financialchart: courbe financière qui monte
+- instagramprofile: profil Instagram animé avec stats
+- netflixreveal: logo reveal dramatique style Netflix
+- timer: chronomètre animé avec cercle
+- githubstars: compteur étoiles GitHub avec sparkles
+- squiggletext: texte qui ondule et danse
+- mcpanimation: réseau de noeuds connectés animés
+- glowtext: texte avec effet glow pulsant
+- ascii: transition texte → ASCII art
+- pricetag: étiquette de prix avec confetti
+- musicvisualizer: visualiseur audio avec vinyl
+- splitreveal: révélation par séparation verticale
+- counterpunch: compteur avec effet punch/impact
+
+RÈGLE BATCH 23 : Pour chaque vidéo générée, utilise AU MOINS 3 de ces nouvelles scènes.
+Alterne TOUJOURS entre scènes avec texte et scènes VISUELLES PURES (sans text).
+Pour les scènes visuelles pures, mets text: "" et laisse l'animation parler.
 
 PHOTOS (1-2 par vidéo, jamais en première ou dernière scène) :
 - type "photo" avec photoQuery en anglais (2-3 mots Pexels)
@@ -134,7 +158,12 @@ fire, snow, sunray, funnel, comparisonbars, roi, achievement, circuit, glitchscr
 pollresults, commentthread, endcredits, wipe, dollyzoom, steps, compare, quotereveal,
 benefits, moodboard, minimalist, gradientbg, pricereveal, logoreveal, brandintro,
 colorpalette, scoreboard, playerstat, menuitem, heartbeat, geometric, liquid, morphshape,
-dna, swipe, click, loading, vinyl, magazinecover, pullquote, infographic
+dna, swipe, click, loading, vinyl, magazinecover, pullquote, infographic,
+terminal, toggle, financialchart, instagramprofile, netflixreveal, timer,
+githubstars, squiggletext, mcpanimation, glowtext, ascii, pricetag,
+musicvisualizer, splitreveal, counterpunch
+
+BATCH 23 : utilise AU MOINS 3 de ces scènes. Alterne texte et scènes visuelles pures (text: "").
 
 Réponds UNIQUEMENT en JSON valide sans markdown :
 {

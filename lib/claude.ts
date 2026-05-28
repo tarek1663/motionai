@@ -1068,7 +1068,9 @@ RÈGLES COMPLÉMENTAIRES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
 - Phrases fournies = texte voix, raccourcis visuellement en 1-5 mots dans "text" si besoin
 - CTA en dernière scène (type "cta")
-- TOUJOURS 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène`,
+- TOUJOURS 1-2 scènes "photo" (photoQuery en anglais), jamais en première ou dernière scène
+- BATCH 23 : utilise AU MOINS 3 scènes parmi terminal, toggle, financialchart, instagramprofile, netflixreveal, timer, githubstars, squiggletext, mcpanimation, glowtext, ascii, pricetag, musicvisualizer, splitreveal, counterpunch
+- Alterne scènes avec texte et scènes visuelles pures (text: "" pour laisser l'animation parler)`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}
