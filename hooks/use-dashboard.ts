@@ -565,8 +565,24 @@ export function useDashboard() {
     const qualityOptionId = answers.quality || "quality_fast";
     setQuality(qualityOptionId === "quality_high" ? "high" : "fast");
 
+    const colorMap: Record<string, string> = {
+      "🟢 Vert": "#10B981",
+      "🟣 Violet": "#7C3AED",
+      "🔵 Bleu": "#3B82F6",
+      "🟡 Or": "#F59E0B",
+      "🔴 Rouge": "#EF4444",
+      "⚪ Blanc": "#ffffff",
+      "🩷 Rose": "#EC4899",
+      "🩵 Cyan": "#06B6D4",
+    };
+    const colorAnswer = answers.color || "🟢 Vert";
+    const color = colorMap[colorAnswer] || "#10B981";
+    setAccentColor(color);
+
     const contextualAnswers = Object.fromEntries(
-      Object.entries(answers).filter(([key]) => key !== "duration" && key !== "quality")
+      Object.entries(answers).filter(
+        ([key]) => key !== "duration" && key !== "quality" && key !== "color"
+      )
     );
     const enriched = buildEnrichedPrompt(prompt, questions, contextualAnswers, otherDetails);
     setPrompt(enriched);

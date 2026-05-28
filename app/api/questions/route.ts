@@ -18,32 +18,48 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Prompt requis" }, { status: 400 });
     }
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 1000,
-      system: `Tu es un expert en motion design.
-Tu dois générer UNIQUEMENT une 3e question contextuelle (optionnelle) pour personnaliser la vidéo.
+    const systemPrompt = `Tu es un expert en motion design. Génère des questions pour personnaliser la vidéo.
 
 RÈGLES IMPORTANTES :
-- Les questions 1 et 2 (durée et qualité) sont déjà imposées côté serveur, ne les regénère pas.
-- Génère au maximum UNE question supplémentaire utile au contexte.
-- Réponds UNIQUEMENT en JSON valide.
+- La première question doit TOUJOURS être sur la durée
+- La deuxième question doit TOUJOURS être sur la qualité
+- La troisième question doit TOUJOURS être sur la couleur accent
+- Maximum 1 question supplémentaire selon le contexte
+- Réponds UNIQUEMENT en JSON valide
 
-Format attendu :
+Format :
 {
   "questions": [
     {
-      "id": "custom",
-      "question": "...",
-      "options": ["...", "...", "..."]
+      "id": "duration",
+      "question": "Quelle durée pour ta vidéo ?",
+      "options": ["15s", "30s", "45s", "60s", "90s"],
+      "default": "30s"
+    },
+    {
+      "id": "quality",
+      "question": "Quelle qualité de rendu ?",
+      "options": ["⚡ Rapide (2-3 min)", "✨ Haute qualité (5-7 min)"],
+      "default": "⚡ Rapide (2-3 min)"
+    },
+    {
+      "id": "color",
+      "question": "Quelle couleur principale pour ta vidéo ?",
+      "options": ["🟢 Vert", "🟣 Violet", "🔵 Bleu", "🟡 Or", "🔴 Rouge", "⚪ Blanc", "🩷 Rose", "🩵 Cyan"],
+      "default": "🟢 Vert"
     }
   ]
-}`,
+}`;
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 1000,
+      system: systemPrompt,
       messages: [
         {
           role: "user",
           content: `Prompt utilisateur: "${prompt}"
-Génère une question contextuelle supplémentaire (ou tableau vide si inutile).`,
+Génère les questions au format demandé (avec éventuellement 1 question contextuelle supplémentaire).`,
         },
       ],
     });
@@ -82,7 +98,25 @@ Génère une question contextuelle supplémentaire (ou tableau vide si inutile).
       ],
     };
 
-    const rawCustom = (result.questions || [])[0];
+    const colorQuestion = {
+      id: "color",
+      question: "Quelle couleur principale pour ta vidéo ?",
+      options: [
+        { id: "🟢 Vert", label: "🟢 Vert" },
+        { id: "🟣 Violet", label: "🟣 Violet" },
+        { id: "🔵 Bleu", label: "🔵 Bleu" },
+        { id: "🟡 Or", label: "🟡 Or" },
+        { id: "🔴 Rouge", label: "🔴 Rouge" },
+        { id: "⚪ Blanc", label: "⚪ Blanc" },
+        { id: "🩷 Rose", label: "🩷 Rose" },
+        { id: "🩵 Cyan", label: "🩵 Cyan" },
+      ],
+    };
+
+    const generatedQuestions = result.questions || [];
+    const rawCustom = generatedQuestions.find(
+      (q) => q.id && !["duration", "quality", "color"].includes(q.id)
+    );
     const normalizedCustom =
       rawCustom && rawCustom.question
         ? {
@@ -104,8 +138,8 @@ Génère une question contextuelle supplémentaire (ou tableau vide si inutile).
         : null;
 
     const questions = normalizedCustom
-      ? [durationQuestion, qualityQuestion, normalizedCustom]
-      : [durationQuestion, qualityQuestion];
+      ? [durationQuestion, qualityQuestion, colorQuestion, normalizedCustom]
+      : [durationQuestion, qualityQuestion, colorQuestion];
 
     return NextResponse.json({ questions });
   } catch (err: unknown) {
