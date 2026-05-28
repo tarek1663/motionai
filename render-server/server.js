@@ -138,7 +138,7 @@ app.post("/voice", async (req, res) => {
       charIndex += sentence.length + 1;
 
       const startFrame = Math.round(startTime * fps);
-      const durationFrames = Math.max(60, Math.round((endTime - startTime) * fps));
+      const durationFrames = Math.max(120, Math.round((endTime - startTime) * fps));
 
       return {
         phrase: sentence,
@@ -274,10 +274,16 @@ app.post("/render", async (req, res) => {
 
   res.json({ jobId });
 
+  const sceneCount = Array.isArray(scenes) ? scenes.length : 8;
+  const adjustedTotalFrames = Math.max(
+    totalFrames || 1800,
+    sceneCount * 120,
+  );
+
   const inputProps = {
     scenes,
     sceneDurations,
-    totalFrames,
+    totalFrames: adjustedTotalFrames,
     format: format || "9:16",
     audioSrc: audioUrl || null,
     musicSrc: musicUrl || null,
