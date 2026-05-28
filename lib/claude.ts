@@ -1034,16 +1034,16 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
 
   // Ajuster les durées pour que la somme - overlaps = totalFrames
   const rawDurations = phraseTimestamps && phraseTimestamps.length === nbScenes
-    ? phraseTimestamps.map(pt => Math.max(90, Math.min(300, pt.durationFrames)))
+    ? phraseTimestamps.map(pt => Math.max(120, Math.min(300, pt.durationFrames)))
     : (() => {
         const wordCounts = phrases.map(p => p.split(" ").filter(w => w.length > 0).length);
         const totalWords = wordCounts.reduce((a, b) => a + b, 0);
         const totalFrames = Math.round(audioDuration * fps);
         if (totalWords === 0) {
-          return phrases.map(() => Math.max(90, Math.round(totalFrames / nbScenes)));
+          return phrases.map(() => Math.max(120, Math.round(totalFrames / nbScenes)));
         }
         return wordCounts.map(wc =>
-          Math.min(300, Math.max(90, Math.round((wc / totalWords) * totalFrames))),
+          Math.min(300, Math.max(120, Math.round((wc / totalWords) * totalFrames))),
         );
       })();
 
@@ -1051,7 +1051,7 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
   const targetTotal = Math.round(audioDuration * fps) + (nbScenes - 1) * FADE_FRAMES;
   const currentSum  = rawDurations.reduce((a, b) => a + b, 0);
   const ratio = currentSum > 0 ? targetTotal / currentSum : 1;
-  const sceneDurations = rawDurations.map(d => Math.max(90, Math.round(d * ratio)));
+  const sceneDurations = rawDurations.map(d => Math.max(120, Math.round(d * ratio)));
 
   const durationPerScene = Math.round(sceneDurations.reduce((a, b) => a + b, 0) / nbScenes);
 

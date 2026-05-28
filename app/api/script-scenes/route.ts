@@ -64,7 +64,7 @@ Réponds UNIQUEMENT en JSON valide sans markdown :
             : accent,
       };
     });
-    const MIN_SCENE_FRAMES = 90;
+    const MIN_SCENE_FRAMES = 120;
     let frameCursor = 0;
     const sceneDurations = scenes.map(() => {
       const startFrame = frameCursor;
