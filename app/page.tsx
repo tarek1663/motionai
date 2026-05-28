@@ -3,6 +3,7 @@
 import { Fragment, type CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { FaLinkedinIn } from "react-icons/fa6";
 import {
   siFacebook,
@@ -85,6 +86,7 @@ function SocialBrandLogo({ brand }: { brand: SocialBrand }) {
 
 export default function LandingPage() {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
   const [scrolled, setScrolled] = useState(false);
   const [showProductMenu, setShowProductMenu] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -766,44 +768,73 @@ export default function LandingPage() {
           ))}
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Link
-            href="/login"
+        {!isLoaded ? (
+          <div
             style={{
-              padding: "8px 18px",
-              background: "transparent",
-              border: "1px solid rgba(23,19,17,0.12)",
+              width: 180,
+              height: 36,
+              background: "rgba(255,255,255,0.06)",
               borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 600,
-              color: "#0a0a0a",
-              textDecoration: "none",
-              transition: "all 0.15s",
-              display: "inline-flex",
-              alignItems: "center",
             }}
-          >
-            Connexion
-          </Link>
-          <Link
-            href="/signup"
+          />
+        ) : user ? (
+          <button
+            onClick={() => router.push("/dashboard")}
             style={{
-              padding: "8px 18px",
               background: "#10B981",
-              color: "#ffffff",
+              color: "#fff",
               border: "none",
               borderRadius: 10,
+              padding: "9px 20px",
               fontSize: 14,
               fontWeight: 700,
-              textDecoration: "none",
-              boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
-              display: "inline-flex",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              display: "flex",
               alignItems: "center",
+              gap: 8,
+              boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
             }}
           >
-            Commencer gratuitement
-          </Link>
-        </div>
+            Accéder au dashboard →
+          </button>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button
+              onClick={() => router.push("/login")}
+              style={{
+                padding: "8px 18px",
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 10,
+                fontSize: 14,
+                fontWeight: 600,
+                color: "rgba(255,255,255,0.7)",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Connexion
+            </button>
+            <button
+              onClick={() => router.push("/signup")}
+              style={{
+                padding: "8px 18px",
+                background: "#10B981",
+                border: "none",
+                borderRadius: 10,
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#ffffff",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+              }}
+            >
+              Commencer gratuitement
+            </button>
+          </div>
+        )}
       </header>
 
       <section
