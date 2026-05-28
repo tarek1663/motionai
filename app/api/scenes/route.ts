@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateScenesFromVoice } from "@/lib/claude";
-import { buildPremiumSceneSystemPrompt } from "@/lib/prompts/motion-scenes-system";
+import { buildPremiumSceneSystemPrompt, MOTION_GOLDEN_RULES } from "@/lib/prompts/motion-scenes-system";
 import { getErrorMessage } from "@/lib/utils";
 
-/** Prompt système premium — utilisé via generateScenesFromVoice (lib/claude.ts) */
+/** Prompt système premium + règles d'or images/icônes */
 export const scenesSystemPrompt = (accentColor = "#7C3AED") =>
-  buildPremiumSceneSystemPrompt(accentColor);
+  `${buildPremiumSceneSystemPrompt(accentColor)}\n\n${MOTION_GOLDEN_RULES}`;
 
 type GeneratedScene = {
   type: string;
@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
 
     const scenesWithPhotos = await Promise.all(
       (result.scenes as GeneratedScene[]).map(async (scene) => {
-        if (scene.type === "photo" && scene.photoQuery) {
+        const needsPhoto =
+          (scene.type === "photo" || scene.type === "photocard" || scene.type === "phototext") &&
+          scene.photoQuery;
+        if (needsPhoto) {
           try {
             console.log("🖼️ Téléchargement photo pour:", scene.photoQuery);
             const photoRes = await fetch(`${RENDER_URL}/photos`, {

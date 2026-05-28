@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { PhraseTimestamp } from "@/lib/elevenlabs";
-import { buildPremiumSceneSystemPrompt } from "@/lib/prompts/motion-scenes-system";
+import { buildPremiumSceneSystemPrompt, MOTION_GOLDEN_RULES } from "@/lib/prompts/motion-scenes-system";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -1060,24 +1060,15 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
     max_tokens: 4000,
     system: `${buildPremiumSceneSystemPrompt(accentColor)}${formatGuidance ? `\n\n${formatGuidance}` : ""}
 
-SCÈNES PRIORITAIRES — UTILISER EN PREMIER :
-- puretext: texte centré pur sur fond avec grille — LA PLUS UTILISÉE
-- accentfirstword: premier mot en couleur accent, reste en noir/blanc
-- bignumber: grand chiffre en accent + label en gris (counterTo + text)
-- photocard: texte au-dessus + photo limitée en dessous (photoUrl)
-- stat, cleantext, cleancta
-
-RÈGLES ABSOLUES :
-- Texte TOUJOURS centré, beaucoup d'espace vide
-- 2 à 3 photocard max par vidéo, jamais en première ou dernière scène
-- Fond blanc (#ffffff) ou noir (#0a0a0a), alterner entre scènes
-- RIEN D'AUTRE sauf si vraiment utile
+${MOTION_GOLDEN_RULES}
 
 RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
-- Phrases fournies = texte voix, raccourcis visuellement en 1-5 mots dans "text" si besoin
-- CTA en dernière scène (type "cleancta" ou "cta")
-- 1-2 scènes "photocard" avec photoUrl ou photoQuery (anglais), jamais en première ou dernière scène`,
+- Phrases fournies = texte voix ; "text" = titre court MAJUSCULES (1-4 mots) ; "text2" = complément lisible si besoin
+- Minimum 2 scènes photocard et 1 scène icontext (ajuster si vidéo courte)
+- Chaque photocard DOIT avoir photoQuery en anglais
+- CTA en dernière scène (type "cleancta")
+- Le reste = puretext, accentfirstword, bignumber, stat, cleantext`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}
