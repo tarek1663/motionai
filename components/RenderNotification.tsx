@@ -20,6 +20,7 @@ export default function RenderNotification() {
   useEffect(() => {
     const checkStorage = () => {
       const saved = localStorage.getItem(STORAGE_KEY);
+      console.log("🔍 RenderNotification checkStorage:", saved);
       if (!saved) return;
 
       try {

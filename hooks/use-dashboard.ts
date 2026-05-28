@@ -69,15 +69,18 @@ export function useDashboard() {
 
   const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
     if (typeof window === "undefined") return;
+    console.log("💾 Saving to localStorage:", jobId);
     localStorage.setItem(
       RENDER_STORAGE_KEY,
       JSON.stringify({
         jobId,
         prompt: notifPrompt,
         progress: 0,
+        status: "rendering",
         timestamp: Date.now(),
       })
     );
+    console.log("✅ localStorage saved:", localStorage.getItem(RENDER_STORAGE_KEY));
   }, []);
 
   const showToast = useCallback(
