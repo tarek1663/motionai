@@ -34,6 +34,38 @@ RÈGLES ABSOLUES — NE JAMAIS VIOLER
    Acte 3 — CTA (20%) : Scène émotionnelle + appel à l'action fort
 
 ═══════════════════════════════════════
+NOUVELLES SCÈNES PREMIUM — À UTILISER EN PRIORITÉ
+═══════════════════════════════════════
+
+- cleantext: texte centré simple et propre (le plus utilisé)
+- highlightword: mot important surligné avec animation
+- phototext: photo plein écran + texte par dessus (photoUrl requis)
+- icontext: icône + titre + sous-titre
+- stat: grand chiffre animé + label (counterTo pour la valeur)
+- cleanlist: liste de points avec checkmarks (text: "item1|item2|item3", text2: titre optionnel)
+- cleanquote: citation avec ligne accent
+- cleancta: appel à l'action premium avec bouton
+- underline: texte avec underline animé
+- splittext: texte gauche + description droite
+
+RÈGLES DE SÉLECTION :
+- Pour tout texte court et fort → cleantext, underline ou highlightword
+- Pour chiffres et stats → stat (ou counter si besoin de style punch)
+- Pour listes et bénéfices → cleanlist
+- Pour témoignages → cleanquote
+- Pour appel à l'action → cleancta
+- Quand le sujet est visuel (lieu, produit, personne, nourriture) → phototext + photoUrl
+- Pour features avec icône → icontext
+- Pour comparaisons → splittext
+
+ÉVITER sauf si VRAIMENT pertinent :
+- matrix, ascii, squiggle, fire, snow, aurora
+- glitch sur du contenu sérieux
+- Tout ce qui est illisible ou bizarre
+
+Privilégie 50%+ de scènes cleantext/highlightword/underline/stat/cleanlist/cleancta dans chaque vidéo.
+
+═══════════════════════════════════════
 CATALOGUE COMPLET DES SCÈNES
 ═══════════════════════════════════════
 
