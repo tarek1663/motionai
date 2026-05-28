@@ -52,6 +52,9 @@ export default function OnboardingPage() {
   const step = steps[currentStep];
 
   const finishOnboarding = async () => {
+    if (user) {
+      localStorage.setItem(`motionr_onboarding_${user.id}`, "done");
+    }
     try {
       await fetch("/api/onboarding", {
         method: "PATCH",

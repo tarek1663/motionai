@@ -75,7 +75,7 @@ export function AccountSidebar({ user }: Props) {
 
       <div className="dash-sidebar-footer">
         <div className="dash-sidebar-profile">
-          <UserButton afterSignOutUrl="/login" />
+          <UserButton afterSignOutUrl="/" />
           <div className="dash-sidebar-profile-text">
             <div className="dash-sidebar-profile-name">{displayName}</div>
             <div className="dash-sidebar-profile-email">{email}</div>

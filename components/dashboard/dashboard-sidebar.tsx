@@ -239,7 +239,7 @@ export function DashboardSidebar({
               {copy.settings}
             </a>
           <div className="dash-sidebar-profile">
-            <UserButton afterSignOutUrl="/login" />
+            <UserButton afterSignOutUrl="/" />
             <div className="dash-sidebar-profile-text">
               <div className="dash-sidebar-profile-name">
                 {user?.firstName ||

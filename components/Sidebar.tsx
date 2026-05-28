@@ -101,7 +101,7 @@ export function Sidebar({ active, credits }: SidebarProps) {
             Upgrader →
           </a>
         </div>
-        <UserButton afterSignOutUrl="/login" />
+        <UserButton afterSignOutUrl="/" />
       </div>
     </aside>
   );

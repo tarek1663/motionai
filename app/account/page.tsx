@@ -438,7 +438,7 @@ export default function AccountPage() {
                 Toutes tes vidéos et données seront supprimées
               </div>
             </div>
-            <UserButton afterSignOutUrl="/login" />
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </div>
