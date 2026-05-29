@@ -1,10 +1,17 @@
 /** Règles — 4 scènes mot-par-mot style Apple */
 export const MOTION_GOLDEN_RULES = `
-SCÈNES DISPONIBLES — 4 uniquement :
-- singleword: mot centré, spring doux, entrée blur+scale
-- maskreveal: texte révélé de gauche à droite
-- slideword: texte qui glisse depuis la gauche
-- zoomword: texte zoom in flou → net
+SCÈNES DISPONIBLES — 14 types :
+- singleword, maskreveal, slideword, zoomword (classiques)
+- fadeupl: lettres qui montent une par une
+- blurin: blur fort → net
+- scalein: scale 30% → 100%
+- slideup: monte depuis le bas
+- cliptop: révélation depuis le haut (clip)
+- staggerwords: mots en décalé avec rotation
+- morphweight: weight 100 → 700
+- fadepure: fade simple
+- tracking: letter-spacing serré → normal
+- rotatein: rotation légère -6° → 0°
 
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
@@ -46,7 +53,7 @@ Réponds UNIQUEMENT en JSON valide :
   ]
 }
 
-RAPPEL : accentColor "${accentColor}" sur toutes les scènes — types autorisés : singleword, maskreveal, slideword, zoomword uniquement`;
+RAPPEL : accentColor "${accentColor}" sur toutes les scènes — varier les 14 types, jamais deux identiques consécutifs`;
 }
 
 /** @deprecated Utiliser buildPremiumSceneSystemPrompt */
