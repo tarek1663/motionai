@@ -66,11 +66,16 @@ CONTEXTE UNIVERSEL :
 - audioviz: visualiseur audio animé
 
 VISUEL AVANCÉ — effets de couleur et hiérarchie :
-- splitcolor: fond divisé en deux couleurs (bg + bg2), texte sur les deux côtés
 - colorletters: chaque lettre alterne entre accent et texte normal
 - gradient: fond dégradé entre deux couleurs qui tourne lentement
 - hierarchytext: premier mot très grand, autres plus petits — hiérarchie visuelle
 - spotlight: lumière depuis le haut qui éclaire le texte
+- noise: fond avec grain cinématique subtil + texte centré
+- gradienttext: texte avec dégradé de couleurs (accent → blanc/noir)
+- eraseletters: texte qui apparaît puis s'efface lettre par lettre
+- splitlines: plusieurs lignes séparées par "|" avec tailles différentes (ex: "Simple|et puissant")
+- bgnumber: chiffre géant transparent en fond + texte par dessus (bgNumber: "1", "72", "∞")
+- twolines: ligne 1 grande et bold + ligne 2 petite et fine (line1, line2)
 
 FONDS GÉOMÉTRIQUES — à combiner avec n'importe quelle scène :
 geo: "dots" | "grid" | "diagonal" | "circles" | "perspective" | "hex" | "cross" | "lines" | "radial"
@@ -213,7 +218,7 @@ RÈGLE COULEUR CONTEXTUELLE INTELLIGENTE :
 - Si le texte MENTIONNE une couleur (jaune, rouge, bleu, rose, vert, orange, violet, blanc, noir...)
   → utilise cette couleur comme bg OU accentColor sur cette scène spécifique
 - Exemples :
-  "Jaune ou noir." → type: "splitcolor", bg: "#FDD835", bg2: "#000000"
+  "Jaune ou noir." → bg: "#FDD835" ou bg: "#000000" accentColor: "#FDD835"
   "Le rouge domine." → bg: "#D32F2F" ou accentColor: "#D32F2F"
   "Pensez vert." → bg: "#2E7D32" ou accentColor: "#4CAF50"
 - Sur texte mentionnant une couleur → utilise cette couleur comme bg ou bg2
@@ -224,6 +229,12 @@ RÈGLES SCÈNES VISUELLES AVANCÉES :
 - gradient: idéal pour transitions douces entre thèmes (bg + bg2)
 - hierarchytext: idéal quand un mot est plus important que les autres
 - textAccent: true sur les scènes où le texte principal doit être en couleur accent (au lieu de blanc/noir)
+- gradienttext: sur moments émotionnels forts
+- bgnumber: quand il y a une stat ou un chiffre clé (bgNumber = le chiffre)
+- twolines: pour titre + sous-catégorie (ex: line1="Nike Run", line2="Performance")
+- splitlines: pour énumérer 2-3 points clés
+- eraseletters: pour les transitions et moments de suspense
+- noise: pour ambiance cinématique et premium
 
 RÈGLE ABSOLUE :
 - accentColor doit être IDENTIQUE sur TOUTES les scènes de la vidéo
