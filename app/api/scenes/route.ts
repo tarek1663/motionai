@@ -38,12 +38,7 @@ export async function POST(req: NextRequest) {
     });
 
     const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
-    const PHOTO_TYPES = new Set([
-      "kenburns",
-      "photoreveal",
-      "photooverlay",
-      "photocollage",
-    ]);
+    const PHOTO_TYPES = new Set(["photoreveal", "photocollage"]);
 
     const scenesWithPhotos = await Promise.all(
       result.scenes.map(async (scene) => {

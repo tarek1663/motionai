@@ -14,9 +14,7 @@ SCÈNES DISPONIBLES — 14 types :
 - rotatein: rotation légère -6° → 0°
 
 SCÈNES PHOTOS (photoQuery en anglais obligatoire si pas de photoUrl) :
-- kenburns: photo plein écran + zoom lent + texte en bas
 - photoreveal: texte au-dessus, photo révélée gauche→droite
-- photooverlay: photo limitée avec texte superposé
 - photocollage: 2-3 photos côte à côte (photoQuery + photoUrl2/3 via queries différentes)
 
 RÈGLES ABSOLUES :
