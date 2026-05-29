@@ -73,7 +73,7 @@ const recalcSceneDurations = (scenes) => {
   const ANTICIPATION = 3;
   let currentFrame = 0;
   return (scenes || []).map((scene, i) => {
-    const duration = scene.durationFrames || 120;
+    const duration = scene.durationFrames || 90;
     const start = Math.max(0, currentFrame - (i > 0 ? ANTICIPATION : 0));
     const result = {
       startFrame: start,
@@ -82,6 +82,54 @@ const recalcSceneDurations = (scenes) => {
     currentFrame += duration;
     return result;
   });
+};
+
+const syncScenesWithVoice = (scenes, phraseTimestamps, fps = 60) => {
+  if (!phraseTimestamps || phraseTimestamps.length === 0) {
+    return recalcSceneDurations(scenes);
+  }
+
+  console.log(
+    "🎙️ Syncing",
+    scenes.length,
+    "scenes with",
+    phraseTimestamps.length,
+    "phrases",
+  );
+
+  const synced = [];
+  let currentFrame = 0;
+
+  scenes.forEach((scene, i) => {
+    const phrase = phraseTimestamps[i];
+
+    if (phrase) {
+      const startFrame = Math.round(phrase.startFrame ?? currentFrame);
+      const endFrame = Math.round(
+        phrase.endFrame ?? startFrame + (phrase.durationFrames || 90),
+      );
+      const durationFrames = Math.max(60, endFrame - startFrame);
+
+      synced.push({
+        startFrame,
+        durationFrames,
+      });
+      currentFrame = startFrame + durationFrames;
+    } else {
+      const duration = scene.durationFrames || 90;
+      synced.push({
+        startFrame: currentFrame,
+        durationFrames: duration,
+      });
+      currentFrame += duration;
+    }
+  });
+
+  console.log(
+    "🎙️ Synced durations:",
+    synced.map((s) => s.durationFrames),
+  );
+  return synced;
 };
 
 // ── Health check ──────────────────────────────────────
@@ -153,7 +201,7 @@ app.post("/voice", async (req, res) => {
       charIndex += sentence.length + 1;
 
       const startFrame = Math.round(startTime * fps);
-      const durationFrames = Math.max(120, Math.round((endTime - startTime) * fps));
+      const durationFrames = Math.max(60, Math.round((endTime - startTime) * fps));
 
       return {
         phrase: sentence,
@@ -300,8 +348,7 @@ app.post("/render", async (req, res) => {
   const jobId = uuidv4();
   const {
     scenes,
-    sceneDurations,
-    totalFrames,
+    totalFrames: requestedTotalFrames,
     format,
     audioUrl,
     musicUrl,
@@ -312,6 +359,7 @@ app.post("/render", async (req, res) => {
     formatName,
     plan = "free",
     quality = "fast",
+    phraseTimestamps = [],
   } = req.body;
 
   const enrichedScenes = await enrichScenesWithPhotos(scenes || [], prompt || "");
@@ -346,27 +394,41 @@ app.post("/render", async (req, res) => {
 
   res.json({ jobId });
 
-  const sceneCount = Array.isArray(enrichedScenes) ? enrichedScenes.length : 8;
-  const computedSceneDurations = recalcSceneDurations(enrichedScenes);
-  const computedTotalFrames = computedSceneDurations.reduce(
+  const sceneList = enrichedScenes || [];
+  const sceneDurations = syncScenesWithVoice(sceneList, phraseTimestamps, 60);
+  const computedTotalFrames = sceneDurations.reduce(
     (acc, s) => acc + s.durationFrames,
     0,
   );
   const adjustedTotalFrames = Math.max(
-    computedTotalFrames || totalFrames || 1800,
-    sceneCount * 120,
+    computedTotalFrames || requestedTotalFrames || 1800,
+    sceneList.length * 60,
+  );
+
+  console.log(
+    "🎬 Total frames:",
+    adjustedTotalFrames,
+    "— Scenes:",
+    sceneList.length,
   );
 
   const inputProps = {
-    scenes: enrichedScenes,
-    sceneDurations: computedSceneDurations,
+    scenes: sceneList,
+    sceneDurations,
     totalFrames: adjustedTotalFrames,
+    phraseTimestamps,
     format: format || "9:16",
     audioSrc: audioUrl || null,
     musicSrc: musicUrl || null,
     musicVolume: musicVolume || 0.07,
     showWatermark: plan === "free",
     prompt,
+    duration,
+    accentColor,
+    formatName,
+    quality,
+    audioUrl,
+    musicUrl,
   };
 
   (async () => {

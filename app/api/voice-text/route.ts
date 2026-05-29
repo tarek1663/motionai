@@ -9,7 +9,16 @@ export async function POST(req: NextRequest) {
     const { prompt, duration } = await req.json();
     if (!prompt?.trim()) return NextResponse.json({ error: "Prompt requis" }, { status: 400 });
     const durationSec = String(duration || "30");
-    console.log("🎙️ voice-text duration:", durationSec, "s — ~", Math.round(parseInt(durationSec) * 2.5), "mots");
+    const sec = parseInt(durationSec, 10) || 30;
+    const targetScenes =
+      sec <= 15 ? 9 : sec <= 30 ? 18 : sec <= 45 ? 26 : 33;
+    console.log(
+      "🎙️ voice-text duration:",
+      durationSec,
+      "s —",
+      targetScenes,
+      "lignes cible",
+    );
     const result = await generateVoiceText({ prompt, duration: durationSec });
     // NextResponse.json(result) — voiceoverText, accentColor, bgAccent, bgLight, formatId, formatName
     return NextResponse.json(result);

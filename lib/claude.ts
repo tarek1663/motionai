@@ -927,6 +927,14 @@ export async function generateVoiceText(params: {
 }> {
   const { prompt, duration } = params;
   const durationSec = parseInt(String(duration), 10) || 30;
+  const targetScenes =
+    durationSec <= 15
+      ? 9
+      : durationSec <= 30
+        ? 18
+        : durationSec <= 45
+          ? 26
+          : 33;
   const wordsCount = Math.round(durationSec * 2.5);
   const format = detectVideoFormat(prompt);
 
@@ -968,10 +976,13 @@ RÈGLES COULEUR — pense visuellement:
 RÈGLES VOIX:
 Format: ${format.name}
 Style: ${format.voiceStyle}
-- Génère un script voix de exactement ${durationSec} secondes — soit environ ${wordsCount} mots. PAS PLUS COURT.
-- EXACTEMENT ${wordsCount} mots (minimum)
-- Chaque phrase sur une NOUVELLE LIGNE
-- Phrases très courtes (4-8 mots max)
+- Une ligne = une scène = une idée courte
+- Maximum 5 mots par ligne
+- Minimum ${targetScenes} lignes pour une vidéo de ${durationSec}s
+- Sépare chaque ligne par un saut de ligne
+- Style Apple — court, impactant, rythmé
+- Pas de ponctuation sauf les points finaux
+- Génère un script voix de exactement ${durationSec} secondes — soit environ ${wordsCount} mots
 - En français`,
     messages: [{
       role: "user",
@@ -1050,7 +1061,7 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
 
   // Ajuster les durées pour que la somme - overlaps = totalFrames
   const rawDurations = phraseTimestamps && phraseTimestamps.length === nbScenes
-    ? phraseTimestamps.map(pt => Math.max(120, Math.min(300, pt.durationFrames)))
+    ? phraseTimestamps.map((pt) => Math.max(60, Math.min(180, pt.durationFrames)))
     : (() => {
         const wordCounts = phrases.map(p => p.split(" ").filter(w => w.length > 0).length);
         const totalWords = wordCounts.reduce((a, b) => a + b, 0);

@@ -258,13 +258,23 @@ RÈGLES SCÈNES VISUELLES AVANCÉES :
 - eraseletters: pour les transitions et moments de suspense
 - noise: pour ambiance cinématique et premium
 
+NOMBRE DE SCÈNES :
+- Vidéo 15s → 8 à 10 scènes
+- Vidéo 30s → 16 à 20 scènes
+- Vidéo 45s → 24 à 28 scènes
+- Vidéo 60s → 30 à 36 scènes
+- Durée par scène : 60 à 90 frames max (1 à 1.5 secondes)
+- JAMAIS plus de 90 frames par scène sauf mockup/stats
+- Chaque scène = 1 mot ou 1 idée courte
+- Rythme soutenu — comme un montage Apple/Nike
+
 DURÉES PAR TYPE DE SCÈNE :
-- Scène 1 mot court (singleword, zoomword, scalein...) → durationFrames: 90
-- Scène phrase (maskreveal, slideword, staggerwords...) → durationFrames: 120
-- Scène complexe (mockup, dashboard, checklist, timeline...) → durationFrames: 200
-- Scène transition (iris, curtain, wipe...) → durationFrames: 80
-- Scène stats/chiffres (counter, multistats, progressbar...) → durationFrames: 180
-- Scène photo (photoreveal, photocollage...) → durationFrames: 180
+- Scène 1 mot court (singleword, zoomword, scalein...) → durationFrames: 60 à 90
+- Scène phrase (maskreveal, slideword, staggerwords...) → durationFrames: 60 à 90
+- Scène complexe (mockup, dashboard, checklist, timeline...) → durationFrames: 120 à 180
+- Scène transition (iris, curtain, wipe...) → durationFrames: 60 à 80
+- Scène stats/chiffres (counter, multistats, progressbar...) → durationFrames: 120 à 180
+- Scène photo (photoreveal, photocollage...) → durationFrames: 90 à 120
 - Toujours inclure durationFrames dans chaque scène du JSON
 
 RÈGLE ABSOLUE :
@@ -288,7 +298,7 @@ RÈGLES ABSOLUES
 1. Texte MAX 5 mots par scène — toujours court et impactant
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff, bg:#000000 et la couleur accent (2-3 scènes en bg accent)
-4. 8 à 12 scènes par vidéo
+4. Respecte le nombre de scènes selon la durée (voir NOMBRE DE SCÈNES)
 5. "geo" sur TOUTES les scènes (fonds géométriques variés)
 6. Toujours finir par "cleancta" ou "pulsebutton"
 7. Police SF Pro Display — letterSpacing -0.03em

@@ -181,7 +181,7 @@ export async function generateFromPrompt(params: PromptParams) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scenes: scenesData.scenes,
-        sceneDurations: scenesData.sceneDurations,
+        phraseTimestamps: voiceData.phraseTimestamps || [],
         totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
         quality,
@@ -287,7 +287,7 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scenes: scenesData.scenes,
-        sceneDurations: scenesData.sceneDurations,
+        phraseTimestamps: voiceData.phraseTimestamps || [],
         totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
         format,
         quality,
@@ -416,7 +416,7 @@ export async function generateFromScript(params: ScriptParams) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scenes: scenesData.scenes,
-        sceneDurations: voiceData.phraseTimestamps,
+        phraseTimestamps: voiceData.phraseTimestamps || [],
         totalFrames,
         format,
         quality,
