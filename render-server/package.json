@@ -6,6 +6,7 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "@remotion/bundler": "*",
     "@remotion/google-fonts": "*",
     "@remotion/renderer": "*",
