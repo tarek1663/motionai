@@ -340,6 +340,27 @@ export async function generateFromScript(params: ScriptParams) {
     const requestedDurationSeconds = durationToSeconds(duration);
     const accentColor = userAccentColor || colors.accent;
 
+    const voiceTextRes = await fetch("/api/voice-text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: finalScript,
+        mode: "script",
+        customScript: finalScript,
+        duration: requestedDurationSeconds,
+      }),
+    });
+    const voiceTextData = await voiceTextRes.json();
+    if (!voiceTextRes.ok) {
+      cb.setError(voiceTextData.error || "Erreur de preparation du script");
+      cb.setScreen("input");
+      return;
+    }
+
+    const scriptForVoice = String(
+      voiceTextData.script || voiceTextData.voiceoverText || finalScript,
+    ).replace(/\r\n/g, "\n");
+
     const scenesRes = await fetch("/api/script-scenes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -361,8 +382,6 @@ export async function generateFromScript(params: ScriptParams) {
 
     console.log("🎬 Scenes count:", scenesData.scenes?.length);
     console.log("🎬 First scene:", scenesData.scenes?.[0]);
-
-    const scriptForVoice = String(scenesData.restructuredScript || finalScript).replace(/\r\n/g, "\n");
     console.log("🎬 Scenes:", scenesData.scenes?.length);
     console.log("📝 Script for voice:", scriptForVoice);
     console.log("📝 Script for voice lines:", scriptForVoice.split("\n").length);

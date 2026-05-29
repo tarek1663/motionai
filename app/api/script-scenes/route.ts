@@ -52,12 +52,16 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Tu es le meilleur directeur artistique motion design au monde.
+          content: `Tu es le meilleur directeur artistique motion design.
 
-Transforme ce script en vidéo motion design SPECTACULAIRE de ${durationFrames} secondes.
-
-SCRIPT :
+SCRIPT EXACT DE L'UTILISATEUR (ne jamais modifier ce texte) :
 ${script}
+
+Ta mission : créer des scènes visuelles qui ILLUSTRENT ce script.
+- Le champ "text" de chaque scène doit contenir les MOTS EXACTS du script
+- Découpe le script en scènes : une phrase ou groupe de mots = une scène
+- NE JAMAIS reformuler ou modifier le texte original
+- Chaque scène illustre une partie du script avec les animations appropriées
 
 COULEUR ACCENT : ${accent}
 DURÉE : ${durationFrames} secondes
@@ -85,7 +89,7 @@ RÈGLES ABSOLUES :
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
-5. Texte MAX 4 mots par scène
+5. Texte MAX 4 mots par scène — extraits EXACTS du script original
 6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
 7. durationFrames : texte court=80, phrase=100, stats=150, mockup=180, transition=70
 8. accentColor = ${accent} sur TOUTES les scènes
