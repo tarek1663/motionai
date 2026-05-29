@@ -31,6 +31,18 @@ STRUCTURE TYPE :
 7. applephoto — deuxième photo
 8. applecta — appel à l'action final
 
+SCÈNES VOIX MOT-PAR-MOT (1 phrase = 1 scène, text = mot(s) courts) :
+- singleword: un seul mot centré (ex: "Simple.")
+- scalepunch: impact fort
+- maskreveal: révélation masque gauche→droite
+- slideword: glisse depuis la gauche
+- zoomword: zoom in depuis flou
+- sequentialwords: plusieurs mots qui apparaissent en séquence (text: "Fait pour toi.")
+- appletypewriter: lettre par lettre
+- splitwords: deux lignes (text: "Motionr. L'IA vidéo.")
+
+Pour vidéos voix-off : privilégier singleword, scalepunch, slideword, zoomword, sequentialwords — alterner #ffffff et #000000.
+
 Alias acceptés (même rendu) : puretext→appletext, photocard→applephoto, icontext→appleicon, cleancta→applecta
 `.trim();
 
