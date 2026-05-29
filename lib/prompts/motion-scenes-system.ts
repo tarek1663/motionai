@@ -17,6 +17,11 @@ SCÈNES PHOTOS (photoQuery en anglais obligatoire si pas de photoUrl) :
 - photoreveal: texte au-dessus, photo révélée gauche→droite
 - photocollage: 2-3 photos côte à côte (photoQuery + photoUrl2/3 via queries différentes)
 
+SCÈNES STATS :
+- counter: grand chiffre 0→counterTo + label text (suffix/prefix optionnels)
+- progressbar: barre % animée, counterTo = pourcentage cible, accentColor pour la barre
+- multistats: tableau stats [{ value, label, suffix }] — 3 lignes en séquence
+
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
 2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
