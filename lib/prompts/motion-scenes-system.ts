@@ -37,6 +37,9 @@ TRANSITIONS ENTRE SCÈNES :
 - flash: flash accentColor intense au début et à la fin
 - colorfade: fondu via couleur accent au milieu de la scène
 
+10 TRANSITIONS SUPPLÉMENTAIRES :
+splitvertical, zoomtransition, iris, curtain, diagonalwipe, glitchswitch, venetian, scalewipe, pixeldissolve, lightsweep
+
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
 2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
