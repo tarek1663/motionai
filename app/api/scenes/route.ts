@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const scenesWithPhotos = await Promise.all(
       (result.scenes as GeneratedScene[]).map(async (scene) => {
         const needsPhoto =
-          (scene.type === "photo" || scene.type === "photocard" || scene.type === "phototext") &&
+          (scene.type === "photo" || scene.type === "photocard" || scene.type === "phototext" || scene.type === "applephoto") &&
           scene.photoQuery;
         if (needsPhoto) {
           try {

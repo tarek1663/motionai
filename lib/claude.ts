@@ -1064,11 +1064,11 @@ ${MOTION_GOLDEN_RULES}
 
 RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
-- Phrases fournies = texte voix ; "text" = titre court MAJUSCULES (1-4 mots) ; "text2" = complément lisible si besoin
-- Minimum 2 scènes photocard et 1 scène icontext (ajuster si vidéo courte)
-- Chaque photocard DOIT avoir photoQuery en anglais
-- CTA en dernière scène (type "cleancta")
-- Le reste = puretext, accentfirstword, bignumber, stat, cleantext`,
+- Phrases fournies = texte voix ; "text" = titre court MAJUSCULES (1-5 mots) ; "text2" = complément lisible
+- Minimum 2 scènes applephoto et 1 scène appleicon (types apple* obligatoires)
+- Chaque applephoto DOIT avoir photoQuery en anglais
+- CTA en dernière scène (type "applecta")
+- Le reste = appletext, appleaccent, applenumber`,
     messages: [{
       role: "user",
       content: `Sujet: "${prompt}" — Accent: ${accentColor}
