@@ -202,6 +202,15 @@ THÈMES & CONTEXTES — choisis selon l'ambiance :
 - Été/Soleil → jaune #FDD835
 - Nuit/Sombre → violet #4A148C
 
+RÈGLE COULEUR CONTEXTUELLE INTELLIGENTE :
+- Si le texte MENTIONNE une couleur (jaune, rouge, bleu, rose, vert, orange, violet, blanc, noir...)
+  → utilise cette couleur comme bg OU accentColor sur cette scène spécifique
+- Exemples :
+  "Jaune ou noir." → bg: "#FDD835" ou bg: "#000000" accentColor: "#FDD835"
+  "Le rouge domine." → bg: "#D32F2F" ou accentColor: "#D32F2F"
+  "Pensez vert." → bg: "#2E7D32" ou accentColor: "#4CAF50"
+- C'est un clin d'œil visuel fort — exploite-le toujours
+
 RÈGLE ABSOLUE :
 - accentColor doit être IDENTIQUE sur TOUTES les scènes de la vidéo
 - Choisis UNE seule couleur et applique-la partout
