@@ -114,7 +114,7 @@ SCÈNES AVEC PHOTOS — règles :
 - photoQuery doit être en anglais, descriptif, 2-4 mots
 
 RÈGLE GEO OBLIGATOIRE :
-- Ajoute "geo" sur au moins 4 scènes par vidéo (40% minimum)
+- Ajoute "geo" sur au moins 5 scènes par vidéo
 - Valeurs possibles : "dots" | "grid" | "diagonal" | "circles" | "perspective" | "hex" | "cross" | "lines" | "radial"
 - Exemples :
   { "type": "singleword", "text": "Simple.", "bg": "#ffffff", "geo": "dots" }
@@ -190,15 +190,23 @@ RÈGLE ABSOLUE :
 - Si aucune marque ni thème clair → utilise #ffffff sur fond noir et #000000 sur fond blanc
 - La couleur doit être COHÉRENTE avec le message et l'identité visuelle
 
+RÈGLES FOND & COULEUR :
+- bg peut être : "#ffffff" (blanc) | "#000000" (noir) | la couleur accent elle-même
+- Utilise la couleur accent comme fond sur 2-3 scènes par vidéo pour varier
+- Exemple : si accentColor="#FF6600" → une scène avec bg="#FF6600"
+- Sur fond accent : textColor sera automatiquement blanc ou noir selon la lisibilité
+- Alterner : blanc → noir → accent → blanc → noir → accent
+- geo OBLIGATOIRE sur au moins 5 scènes — choisis parmi : dots, grid, diagonal, circles, perspective, hex, cross, lines, radial
+
 ═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
 
 1. Texte MAX 5 mots par scène — toujours court et impactant
 2. JAMAIS deux types identiques consécutifs
-3. Alterner bg:#ffffff et bg:#000000
+3. Alterner bg:#ffffff, bg:#000000 et la couleur accent (2-3 scènes en bg accent)
 4. 8 à 12 scènes par vidéo
-5. Au moins 4 scènes avec "geo" (fonds géométriques variés)
+5. Au moins 5 scènes avec "geo" (fonds géométriques variés)
 6. Toujours finir par "cleancta" ou "pulsebutton"
 7. Police SF Pro Display — letterSpacing -0.03em
 8. JAMAIS de sous-titre gris — tout le texte à pleine opacité
