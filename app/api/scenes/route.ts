@@ -90,6 +90,17 @@ MOCKUPS & REPRÉSENTATIONS :
 - worldmap: carte du monde avec villes animées — idéal pour global/international
 - horizontaltimeline: frise chronologique (events: [{year, label}])
 
+RÈGLES MOCKUP — UTILISATION STRICTE :
+- iphone, macbook, browser, doubledevice, dashboard : UNIQUEMENT pour :
+  • Sites web (nike.com, spotify.com, airbnb.fr...)
+  • Applications mobiles (Uber, Instagram, TikTok...)
+  • SaaS et outils (Notion, Stripe, Linear, Figma...)
+  • E-commerce (Amazon, Shopify...)
+  • Services digitaux (Netflix, YouTube, Spotify...)
+- JAMAIS pour : nourriture, voyage physique, sport pur, motivation, actualités
+- Ajoute toujours "websiteUrl" avec le nom du site détecté
+- Exemple : { "type": "iphone", "websiteUrl": "spotify.com", "text": "Écoute.", "bg": "#121212", "accentColor": "#1DB954" }
+
 UTILISATION CONTEXTUELLE :
 - iphone/macbook/browser/doubledevice: pour apps, SaaS, sites web, produits digitaux
 - dashboard: pour analytics, KPIs, performances, résultats
