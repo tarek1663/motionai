@@ -805,11 +805,11 @@ export default function LandingPage() {
               style={{
                 padding: "8px 18px",
                 background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)",
+                border: "1px solid rgba(23,19,17,0.15)",
                 borderRadius: 10,
                 fontSize: 14,
                 fontWeight: 600,
-                color: "rgba(255,255,255,0.7)",
+                color: "rgba(23,19,17,0.78)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}
