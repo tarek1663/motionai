@@ -79,7 +79,7 @@ SELON LE CONTENU :
 - Citation → quote
 - Étapes/processus → timeline, checklist
 - Réseau social → socialstats
-- Produit/app → uiprogress, pulsebutton, notification
+- Produit/app → uiprogress, pulsebutton (notification seulement si lancement app / alerte / promo)
 - Photo disponible → photoreveal, photocollage
 - Transition entre thèmes → iris, curtain, splitvertical
 - Ambiance musicale → audioviz
@@ -88,11 +88,26 @@ SELON LE CONTENU :
 SELON LE CONTEXTE :
 - Marketing/pub → accentword, counter, pulsebutton, cleancta
 - Motivation → scalein, staggerwords, expandingshape
-- Tech/SaaS → uiprogress, checklist, timeline, notification
+- Tech/SaaS → uiprogress, checklist, timeline
 - Sport → socialstats, counter, glitchswitch
 - Lifestyle → photoreveal, colorshift, audioviz
 - Business → multistats, progressbar, timeline
 - Éducatif → checklist, timeline, quote
+
+SCÈNE notification — règles STRICTES :
+- N'utiliser notification QUE dans ces contextes :
+  • Lancement d'une app
+  • Annonce d'une offre ou promo
+  • Alerte ou breaking news
+  • Résultat d'une action (commande, livraison, paiement)
+- JAMAIS sur un sujet générique comme "micro intégré" ou "feature technique"
+- Maximum 1 scène notification par vidéo
+- Les champs OBLIGATOIRES :
+  notifTitle: nom de l'app ou marque (ex: "Orange Xifi", "Nike", "Spotify")
+  notifText: message contextuel cohérent (ex: "Connexion établie ✓", "Nouvelle playlist disponible", "Commande confirmée ✓")
+  notifIcon: emoji cohérent avec le sujet (📡 télécoms, 🎵 musique, 👟 sport, 🍕 food...)
+- Exemple pour Orange Xifi :
+  { "type": "notification", "text": "Connecté.", "notifTitle": "Orange Xifi", "notifText": "Connexion WiFi établie ✓", "notifIcon": "📡", "bg": "#000000", "accentColor": "#FF6600" }
 
 SCÈNE uiprogress — règles :
 - Le champ "text" = titre de la carte (ex: "Orange Xifi", "Spotify Premium", "Nike Run")

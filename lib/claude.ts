@@ -14,6 +14,9 @@ export type MotionScene = Record<string, unknown> & {
   photoUrl?: string;
   photoUrl2?: string;
   photoUrl3?: string;
+  notifTitle?: string;
+  notifText?: string;
+  notifIcon?: string;
   geo?:
     | "dots"
     | "grid"
