@@ -1001,6 +1001,7 @@ export async function generateScenesFromVoice(params: {
   bgAccent?: string;
   phraseTimestamps?: PhraseTimestamp[];
   formatId?: string;
+  systemPrompt?: string;
 }): Promise<{ scenes: MotionScene[]; durationPerScene: number; sceneDurations: number[] }> {
   const { prompt, voiceoverText, audioDuration, phraseTimestamps } = params;
 
@@ -1055,18 +1056,22 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
 
   const durationPerScene = Math.round(sceneDurations.reduce((a, b) => a + b, 0) / nbScenes);
 
+  const voiceRules = `
+RÈGLES VOIX-OFF:
+- Une scène par phrase exactement (${nbScenes} scènes)
+- Phrases fournies = texte voix ; "text" = 1 à 5 mots courts, une seule ligne (pas de text2)
+- Scènes photo : photoQuery en anglais obligatoire (ex: "team meeting office")`;
+
   const response = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 4000,
-    system: `${buildPremiumSceneSystemPrompt(accentColor)}${formatGuidance ? `\n\n${formatGuidance}` : ""}
+    system: params.systemPrompt
+      ? `${params.systemPrompt}${formatGuidance ? `\n\n${formatGuidance}` : ""}\n\n${voiceRules}`
+      : `${buildPremiumSceneSystemPrompt(accentColor)}${formatGuidance ? `\n\n${formatGuidance}` : ""}
 
 ${MOTION_GOLDEN_RULES}
 
-RÈGLES VOIX-OFF:
-- Une scène par phrase exactement (${nbScenes} scènes)
-- Phrases fournies = texte voix ; "text" = 1 à 3 mots courts, une seule ligne (pas de text2)
-- Types autorisés : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, photoreveal, photocollage, counter, progressbar, multistats, accentword, underline, colorshift, linedraw, shape, expandingshape, wipe, flash, colorfade, splitvertical, zoomtransition, iris, curtain, diagonalwipe, glitchswitch, pixeldissolve, lightsweep, notification, pulsebutton, uiprogress, quote, timeline, socialstats, checklist, audioviz
-- Scènes photo : photoQuery en anglais obligatoire (ex: "team meeting office")
+${voiceRules}
 - Alterner bg #ffffff et #000000 ; varier les types — jamais deux identiques consécutifs`,
     messages: [{
       role: "user",
