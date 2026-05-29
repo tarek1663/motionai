@@ -9,9 +9,15 @@ SCÈNES DISPONIBLES — 14 types :
 - cliptop: révélation depuis le haut (clip)
 - staggerwords: mots en décalé avec rotation
 - fadepure: fade simple
-- geobgtest: test fonds géométriques (geo: dots|grid|diagonal|circles|perspective|triangles|hex|cross|lines|radial)
+- geobgtest: test fonds géométriques (geo: dots|grid|diagonal|circles|perspective|hex|cross|lines|radial)
 - tracking: letter-spacing serré → normal
 - rotatein: rotation légère -6° → 0°
+
+SCÈNES PHOTOS (photoQuery en anglais obligatoire si pas de photoUrl) :
+- kenburns: photo plein écran + zoom lent + texte en bas
+- photoreveal: texte au-dessus, photo révélée gauche→droite
+- photooverlay: photo limitée avec texte superposé
+- photocollage: 2-3 photos côte à côte (photoQuery + photoUrl2/3 via queries différentes)
 
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
