@@ -22,6 +22,11 @@ SCÈNES STATS :
 - progressbar: barre % animée, counterTo = pourcentage cible, accentColor pour la barre
 - multistats: tableau stats [{ value, label, suffix }] — 3 lignes en séquence
 
+SCÈNES COULEURS & ACCENT :
+- accentword: un mot en accentColor (accentIndex = index du mot)
+- underline: texte + soulignement animé accentColor
+- colorshift: fond fromBg → toBg progressif (hex #ffffff / #000000)
+
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
 2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
