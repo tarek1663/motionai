@@ -101,6 +101,14 @@ SCÈNES AVEC PHOTOS — règles :
 - Le système récupère automatiquement les photos depuis Pexels
 - photoQuery doit être en anglais, descriptif, 2-4 mots
 
+RÈGLE GEO OBLIGATOIRE :
+- Ajoute "geo" sur au moins 4 scènes par vidéo (40% minimum)
+- Valeurs possibles : "dots" | "grid" | "diagonal" | "circles" | "perspective" | "hex" | "cross" | "lines" | "radial"
+- Exemples :
+  { "type": "singleword", "text": "Simple.", "bg": "#ffffff", "geo": "dots" }
+  { "type": "counter", "text": "utilisateurs", "bg": "#000000", "geo": "grid" }
+  { "type": "maskreveal", "text": "Élégant.", "bg": "#ffffff", "geo": "circles" }
+
 ═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
@@ -109,7 +117,7 @@ RÈGLES ABSOLUES
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff et bg:#000000
 4. 8 à 12 scènes par vidéo
-5. Ajoute geo sur 30% des scènes pour varier les fonds
+5. Au moins 4 scènes avec "geo" (fonds géométriques variés)
 6. Toujours finir par "cleancta" ou "pulsebutton"
 7. Police SF Pro Display — letterSpacing -0.03em
 8. JAMAIS de sous-titre gris — tout le texte à pleine opacité
@@ -135,7 +143,8 @@ Réponds UNIQUEMENT en JSON valide :
       "text": "vidéos créées",
       "bg": "#000000",
       "accentColor": "#ffffff",
-      "counterTo": 12400
+      "counterTo": 12400,
+      "geo": "grid"
     },
     {
       "type": "quote",

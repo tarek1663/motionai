@@ -12,6 +12,18 @@ export type MotionScene = Record<string, unknown> & {
   text2?: string;
   photoQuery?: string;
   photoUrl?: string;
+  photoUrl2?: string;
+  photoUrl3?: string;
+  geo?:
+    | "dots"
+    | "grid"
+    | "diagonal"
+    | "circles"
+    | "perspective"
+    | "hex"
+    | "cross"
+    | "lines"
+    | "radial";
   _duration?: number;
 };
 
