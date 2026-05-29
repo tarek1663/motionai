@@ -69,6 +69,21 @@ const toAbsoluteAssetUrl = (url) => {
   return `${process.env.RENDER_SERVER_URL}${url}`;
 };
 
+const recalcSceneDurations = (scenes) => {
+  const ANTICIPATION = 3;
+  let currentFrame = 0;
+  return (scenes || []).map((scene, i) => {
+    const duration = scene.durationFrames || 120;
+    const start = Math.max(0, currentFrame - (i > 0 ? ANTICIPATION : 0));
+    const result = {
+      startFrame: start,
+      durationFrames: duration,
+    };
+    currentFrame += duration;
+    return result;
+  });
+};
+
 // ── Health check ──────────────────────────────────────
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
@@ -332,14 +347,19 @@ app.post("/render", async (req, res) => {
   res.json({ jobId });
 
   const sceneCount = Array.isArray(enrichedScenes) ? enrichedScenes.length : 8;
+  const computedSceneDurations = recalcSceneDurations(enrichedScenes);
+  const computedTotalFrames = computedSceneDurations.reduce(
+    (acc, s) => acc + s.durationFrames,
+    0,
+  );
   const adjustedTotalFrames = Math.max(
-    totalFrames || 1800,
+    computedTotalFrames || totalFrames || 1800,
     sceneCount * 120,
   );
 
   const inputProps = {
     scenes: enrichedScenes,
-    sceneDurations,
+    sceneDurations: computedSceneDurations,
     totalFrames: adjustedTotalFrames,
     format: format || "9:16",
     audioSrc: audioUrl || null,

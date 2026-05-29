@@ -76,6 +76,7 @@ VISUEL AVANCÉ — effets de couleur et hiérarchie :
 - splitlines: plusieurs lignes séparées par "|" avec tailles différentes (ex: "Simple|et puissant")
 - bgnumber: chiffre géant transparent en fond + texte par dessus (bgNumber: "1", "72", "∞")
 - twolines: ligne 1 grande et bold + ligne 2 petite et fine (line1, line2)
+- weightreveal: mots avec poids variable — ultra fin et ultra bold dans la même phrase
 
 MOCKUPS & REPRÉSENTATIONS :
 - iphone: iPhone flottant avec écran animé (photoUrl optionnel)
@@ -256,6 +257,15 @@ RÈGLES SCÈNES VISUELLES AVANCÉES :
 - splitlines: pour énumérer 2-3 points clés
 - eraseletters: pour les transitions et moments de suspense
 - noise: pour ambiance cinématique et premium
+
+DURÉES PAR TYPE DE SCÈNE :
+- Scène 1 mot court (singleword, zoomword, scalein...) → durationFrames: 90
+- Scène phrase (maskreveal, slideword, staggerwords...) → durationFrames: 120
+- Scène complexe (mockup, dashboard, checklist, timeline...) → durationFrames: 200
+- Scène transition (iris, curtain, wipe...) → durationFrames: 80
+- Scène stats/chiffres (counter, multistats, progressbar...) → durationFrames: 180
+- Scène photo (photoreveal, photocollage...) → durationFrames: 180
+- Toujours inclure durationFrames dans chaque scène du JSON
 
 RÈGLE ABSOLUE :
 - accentColor doit être IDENTIQUE sur TOUTES les scènes de la vidéo
