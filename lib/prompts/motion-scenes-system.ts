@@ -38,7 +38,7 @@ TRANSITIONS ENTRE SCÈNES :
 - colorfade: fondu via couleur accent au milieu de la scène
 
 10 TRANSITIONS SUPPLÉMENTAIRES :
-splitvertical, zoomtransition, iris, curtain, diagonalwipe, glitchswitch, pixeldissolve, lightsweep
+splitvertical, zoomtransition, iris, curtain, diagonalwipe, glitchswitch, pixeldissolve, lightsweep, notification, pulsebutton, uiprogress
 
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
