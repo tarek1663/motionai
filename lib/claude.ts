@@ -929,12 +929,12 @@ export async function generateVoiceText(params: {
   const durationSec = parseInt(String(duration), 10) || 30;
   const targetScenes =
     durationSec <= 15
-      ? 9
+      ? 12
       : durationSec <= 30
-        ? 18
+        ? 20
         : durationSec <= 45
-          ? 26
-          : 33;
+          ? 28
+          : 35;
   const wordsCount = Math.round(durationSec * 2.5);
   const format = detectVideoFormat(prompt);
 
@@ -1061,7 +1061,7 @@ TYPES PRIORITAIRES: ${detectedFormat.sceneTypes}
 
   // Ajuster les durées pour que la somme - overlaps = totalFrames
   const rawDurations = phraseTimestamps && phraseTimestamps.length === nbScenes
-    ? phraseTimestamps.map((pt) => Math.max(60, Math.min(180, pt.durationFrames)))
+    ? phraseTimestamps.map((pt) => Math.max(60, Math.min(300, pt.durationFrames)))
     : (() => {
         const wordCounts = phrases.map(p => p.split(" ").filter(w => w.length > 0).length);
         const totalWords = wordCounts.reduce((a, b) => a + b, 0);
@@ -1123,12 +1123,23 @@ Crée exactement ${nbScenes} scènes.`,
     throw new Error("Scènes invalides — réessaie");
   }
 
-  const scenes = (result.scenes || []).map((scene, i: number) => ({
-    ...scene,
-    _duration: sceneDurations[i] || durationPerScene,
-  }));
+  const scenes = (result.scenes || []).map((scene, i: number) => {
+    const durationFrames =
+      (scene as { durationFrames?: number }).durationFrames ||
+      sceneDurations[i] ||
+      durationPerScene;
+    return {
+      ...scene,
+      durationFrames: Math.max(60, Math.round(durationFrames)),
+      _duration: Math.max(60, Math.round(durationFrames)),
+    };
+  });
 
-  return { scenes, durationPerScene, sceneDurations };
+  const finalSceneDurations = scenes.map((s) =>
+    Math.max(60, (s as { durationFrames?: number }).durationFrames || durationPerScene),
+  );
+
+  return { scenes, durationPerScene, sceneDurations: finalSceneDurations };
 }
 
 // Gardé pour compatibilité
