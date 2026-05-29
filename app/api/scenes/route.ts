@@ -340,6 +340,13 @@ GEO — Rotation obligatoire :
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
 
+RÈGLE ABSOLUE — TEXTE TOUJOURS CENTRÉ :
+- textAlign: "center" sur TOUTES les scènes sans exception
+- Jamais d'alignement gauche ou droite
+- Jamais de texte qui sort du cadre
+- Jamais de texte en bas de l'écran sauf si c'est voulu (photoreveal)
+- Le texte doit toujours être centré verticalement ET horizontalement
+
 1. Texte MAX 5 mots par scène — toujours court et impactant
 2. Respecte la RÈGLE DE DIVERSITÉ ABSOLUE (groupes, fonds, geo)
 3. Alterner bg:#ffffff, bg:#000000 et la couleur accent (2-3 scènes en bg accent)
