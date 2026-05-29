@@ -292,11 +292,56 @@ RÈGLES FOND & COULEUR :
 - geo OBLIGATOIRE sur chaque scène — choisis parmi : dots, grid, diagonal, circles, perspective, hex, cross, lines, radial
 
 ═══════════════════════════════════════════════════════
+RÈGLE DE DIVERSITÉ ABSOLUE
+═══════════════════════════════════════════════════════
+
+- JAMAIS deux scènes du même type consécutives
+- JAMAIS deux fonds identiques consécutifs (blanc puis blanc = INTERDIT)
+- JAMAIS deux animations d'entrée similaires consécutives
+
+SYSTÈME DE ROTATION OBLIGATOIRE :
+
+Groupe A — Entrée par le bas : slideup, cliptop, staggerwords
+Groupe B — Entrée blur/scale : blurin, scalein, zoomword, singleword
+Groupe C — Révélation : maskreveal, slideword, fadeupl, rotatein
+Groupe D — Spécial : tracking, fadepure, colorletters, gradienttext
+Groupe E — Formes : linedraw, shape, expandingshape, spotlight
+Groupe F — Stats : counter, multistats, progressbar, socialstats
+Groupe G — Mockup : iphone, macbook, browser, dashboard, chat, network
+Groupe H — Contexte : quote, timeline, checklist, audioviz, bgnumber
+Groupe I — Transition : iris, curtain, diagonalwipe, splitvertical, zoomtransition
+Groupe J — Deux lignes : twolines, splitlines, hierarchytext, weightreveal
+
+RÈGLE : après un groupe, utilise OBLIGATOIREMENT un groupe différent
+Exemple parfait :
+1. singleword (B) bg:#ffffff
+2. maskreveal (C) bg:#000000
+3. counter (F) bg:#ffffff
+4. spotlight (E) bg:#000000
+5. staggerwords (A) bg:#ffffff
+6. iphone (G) bg:#000000
+7. gradienttext (D) bg:#ffffff
+8. iris (I) bg:#000000
+9. checklist (H) bg:#ffffff
+10. twolines (J) bg:#000000
+11. blurin (B) bg:#ffffff
+12. slideword (C) bg:#000000
+
+FONDS — Rotation obligatoire :
+- Alterne TOUJOURS blanc → noir → accent → blanc → noir
+- JAMAIS blanc → blanc ou noir → noir
+- Utilise la couleur accent comme fond toutes les 3-4 scènes
+
+GEO — Rotation obligatoire :
+- Chaque scène doit avoir un geo différent de la précédente
+- Séquence suggérée : dots → grid → circles → diagonal → dots → cross → perspective...
+
+═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
 
 1. Texte MAX 5 mots par scène — toujours court et impactant
-2. JAMAIS deux types identiques consécutifs
+2. Respecte la RÈGLE DE DIVERSITÉ ABSOLUE (groupes, fonds, geo)
 3. Alterner bg:#ffffff, bg:#000000 et la couleur accent (2-3 scènes en bg accent)
 4. Respecte le nombre de scènes selon la durée (voir NOMBRE DE SCÈNES)
 5. "geo" sur TOUTES les scènes (fonds géométriques variés)
