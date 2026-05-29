@@ -77,6 +77,27 @@ VISUEL AVANCÉ — effets de couleur et hiérarchie :
 - bgnumber: chiffre géant transparent en fond + texte par dessus (bgNumber: "1", "72", "∞")
 - twolines: ligne 1 grande et bold + ligne 2 petite et fine (line1, line2)
 
+MOCKUPS & REPRÉSENTATIONS :
+- iphone: iPhone flottant avec écran animé (photoUrl optionnel)
+- macbook: MacBook qui s'ouvre et révèle un site (photoUrl, url optionnels)
+- doubledevice: iPhone + MacBook côte à côte
+- browser: fenêtre navigateur avec loading bar (url, photoUrl optionnels)
+- dashboard: interface analytics avec barres animées (dashTitle optionnel)
+- chat: conversation par bulles (messages: [{text, isUser}])
+- network: réseau de points connectés — idéal pour IA, tech, réseau
+- dataflow: flux de données style Matrix sobre — idéal pour tech/data
+- worldmap: carte du monde avec villes animées — idéal pour global/international
+- horizontaltimeline: frise chronologique (events: [{year, label}])
+
+UTILISATION CONTEXTUELLE :
+- iphone/macbook/browser/doubledevice: pour apps, SaaS, sites web, produits digitaux
+- dashboard: pour analytics, KPIs, performances, résultats
+- chat: pour service client, IA conversationnelle, messaging
+- network: pour IA, blockchain, réseaux sociaux, connectivité
+- dataflow: pour data, cybersécurité, tech, algorithmes
+- worldmap: pour entreprises internationales, livraisons mondiales, global
+- horizontaltimeline: pour historique, roadmap, milestones, croissance
+
 FONDS GÉOMÉTRIQUES — à combiner avec n'importe quelle scène :
 geo: "dots" | "grid" | "diagonal" | "circles" | "perspective" | "hex" | "cross" | "lines" | "radial"
 
