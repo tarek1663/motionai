@@ -8,8 +8,8 @@ SCÈNES DISPONIBLES — 14 types :
 - slideup: monte depuis le bas
 - cliptop: révélation depuis le haut (clip)
 - staggerwords: mots en décalé avec rotation
-- morphweight: weight 100 → 700
 - fadepure: fade simple
+- geobgtest: test fonds géométriques (geo: dots|grid|diagonal|circles|perspective|triangles|hex|cross|lines|radial)
 - tracking: letter-spacing serré → normal
 - rotatein: rotation légère -6° → 0°
 

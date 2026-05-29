@@ -1065,7 +1065,7 @@ ${MOTION_GOLDEN_RULES}
 RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
 - Phrases fournies = texte voix ; "text" = 1 à 3 mots courts, une seule ligne (pas de text2)
-- Types autorisés : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, morphweight, fadepure, tracking, rotatein
+- Types autorisés : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein
 - Alterner bg #ffffff et #000000 ; varier les types — jamais deux identiques consécutifs`,
     messages: [{
       role: "user",
