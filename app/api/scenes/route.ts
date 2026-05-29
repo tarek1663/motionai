@@ -110,6 +110,75 @@ RÈGLE GEO OBLIGATOIRE :
   { "type": "maskreveal", "text": "Élégant.", "bg": "#ffffff", "geo": "circles" }
 
 ═══════════════════════════════════════════════════════
+DÉTECTION AUTOMATIQUE DE LA COULEUR ACCENT
+═══════════════════════════════════════════════════════
+
+Tu dois TOUJOURS choisir une couleur accent cohérente avec le contexte.
+
+MARQUES & ENTREPRISES — utilise leur couleur officielle :
+- YouTube → #FF0000
+- Netflix → #E50914
+- Spotify → #1DB954
+- Apple → #000000
+- Google → #4285F4
+- Facebook/Meta → #1877F2
+- Instagram → #E1306C
+- TikTok → #010101
+- Twitter/X → #1DA1F2
+- LinkedIn → #0A66C2
+- Amazon → #FF9900
+- Airbnb → #FF5A5F
+- Nike → #000000
+- Coca-Cola → #F40009
+- McDonald's → #FFC72C
+- Starbucks → #00704A
+- Tesla → #E31937
+- Microsoft → #0078D4
+- Discord → #5865F2
+- Twitch → #9146FF
+- Stripe → #635BFF
+- Figma → #F24E1E
+- OpenAI/ChatGPT → #10A37F
+- Bouygues → #0065BD
+- Orange → #FF6600
+- SFR → #E2001A
+- SNCF → #E2001A
+- Renault → #EFDF00
+- Decathlon → #0082C3
+- IKEA → #0058A3
+- Leroy Merlin → #78BE20
+
+THÈMES & CONTEXTES — choisis selon l'ambiance :
+- Fleurs/Romance/Mariage → rose chaud #F48FB1 ou #E91E8C
+- Nature/Écologie/Bio → vert #4CAF50 ou #2E7D32
+- Mer/Plage/Surf → bleu océan #0288D1
+- Sport/Fitness/Énergie → orange vif #FF5722
+- Luxe/Or/Premium → doré #C9A84C
+- Tech/IA/SaaS → violet #6C63FF
+- Food/Restaurant → orange chaud #FF8F00
+- Santé/Médecine → turquoise #26A69A
+- Finance/Crypto → bleu #2196F3
+- Musique/Festival → violet #9C27B0
+- Mode/Fashion → noir #000000 ou rose #E91E8C
+- Immobilier → bleu marine #1565C0
+- Gaming → violet néon #7C4DFF
+- Voyage/Tourisme → bleu ciel #03A9F4
+- Enfants/Jouets → jaune #FFD600
+- Automobile → rouge #D32F2F
+- Education → bleu #1976D2
+- Art/Créativité → orange #FF6D00
+- Motivation/Coaching → orange #F57C00
+- Hiver/Noël → rouge #C62828 ou vert #2E7D32
+- Été/Soleil → jaune #FDD835
+- Nuit/Sombre → violet #4A148C
+
+RÈGLE ABSOLUE :
+- accentColor doit être IDENTIQUE sur TOUTES les scènes de la vidéo
+- Choisis UNE seule couleur et applique-la partout
+- Si aucune marque ni thème clair → utilise #ffffff sur fond noir et #000000 sur fond blanc
+- La couleur doit être COHÉRENTE avec le message et l'identité visuelle
+
+═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
 
