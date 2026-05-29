@@ -2,61 +2,75 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateScenesFromVoice } from "@/lib/claude";
 import { getErrorMessage } from "@/lib/utils";
 
-const buildSystemPrompt = (userPrompt: string, duration: number) => `Tu es le meilleur directeur artistique motion design au monde.
-Pour le prompt "${userPrompt}", génère une vidéo COMPLÈTE de ${duration} secondes.
+const buildSystemPrompt = (
+  userPrompt: string,
+  duration: number,
+  accent = "#10B981",
+) => {
+  const minScenes =
+    (
+      {
+        15: 12,
+        30: 20,
+        45: 28,
+        60: 35,
+      } as Record<number, number>
+    )[duration] || 20;
 
-NOMBRE DE SCÈNES OBLIGATOIRE :
-- 15s → 12 scènes minimum
-- 30s → 20 scènes minimum
-- 45s → 28 scènes minimum
-- 60s → 35 scènes minimum
+  return `Tu es le meilleur directeur artistique motion design au monde.
 
-EXEMPLE pour "présente moi Spotify" en 30s → 20 scènes :
-1. singleword — "Spotify." — bg:#121212 — geo:dots — durationFrames:80
-2. maskreveal — "La musique." — bg:#000000 — geo:grid — durationFrames:90
-3. iphone — "Écoute." — bg:#121212 — websiteUrl:"spotify.com" — geo:circles — durationFrames:180
-4. counter — "100M+" — text:"titres disponibles" — bg:#ffffff — accentColor:#1DB954 — durationFrames:150
-5. zoomword — "Gratuit." — bg:#1DB954 — durationFrames:80
-6. checklist — items:["Podcasts","Playlists","Albums","Radio"] — bg:#121212 — durationFrames:180
-7. staggerwords — "Partout." — bg:#ffffff — geo:diagonal — durationFrames:90
-8. macbook — "Le dashboard." — bg:#121212 — websiteUrl:"spotify.com" — durationFrames:180
-9. socialstats — platform:"Spotify" — counterTo:602000000 — statLabel:"utilisateurs actifs" — bg:#000000 — accentColor:#1DB954 — durationFrames:150
-10. slideword — "Premium." — bg:#1DB954 — durationFrames:80
-11. progressbar — text:"Satisfaction" — counterTo:94 — bg:#121212 — accentColor:#1DB954 — durationFrames:150
-12. iris — "Découvre." — bg:#000000 — durationFrames:80
-13. gradienttext — "La bande-son." — bg:#121212 — accentColor:#1DB954 — durationFrames:90
-14. twolines — line1:"Spotify" — line2:"Ta musique, partout" — bg:#ffffff — accentColor:#1DB954 — durationFrames:120
-15. audioviz — "Écoute ici." — bg:#121212 — accentColor:#1DB954 — durationFrames:150
-16. blurin — "Gratuit." — bg:#000000 — durationFrames:80
-17. spotlight — "Premium." — bg:#121212 — accentColor:#1DB954 — geo:dots — durationFrames:90
-18. scalein — "€9.99/mois." — bg:#ffffff — durationFrames:80
-19. curtain — "Commence." — bg:#1DB954 — durationFrames:90
-20. singleword — "Spotify." — bg:#121212 — accentColor:#1DB954 — durationFrames:100
+Pour le prompt "${userPrompt}", génère une vidéo motion design SPECTACULAIRE de ${duration} secondes.
 
-RÈGLES :
-- TOUJOURS inclure durationFrames pour chaque scène (60-90 mots courts, 120-180 mockups/stats/checklist)
-- Alterner bg:#121212 / bg:#ffffff / bg:accentColor
-- JAMAIS deux types identiques consécutifs
-- Mockup iphone/macbook MAX 2-3 fois par vidéo — répartis dans la vidéo, pas tout au début
-- Texte court : 1-4 mots maximum par scène
-- Inclure au moins : 1 counter, 1 checklist ou timeline, 1 stat, 1-2 mockups, des transitions variées
-- geo OBLIGATOIRE sur chaque scène (dots, grid, circles, diagonal...)
-- accentColor IDENTIQUE sur toutes les scènes
-- websiteUrl obligatoire sur iphone/macbook/browser (ex: "spotify.com")
+COULEUR ACCENT : ${accent}
+DURÉE : ${duration} secondes
+SCÈNES MINIMUM : ${minScenes}
 
-Réponds UNIQUEMENT en JSON valide :
+CATALOGUE COMPLET DES SCÈNES DISPONIBLES :
+
+TEXTE : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, splitlines, twolines, weightreveal, gradienttext, accentword, underline, colorshift, spotlight, hierarchytext
+
+STATS : counter, multistats, progressbar, socialstats, bgnumber
+
+MOCKUPS WEB/APP : iphone, macbook, browser, doubledevice, dashboard
+(UNIQUEMENT si le sujet est une app, site, SaaS, service digital)
+
+FORMES : linedraw, shape, expandingshape
+
+TRANSITIONS : iris, curtain, diagonalwipe, splitvertical, zoomtransition, glitchswitch, pixeldissolve, lightsweep
+
+UI : notification, pulsebutton, uiprogress
+
+CONTEXTE : quote, timeline, checklist, audioviz, photoreveal, photocollage
+
+RÈGLES ABSOLUES :
+1. MINIMUM ${minScenes} scènes
+2. JAMAIS deux types identiques consécutifs
+3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
+4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
+5. Texte MAX 4 mots par scène
+6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
+7. durationFrames : texte court=80, phrase=100, stats=150, mockup=180, transition=70
+8. accentColor = ${accent} sur TOUTES les scènes
+9. UTILISE TOUT LE CATALOGUE — minimum 10 types différents
+10. photoreveal/photocollage : ajoute photoQuery en anglais descriptif
+11. websiteUrl obligatoire sur iphone/macbook/browser (ex: "spotify.com")
+
+FORMAT JSON STRICT :
 {
   "scenes": [
     {
       "type": "singleword",
-      "text": "Spotify.",
-      "bg": "#121212",
-      "accentColor": "#1DB954",
+      "text": "mot",
+      "bg": "#000000",
+      "accentColor": "${accent}",
       "geo": "dots",
       "durationFrames": 80
     }
   ]
-}`;
+}
+
+Réponds UNIQUEMENT en JSON valide.`;
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -80,6 +94,7 @@ export async function POST(req: NextRequest) {
     const systemPrompt = buildSystemPrompt(
       prompt || voiceoverText,
       durationSec,
+      accentColor || "#10B981",
     );
 
     const result = await generateScenesFromVoice({

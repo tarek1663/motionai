@@ -309,13 +309,15 @@ export function useDashboard() {
   );
 
   const fetchQuestions = useCallback(async () => {
-    if (!prompt.trim()) return;
+    const text = mode === "ai" ? prompt : customScript;
+    if (!text.trim()) return;
     setLoadingQ(true);
     try {
+      setScreen("questions");
       const res = await fetch("/api/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: text, mode }),
       });
       const data = await res.json();
       if (data.questions?.length > 0) {
@@ -323,16 +325,54 @@ export function useDashboard() {
         setAnswers({});
         setOtherDetails({});
         setCurrentQ(0);
-        setScreen("questions");
-      } else {
+      } else if (mode === "ai") {
         await generatePrompt();
+      } else {
+        await generateFromScript({
+          script: customScript,
+          duration,
+          format,
+          quality,
+          selectedVoiceId,
+          musicEnabled,
+          userAccentColor: accentColor,
+          pollRef,
+          ...generationCallbacks,
+        });
       }
     } catch {
-      await generatePrompt();
+      if (mode === "ai") {
+        await generatePrompt();
+      } else {
+        await generateFromScript({
+          script: customScript,
+          duration,
+          format,
+          quality,
+          selectedVoiceId,
+          musicEnabled,
+          userAccentColor: accentColor,
+          pollRef,
+          ...generationCallbacks,
+        });
+      }
     } finally {
       setLoadingQ(false);
     }
-  }, [prompt, generatePrompt]);
+  }, [
+    mode,
+    prompt,
+    customScript,
+    duration,
+    format,
+    quality,
+    selectedVoiceId,
+    musicEnabled,
+    accentColor,
+    generatePrompt,
+    pollRef,
+    generationCallbacks,
+  ]);
 
   const savePromptToHistory = useCallback(
     (text: string) => {
@@ -438,20 +478,7 @@ export function useDashboard() {
     }
     setLastGenerationTime(now);
     savePromptToHistory(customScript);
-
-    await generateFromScript({
-      script: customScript,
-      duration,
-      format,
-      quality,
-      selectedVoiceId,
-      musicEnabled,
-      userAccentColor: accentColor,
-      pollRef,
-      ...generationCallbacks,
-    });
-    clearDraft();
-    setDraftRestored(false);
+    await fetchQuestions();
   }, [
     mode,
     prompt,
@@ -619,12 +646,14 @@ export function useDashboard() {
       duration_30: "30s",
       duration_45: "45s",
       duration_60: "60s",
-      duration_90: "90s",
     };
-    setDuration(durationMap[durationOptionId] || "30s");
+    const nextDuration = durationMap[durationOptionId] || "30s";
+    setDuration(nextDuration);
 
     const qualityOptionId = answers.quality || "quality_fast";
-    setQuality(qualityOptionId === "quality_high" ? "high" : "fast");
+    const nextQuality: QualityMode =
+      qualityOptionId === "quality_high" ? "high" : "fast";
+    setQuality(nextQuality);
 
     const colorMap: Record<string, string> = {
       "🟢 Vert": "#10B981",
@@ -640,6 +669,29 @@ export function useDashboard() {
     const color = colorMap[colorAnswer] || "#10B981";
     setAccentColor(color);
 
+    setScreen("input");
+    setQuestions([]);
+
+    if (mode === "script") {
+      setTimeout(() => {
+        void generateFromScript({
+          script: customScript,
+          duration: nextDuration,
+          format,
+          quality: nextQuality,
+          selectedVoiceId,
+          musicEnabled,
+          userAccentColor: color,
+          accentColorLabel: colorAnswer,
+          pollRef,
+          ...generationCallbacks,
+        });
+        clearDraft();
+        setDraftRestored(false);
+      }, 100);
+      return;
+    }
+
     const contextualAnswers = Object.fromEntries(
       Object.entries(answers).filter(
         ([key]) => key !== "duration" && key !== "quality" && key !== "color"
@@ -647,16 +699,56 @@ export function useDashboard() {
     );
     const enriched = buildEnrichedPrompt(prompt, questions, contextualAnswers, otherDetails);
     setPrompt(enriched);
-    setScreen("input");
-    setQuestions([]);
     setTimeout(() => generatePrompt(enriched), 100);
-  }, [prompt, questions, answers, otherDetails, generatePrompt, setDuration, setQuality]);
+  }, [
+    mode,
+    customScript,
+    prompt,
+    questions,
+    answers,
+    otherDetails,
+    generatePrompt,
+    format,
+    selectedVoiceId,
+    musicEnabled,
+    pollRef,
+    generationCallbacks,
+    clearDraft,
+  ]);
 
   const skipQuestions = useCallback(() => {
     setScreen("input");
     setQuestions([]);
+    if (mode === "script") {
+      setTimeout(() => {
+        void generateFromScript({
+          script: customScript,
+          duration,
+          format,
+          quality,
+          selectedVoiceId,
+          musicEnabled,
+          userAccentColor: accentColor,
+          pollRef,
+          ...generationCallbacks,
+        });
+      }, 100);
+      return;
+    }
     setTimeout(() => generatePrompt(), 100);
-  }, [generatePrompt]);
+  }, [
+    mode,
+    customScript,
+    duration,
+    format,
+    quality,
+    selectedVoiceId,
+    musicEnabled,
+    accentColor,
+    generatePrompt,
+    pollRef,
+    generationCallbacks,
+  ]);
 
   const selectAnswer = useCallback(
     (questionId: string, optionId: string, question?: ClarificationQuestion) => {

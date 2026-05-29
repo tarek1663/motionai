@@ -67,6 +67,7 @@ type ScriptParams = GenerationCallbacks & {
   selectedVoiceId: string;
   musicEnabled: boolean;
   userAccentColor?: string;
+  accentColorLabel?: string;
   pollRef: MutableRefObject<ReturnType<typeof setInterval> | null>;
 };
 
@@ -312,7 +313,18 @@ export async function generateFromScreenshot(params: ScreenshotParams) {
 }
 
 export async function generateFromScript(params: ScriptParams) {
-  const { script, duration, format, quality, selectedVoiceId, musicEnabled, userAccentColor, pollRef, ...cb } = params;
+  const {
+    script,
+    duration,
+    format,
+    quality,
+    selectedVoiceId,
+    musicEnabled,
+    userAccentColor,
+    accentColorLabel,
+    pollRef,
+    ...cb
+  } = params;
   const finalScript = script.trim();
   if (!finalScript) return;
 
@@ -335,7 +347,8 @@ export async function generateFromScript(params: ScriptParams) {
         script: finalScript,
         format,
         duration,
-        accentColor,
+        quality,
+        accentColor: accentColorLabel || accentColor,
       }),
     });
     const scenesData = await scenesRes.json();
