@@ -572,6 +572,27 @@ app.post("/render", async (req, res) => {
     generateMockupContent(scene, prompt || ""),
   );
 
+  console.log(
+    "📱 Scene types:",
+    enrichedWithMockup.map(
+      (s) => `${s.type}:${s.mockupType || s.mockupData?.type || "none"}`,
+    ),
+  );
+  console.log(
+    "📱 First iPhone scene:",
+    JSON.stringify(
+      enrichedWithMockup.find((s) => s.type === "iphone"),
+      null,
+      2,
+    ),
+  );
+  console.log(
+    "📱 Mockup scenes:",
+    enrichedWithMockup
+      .filter((s) => s.mockupData)
+      .map((s) => `${s.type}:${s.mockupData?.type}`),
+  );
+
   const outPath = path.join(RENDERS_DIR, `${jobId}.mp4`);
   const errPath = path.join(RENDERS_DIR, `${jobId}.error`);
   const metaPath = path.join(RENDERS_DIR, `${jobId}.meta.json`);
@@ -600,28 +621,25 @@ app.post("/render", async (req, res) => {
     })
   );
 
-  res.json({ jobId });
-
-  const sceneList = enrichedWithMockup || [];
-  const sceneDurations = syncScenesWithVoice(sceneList, phraseTimestamps, 60);
+  const sceneDurations = syncScenesWithVoice(enrichedWithMockup, phraseTimestamps, 60);
   const computedTotalFrames = sceneDurations.reduce(
     (acc, s) => acc + s.durationFrames,
     0,
   );
   const adjustedTotalFrames = Math.max(
     computedTotalFrames || requestedTotalFrames || 1800,
-    sceneList.length * 60,
+    enrichedWithMockup.length * 60,
   );
 
   console.log(
     "🎬 Total frames:",
     adjustedTotalFrames,
     "— Scenes:",
-    sceneList.length,
+    enrichedWithMockup.length,
   );
 
   const inputProps = {
-    scenes: sceneList,
+    scenes: enrichedWithMockup,
     sceneDurations,
     totalFrames: adjustedTotalFrames,
     phraseTimestamps,
@@ -639,6 +657,8 @@ app.post("/render", async (req, res) => {
     musicUrl,
   };
 
+  res.json({ jobId });
+
   (async () => {
     try {
       const { renderMedia, selectComposition } = require("@remotion/renderer");
@@ -649,6 +669,19 @@ app.post("/render", async (req, res) => {
         audioSrc: toAbsoluteAssetUrl(inputProps.audioSrc),
         musicSrc: toAbsoluteAssetUrl(inputProps.musicSrc),
       };
+
+      console.log(
+        "📱 Remotion scenes with mockupData:",
+        renderInputProps.scenes?.filter((s) => s.mockupData)?.length ?? 0,
+      );
+      console.log(
+        "📱 Remotion iPhone payload:",
+        JSON.stringify(
+          renderInputProps.scenes?.find((s) => s.type === "iphone"),
+          null,
+          2,
+        ),
+      );
 
       const composition = await selectComposition({
         serveUrl: bundleLocation,
