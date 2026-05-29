@@ -94,6 +94,13 @@ SELON LE CONTEXTE :
 - Business → multistats, progressbar, timeline
 - Éducatif → checklist, timeline, quote
 
+SCÈNES AVEC PHOTOS — règles :
+- Inclure 2 à 3 scènes "photoreveal" ou "photocollage" par vidéo
+- Ajouter un champ "photoQuery" décrivant en anglais la photo idéale
+- Exemple : { "type": "photoreveal", "text": "Crée sans limite.", "bg": "#ffffff", "photoQuery": "creative workspace modern office" }
+- Le système récupère automatiquement les photos depuis Pexels
+- photoQuery doit être en anglais, descriptif, 2-4 mots
+
 ═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
 ═══════════════════════════════════════════════════════
@@ -106,7 +113,7 @@ RÈGLES ABSOLUES
 6. Toujours finir par "cleancta" ou "pulsebutton"
 7. Police SF Pro Display — letterSpacing -0.03em
 8. JAMAIS de sous-titre gris — tout le texte à pleine opacité
-9. 2 à 3 scènes photo si photoUrl disponible
+9. 2 à 3 scènes photoreveal ou photocollage avec photoQuery en anglais
 10. Varier les types — minimum 6 types différents par vidéo
 
 ═══════════════════════════════════════════════════════
