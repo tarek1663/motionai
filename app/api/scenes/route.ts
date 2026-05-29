@@ -129,7 +129,10 @@ SCÈNES AVEC PHOTOS — règles :
 - photoQuery doit être en anglais, descriptif, 2-4 mots
 
 RÈGLE GEO OBLIGATOIRE :
-- Ajoute "geo" sur au moins 5 scènes par vidéo
+- geo doit être présent sur TOUTES les scènes sans exception
+- Si pas de geo spécifié → utilise "dots" par défaut
+- Alterne les types de geo dans la vidéo pour varier
+- Le pattern est toujours visible — blanc sur noir, noir sur blanc, adapté sur couleur accent
 - Valeurs possibles : "dots" | "grid" | "diagonal" | "circles" | "perspective" | "hex" | "cross" | "lines" | "radial"
 - Exemples :
   { "type": "singleword", "text": "Simple.", "bg": "#ffffff", "geo": "dots" }
@@ -211,7 +214,7 @@ RÈGLES FOND & COULEUR :
 - Exemple : si accentColor="#FF6600" → une scène avec bg="#FF6600"
 - Sur fond accent : textColor sera automatiquement blanc ou noir selon la lisibilité
 - Alterner : blanc → noir → accent → blanc → noir → accent
-- geo OBLIGATOIRE sur au moins 5 scènes — choisis parmi : dots, grid, diagonal, circles, perspective, hex, cross, lines, radial
+- geo OBLIGATOIRE sur chaque scène — choisis parmi : dots, grid, diagonal, circles, perspective, hex, cross, lines, radial
 
 ═══════════════════════════════════════════════════════
 RÈGLES ABSOLUES
@@ -221,7 +224,7 @@ RÈGLES ABSOLUES
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff, bg:#000000 et la couleur accent (2-3 scènes en bg accent)
 4. 8 à 12 scènes par vidéo
-5. Au moins 5 scènes avec "geo" (fonds géométriques variés)
+5. "geo" sur TOUTES les scènes (fonds géométriques variés)
 6. Toujours finir par "cleancta" ou "pulsebutton"
 7. Police SF Pro Display — letterSpacing -0.03em
 8. JAMAIS de sous-titre gris — tout le texte à pleine opacité
