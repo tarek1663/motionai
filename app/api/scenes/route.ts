@@ -94,6 +94,18 @@ SELON LE CONTEXTE :
 - Business → multistats, progressbar, timeline
 - Éducatif → checklist, timeline, quote
 
+SCÈNE uiprogress — règles :
+- Le champ "text" = titre de la carte (ex: "Orange Xifi", "Spotify Premium", "Nike Run")
+- Le champ "steps" = 3 étapes COHÉRENTES avec le sujet (tableau de strings)
+- Exemples :
+  Orange Xifi → steps: ["Connexion", "Config", "En ligne"]
+  Spotify → steps: ["Playlist", "Synchro", "Écoute"]
+  Nike → steps: ["Entraîne-toi", "Progresse", "Performe"]
+  Startup → steps: ["Idée", "Lancement", "Croissance"]
+  Recette → steps: ["Ingrédients", "Préparation", "Dégustation"]
+- JAMAIS "Script", "Voix", "Rendu" — ces mots sont internes à Motionr
+- Les steps doivent toujours refléter le contexte du prompt utilisateur
+
 SCÈNES AVEC PHOTOS — règles :
 - Inclure 2 à 3 scènes "photoreveal" ou "photocollage" par vidéo
 - Ajouter un champ "photoQuery" décrivant en anglais la photo idéale
