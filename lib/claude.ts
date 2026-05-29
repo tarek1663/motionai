@@ -1065,7 +1065,7 @@ ${MOTION_GOLDEN_RULES}
 RÈGLES VOIX-OFF:
 - Une scène par phrase exactement (${nbScenes} scènes)
 - Phrases fournies = texte voix ; "text" = 1 à 3 mots courts, une seule ligne (pas de text2)
-- Types autorisés : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, photoreveal, photocollage, counter, progressbar, multistats, accentword, underline, colorshift
+- Types autorisés : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, photoreveal, photocollage, counter, progressbar, multistats, accentword, underline, colorshift, linedraw, shape, expandingshape
 - Scènes photo : photoQuery en anglais obligatoire (ex: "team meeting office")
 - Alterner bg #ffffff et #000000 ; varier les types — jamais deux identiques consécutifs`,
     messages: [{

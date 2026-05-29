@@ -27,6 +27,11 @@ SCÈNES COULEURS & ACCENT :
 - underline: texte + soulignement animé accentColor
 - colorshift: fond fromBg → toBg progressif (hex #ffffff / #000000)
 
+SCÈNES FORMES & LIGNES :
+- linedraw: ligne horizontale qui se trace + texte
+- shape: cercle ou carré autour du texte (shape: "circle" | "square")
+- expandingshape: cercles concentriques qui s'agrandissent
+
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
 2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
