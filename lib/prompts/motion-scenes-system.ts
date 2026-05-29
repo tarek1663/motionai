@@ -32,6 +32,11 @@ SCÈNES FORMES & LIGNES :
 - shape: cercle ou carré autour du texte (shape: "circle" | "square")
 - expandingshape: cercles concentriques qui s'agrandissent
 
+TRANSITIONS ENTRE SCÈNES :
+- wipe: panneau accentColor qui balaie l'écran (entrée/sortie)
+- flash: flash accentColor intense au début et à la fin
+- colorfade: fondu via couleur accent au milieu de la scène
+
 RÈGLES ABSOLUES :
 1. Un mot ou max 3 mots par scène
 2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
