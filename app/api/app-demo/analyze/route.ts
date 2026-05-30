@@ -163,17 +163,61 @@ Réponds UNIQUEMENT en JSON valide.`,
 
     const text =
       response.content[0]?.type === "text" ? response.content[0].text : "";
-    const clean = text.replace(/```json|```/g, "").trim();
-    const s = clean.indexOf("{");
-    const e = clean.lastIndexOf("}");
-    const jsonStr = s !== -1 && e !== -1 ? clean.slice(s, e + 1) : clean;
-    const data = JSON.parse(jsonStr);
+
+    let clean = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const extractJsonObject = (raw: string) => {
+      const s = raw.indexOf("{");
+      const e = raw.lastIndexOf("}");
+      return s !== -1 && e !== -1 ? raw.slice(s, e + 1) : raw;
+    };
+
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(extractJsonObject(clean));
+    } catch (parseErr) {
+      console.log("🔧 JSON parse error, asking Claude to fix...", parseErr);
+
+      const fixResponse = await client.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 4000,
+        messages: [
+          {
+            role: "user",
+            content: `Ce JSON est invalide. Corrige-le et retourne UNIQUEMENT le JSON valide sans markdown :
+
+${clean}
+
+Règles :
+- Corrige les virgules manquantes ou en trop
+- Corrige les guillemets non fermés
+- Corrige les tableaux mal formés
+- Retourne UNIQUEMENT le JSON valide`,
+          },
+        ],
+      });
+
+      const fixedText =
+        fixResponse.content[0]?.type === "text"
+          ? fixResponse.content[0].text
+          : "";
+      const fixedClean = fixedText
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+      data = JSON.parse(extractJsonObject(fixedClean));
+    }
 
     return NextResponse.json({
       ...data,
       format: isMobile ? "mobile" : "desktop",
       accent,
-      totalFrames: data.totalFrames || totalFrames,
+      totalFrames:
+        (typeof data.totalFrames === "number" ? data.totalFrames : null) ||
+        totalFrames,
     });
   } catch (err: unknown) {
     console.error("App demo error:", err);
