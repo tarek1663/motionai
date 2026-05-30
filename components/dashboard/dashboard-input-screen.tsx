@@ -16,7 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
-import { VOICES } from "@/lib/dashboard/constants";
+import { MIN_SCRIPT_WORDS, VOICES } from "@/lib/dashboard/constants";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn;
@@ -47,6 +47,7 @@ export function DashboardInputScreen(props: Props) {
 
   const isBusy = loadingQ || screenshotLoading;
   const currentValue = mode === "ai" ? prompt : customScript;
+  const scriptWordCount = customScript.trim().split(/\s+/).filter(Boolean).length;
   const canSubmit = currentValue.trim().length > 0 && !isBusy && cooldown === 0;
   const selectedVoice = VOICES.find((voice) => voice.id === selectedVoiceId);
 
@@ -174,6 +175,22 @@ export function DashboardInputScreen(props: Props) {
             letterSpacing: "-0.01em",
           }}
         />
+
+        {mode === "script" && (
+          <div
+            style={{
+              padding: "0 14px 4px",
+              fontSize: 11,
+              color:
+                scriptWordCount >= MIN_SCRIPT_WORDS
+                  ? "#10B981"
+                  : "rgba(23,19,17,0.35)",
+              transition: "color 0.3s",
+            }}
+          >
+            {scriptWordCount}/{MIN_SCRIPT_WORDS} mots minimum
+          </div>
+        )}
 
           <div
             style={{

@@ -25,6 +25,8 @@ export const STATUS_LABELS: Record<string, string> = {
 
 export const DURATIONS = ["15s", "30s", "60s", "2min"] as const;
 
+export const MIN_SCRIPT_WORDS = 30;
+
 export const FORMAT_OPTIONS = [
   { id: "9:16", label: "9:16", desc: "TikTok / Reels" },
   { id: "16:9", label: "16:9", desc: "YouTube" },

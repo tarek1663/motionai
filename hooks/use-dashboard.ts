@@ -9,6 +9,7 @@ import {
   type ClarificationQuestion,
 } from "@/lib/dashboard/questions";
 import { fetchCredits, type CreditsInfo } from "@/lib/dashboard/credits";
+import { MIN_SCRIPT_WORDS } from "@/lib/dashboard/constants";
 import { generateFromPrompt, generateFromScreenshot, generateFromScript } from "@/lib/dashboard/generate";
 import type {
   DashboardScreen,
@@ -471,14 +472,28 @@ export function useDashboard() {
       return;
     }
 
-    const validationError = validatePrompt(customScript);
-    if (validationError) {
-      showToast(validationError, "error");
+    if (mode === "script") {
+      if (!customScript.trim()) {
+        showToast("Ecris ton script avant de generer.", "error");
+        return;
+      }
+      const wordCount = customScript.trim().split(/\s+/).filter(Boolean).length;
+      if (wordCount < MIN_SCRIPT_WORDS) {
+        showToast(
+          `Ton script doit contenir au moins ${MIN_SCRIPT_WORDS} mots. (${wordCount}/${MIN_SCRIPT_WORDS})`,
+          "error",
+        );
+        return;
+      }
+      if (customScript.trim().length > 2000) {
+        showToast("Le script est trop long — max 2000 caracteres.", "error");
+        return;
+      }
+      setLastGenerationTime(now);
+      savePromptToHistory(customScript);
+      await fetchQuestions();
       return;
     }
-    setLastGenerationTime(now);
-    savePromptToHistory(customScript);
-    await fetchQuestions();
   }, [
     mode,
     prompt,

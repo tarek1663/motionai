@@ -365,7 +365,7 @@ export async function generateFromScript(params: ScriptParams) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        script: finalScript,
+        script: scriptForVoice,
         format,
         duration,
         quality,
