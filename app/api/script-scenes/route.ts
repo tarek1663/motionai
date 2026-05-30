@@ -96,6 +96,24 @@ RÈGLES ABSOLUES :
 9. UTILISE TOUT LE CATALOGUE — minimum 10 types différents
 10. photoreveal/photocollage : ajoute photoQuery en anglais descriptif
 
+RÈGLE DIVERSITÉ VISUELLE OBLIGATOIRE :
+Par vidéo tu DOIS inclure au minimum :
+- 3 scènes de texte différentes (parmi : singleword, maskreveal, slideword, zoomword, blurin, scalein, staggerwords, fadeup, rotatein, tracking)
+- 1 scène de stats ou chiffres (counter, multistats, progressbar, socialstats, bgnumber)
+- 1 scène de liste (checklist, timeline, splitlines)
+- 1 scène de forme ou ambiance (linedraw, shape, expandingshape, spotlight, audioviz)
+- 1 scène de transition (iris, curtain, diagonalwipe, pixeldissolve, lightsweep, glitchswitch)
+- 1 scène photo si photoQuery pertinent (photoreveal, photocollage)
+- 1 scène mockup SI sujet web/app (iphone, browser, macbook, dashboard)
+- 1 scène accent (accentword, underline, gradienttext, twolines)
+- 1 scène CTA finale (pulsebutton, singleword fort)
+
+FONDS — rotation stricte sur chaque scène :
+bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff → bg:#000000 → bg:${accent}...
+
+GEO — jamais deux fois le même consécutivement :
+dots → grid → circles → diagonal → cross → lines → radial → perspective → dots...
+
 FORMAT JSON STRICT :
 {
   "scenes": [
