@@ -59,7 +59,7 @@ ${script}
 
 Ta mission : créer des scènes visuelles qui ILLUSTRENT ce script.
 - Le champ "text" de chaque scène doit contenir les MOTS EXACTS du script
-- Découpe le script en scènes : une phrase ou groupe de mots = une scène
+- Découpe le script en scènes par groupes de mots naturels (2 à 6 mots) — ne jamais couper une expression
 - NE JAMAIS reformuler ou modifier le texte original
 - Chaque scène illustre une partie du script avec les animations appropriées
 
@@ -89,7 +89,14 @@ RÈGLES ABSOLUES :
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
-5. Texte MAX 4 mots par scène — extraits EXACTS du script original
+5. RÈGLE TEXTE PAR SCÈNE (extraits EXACTS du script original) :
+   - Garde les groupes de mots naturels ensemble — ne jamais couper une expression
+   - 2 à 6 mots par scène selon le rythme
+   - "égalisation adaptative" → une seule scène ✅
+   - "Just Do It" → une seule scène ✅
+   - "La musique change tout" → une seule scène ✅
+   - JAMAIS couper un groupe nominal ou une expression
+   - Les mots courts seuls sont OK : "Simple." "Puissant." "Gratuit."
 6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
 7. durationFrames : texte court=80, phrase=100, stats=150, mockup=180, transition=70
 8. accentColor = ${accent} sur TOUTES les scènes
@@ -118,8 +125,8 @@ FORMAT JSON STRICT :
 {
   "scenes": [
     {
-      "type": "singleword",
-      "text": "mot",
+      "type": "maskreveal",
+      "text": "La musique change tout",
       "bg": "#000000",
       "accentColor": "${accent}",
       "geo": "dots",

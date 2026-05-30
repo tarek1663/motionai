@@ -47,7 +47,14 @@ RÈGLES ABSOLUES :
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
-5. Texte MAX 4 mots par scène
+5. RÈGLE TEXTE PAR SCÈNE :
+   - Garde les groupes de mots naturels ensemble — ne jamais couper une expression
+   - 2 à 6 mots par scène selon le rythme
+   - "égalisation adaptative" → une seule scène ✅
+   - "Just Do It" → une seule scène ✅
+   - "La musique change tout" → une seule scène ✅
+   - JAMAIS couper un groupe nominal ou une expression
+   - Les mots courts seuls sont OK : "Simple." "Puissant." "Gratuit."
 6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
 7. DURÉES PAR TYPE DE SCÈNE — courtes et rythmées :
    - Mot court (singleword, zoomword, scalein...) → durationFrames: 60
@@ -84,8 +91,8 @@ FORMAT JSON STRICT :
 {
   "scenes": [
     {
-      "type": "singleword",
-      "text": "mot",
+      "type": "maskreveal",
+      "text": "La musique change tout",
       "bg": "#000000",
       "accentColor": "${accent}",
       "geo": "dots",
