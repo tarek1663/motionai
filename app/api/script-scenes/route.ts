@@ -82,6 +82,18 @@ RÈGLE TEXTE LONG OBLIGATOIRE :
 - Sur karaoke : durationFrames = nombre de mots × 25 minimum
 - Sur wordgroups : durationFrames = nombre de groupes × 60 minimum
 
+RÈGLE PHOTOS OBLIGATOIRE :
+- TOUJOURS inclure un champ "text" sur les scènes photo
+- Le texte doit décrire ou commenter la photo
+- JAMAIS de scène photo sans texte
+
+RÈGLE COUNTER :
+- counterTo doit être la valeur EXACTE à afficher — jamais arrondir
+- Si c'est un prix → prefix: "€" ou "$" suffix: "" counterTo: 800 (pas 1000)
+- Si c'est des utilisateurs → counterTo: 50000 suffix: "+"
+- Si c'est un pourcentage → counterTo: 94 suffix: "%"
+- JAMAIS mettre counterTo: 1000 si la vraie valeur est 800
+
 RÈGLE IMAGES RENFORCÉE :
 - photoreveal ou photocollage sur au minimum 3 scènes par vidéo
 - photoQuery très descriptif en anglais (ex: "nike running shoes athlete track")

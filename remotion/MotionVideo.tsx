@@ -85,6 +85,7 @@ import {
   EmojiBurstScene,
   ParticlesScene,
   DynamicVignette,
+  GeoBackground,
 } from "./templates/scenes";
 
 export type MotionVideoProps = {
@@ -128,11 +129,56 @@ const SceneCrossfade: React.FC<{ children: React.ReactNode }> = ({ children }) =
   );
 };
 
+const EMPTY_SCENE_EXCEPTIONS = new Set([
+  "particles",
+  "audioviz",
+  "iris",
+  "curtain",
+  "diagonalwipe",
+  "splitvertical",
+  "pixeldissolve",
+  "lightsweep",
+  "glitchswitch",
+  "wipe",
+  "flash",
+  "colorfade",
+  "shape",
+  "expandingshape",
+  "linedraw",
+  "emoji",
+  "emojiburst",
+  "counter",
+  "multistats",
+  "progressbar",
+  "socialstats",
+  "bgnumber",
+  "strobe",
+  "explode",
+  "parallax",
+  "repeatcut",
+]);
+
 const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
   scene,
   index,
 }) => {
   const sceneWithIndex = { ...scene, _index: index };
+
+  if (
+    !scene.text?.trim() &&
+    !scene.photoUrl &&
+    !scene.photoUrl2 &&
+    !scene.photoUrl3 &&
+    !EMPTY_SCENE_EXCEPTIONS.has(String(scene.type))
+  ) {
+    const bg = scene.bg || "#000000";
+    return (
+      <AbsoluteFill style={{ background: bg }}>
+        <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+      </AbsoluteFill>
+    );
+  }
+
   switch (scene.type) {
     case "singleword":
       return <SingleWordScene scene={sceneWithIndex} />;

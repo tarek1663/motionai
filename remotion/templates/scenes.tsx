@@ -177,13 +177,56 @@ const isLight = (hex: string): boolean => {
   }
 };
 
-const textColor = (bg: string): string => (isLight(bg) ? "#000000" : "#ffffff");
+const textColor = (bg: string): string => {
+  try {
+    const h = bg.replace("#", "");
+    if (h.length < 6) return "#ffffff";
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5 ? "#000000" : "#ffffff";
+  } catch {
+    return "#ffffff";
+  }
+};
+
+const safeTextColor = (textCol: string, bg: string): string => {
+  try {
+    const bgH = bg.replace("#", "");
+    const tH = textCol.replace("#", "");
+
+    if (bgH.length < 6 || tH.length < 6) return textColor(bg);
+
+    const bgR = parseInt(bgH.slice(0, 2), 16);
+    const bgG = parseInt(bgH.slice(2, 4), 16);
+    const bgB = parseInt(bgH.slice(4, 6), 16);
+
+    const tR = parseInt(tH.slice(0, 2), 16);
+    const tG = parseInt(tH.slice(2, 4), 16);
+    const tB = parseInt(tH.slice(4, 6), 16);
+
+    const diff = Math.abs(bgR - tR) + Math.abs(bgG - tG) + Math.abs(bgB - tB);
+
+    if (diff < 100) {
+      return textColor(bg);
+    }
+    return textCol;
+  } catch {
+    return textColor(bg);
+  }
+};
 
 const safeAccent = (accentColor: string | undefined, bg: string): string =>
   accentColor || (isLight(bg) ? "#000000" : "#ffffff");
 
 const mainTextColor = (scene: SceneData, bg: string): string =>
-  scene.textAccent ? safeAccent(scene.accentColor, bg) : textColor(bg);
+  scene.textAccent
+    ? safeTextColor(safeAccent(scene.accentColor, bg), bg)
+    : textColor(bg);
+
+export const getPhotoDisplayText = (scene: SceneData): string =>
+  scene.text || scene.photoQuery?.split(" ").slice(0, 3).join(" ") || "";
 
 const mainTextShadow = (bg: string): string =>
   isLight(bg) ? "0 2px 12px rgba(0,0,0,0.08)" : "0 2px 20px rgba(0,0,0,0.4)";
@@ -573,7 +616,7 @@ const GEO_MAP: Record<string, React.FC<{ bg: string }>> = {
 // FOND GÉOMÉTRIQUE DYNAMIQUE
 // ═══════════════════════════════════════════════════════
 
-const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
+export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
   const activeGeo = geo && geo !== "none" ? geo : "dots";
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -1454,6 +1497,7 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const motion = useContinuousMotion();
   const bg = scene.bg || "#ffffff";
   const photoUrl = scene.photoUrl || "";
+  const displayText = getPhotoDisplayText(scene);
 
   const reveal = interpolate(frame, [0, 44], [0, 100], {
     extrapolateRight: "clamp",
@@ -1470,7 +1514,7 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     easing: E_OUT,
   });
 
-  const fontSize = autoFontSize(scene.text || "", 96, 48);
+  const fontSize = autoFontSize(displayText, 96, 48);
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -1483,9 +1527,10 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           gap: 32,
           padding: "60px 80px",
           opacity: fadeOut,
+          textAlign: "center",
         }}
       >
-        {scene.text && (
+        {displayText && (
           <div
             style={{
               fontSize,
@@ -1498,9 +1543,10 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               opacity: textFadeIn,
               transform: `translateY(${textY + motion.floatY}px) scale(${motion.breathe})`,
               whiteSpace: "nowrap",
+              textAlign: "center",
             }}
           >
-            {scene.text}
+            {displayText}
           </div>
         )}
 
@@ -1553,7 +1599,7 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
     to: 1,
   });
 
-  const fontSize = autoFontSize(scene.text || "", 80, 40);
+  const fontSize = autoFontSize(getPhotoDisplayText(scene), 80, 40);
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -1566,6 +1612,7 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           gap: 24,
           padding: "60px 60px",
           opacity: fadeOut,
+          textAlign: "center",
         }}
       >
         <div
@@ -1632,7 +1679,7 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           })}
         </div>
 
-        {scene.text && (
+        {getPhotoDisplayText(scene) && (
           <div
             style={{
               fontSize,
@@ -1645,9 +1692,10 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `translateY(${interpolate(textEnter, [0, 1], [20, 0]) + motion.floatY}px) scale(${motion.breathe})`,
               whiteSpace: "nowrap",
+              textAlign: "center",
             }}
           >
-            {scene.text}
+            {getPhotoDisplayText(scene)}
           </div>
         )}
       </AbsoluteFill>
@@ -1660,6 +1708,30 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
 // ═══════════════════════════════════════════════════════
 
 // ─── COMPTEUR ─────────────────────────────────────────
+const formatCounterValue = (
+  current: number,
+  prefix: string,
+  suffix: string,
+): string => {
+  const isCurrency =
+    prefix.includes("$") ||
+    prefix.includes("€") ||
+    suffix.includes("$") ||
+    suffix.includes("€");
+
+  if (isCurrency) {
+    return `${prefix}${current.toLocaleString("fr-FR")}${suffix}`;
+  }
+
+  if (current >= 1000000) {
+    return `${prefix}${(current / 1000000).toFixed(1)}M${suffix}`;
+  }
+  if (current >= 10000) {
+    return `${prefix}${(current / 1000).toFixed(0)}K${suffix}`;
+  }
+  return `${prefix}${current.toLocaleString("fr-FR")}${suffix}`;
+};
+
 export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -1682,11 +1754,6 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const { opacity: fadeOut } = useAppleTiming();
   const opacity = Math.min(fadeIn, fadeOut);
 
-  const displayValue =
-    current >= 1000
-      ? `${(current / 1000).toFixed(current % 1000 === 0 ? 0 : 1)}K`
-      : current.toLocaleString("fr-FR");
-
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo} />
@@ -1697,6 +1764,7 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           flexDirection: "column",
           gap: 8,
           opacity,
+          textAlign: "center",
         }}
       >
         <div
@@ -1710,11 +1778,10 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             textShadow: mainTextShadow(bg),
             whiteSpace: "nowrap",
             fontVariantNumeric: "tabular-nums",
+            textAlign: "center",
           }}
         >
-          {prefix}
-          {displayValue}
-          {suffix}
+          {formatCounterValue(current, prefix, suffix)}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -1803,7 +1870,7 @@ export const ProgressBarScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             fontFamily: FONT,
             letterSpacing: "-0.05em",
             lineHeight: 1,
-            color: accent,
+            color: safeTextColor(accent, bg),
             fontVariantNumeric: "tabular-nums",
           }}
         >
@@ -3502,7 +3569,7 @@ export const UIProgressScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 fontSize: 16,
                 fontWeight: 700,
                 fontFamily: FONT,
-                color: accent,
+                color: safeTextColor(accent, bg),
               }}
             >
               {Math.round(barProgress)}%
@@ -3713,7 +3780,7 @@ export const QuoteScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                   fontSize: 18,
                   fontWeight: 600,
                   fontFamily: FONT,
-                  color: accent,
+                  color: safeTextColor(accent, bg),
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
                 }}
@@ -3795,7 +3862,7 @@ export const TimelineScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                     fontSize: 16,
                     fontWeight: 700,
                     fontFamily: FONT,
-                    color: accent,
+                    color: safeTextColor(accent, bg),
                     flexShrink: 0,
                   }}
                 >
@@ -3859,7 +3926,7 @@ export const SocialStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           opacity,
         }}
       >
-        <div style={{ color: accent, marginBottom: 8 }}>
+        <div style={{ color: safeTextColor(accent, bg), marginBottom: 8 }}>
           <PlatformIcon platform={platform} size={40} />
         </div>
         <div
@@ -4420,7 +4487,7 @@ export const GradientTextScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             <div style={{
               fontSize, fontWeight: 800, fontFamily: FONT,
               letterSpacing: "-0.04em", lineHeight: 1,
-              color: accent,
+              color: safeTextColor(accent, bg),
               whiteSpace: "nowrap",
               transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])})`,
             }}>
@@ -4731,7 +4798,7 @@ export const TwoLinesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               fontFamily: FONT,
               letterSpacing: "0.08em",
               lineHeight: 1,
-              color: accent,
+              color: safeTextColor(accent, bg),
               whiteSpace: "nowrap",
               textTransform: "uppercase",
               textAlign: "center",
@@ -4969,7 +5036,7 @@ const renderKnownUI = (siteName: string, accent: string, frame: number) => {
         <div style={{ background: "#1a1a1a", borderRadius: 10, padding: "8px" }}>
           <div style={{ fontSize: 8, fontFamily: FONT, color: "#888", marginBottom: 4 }}>EN ROUTE</div>
           <div style={{ fontSize: 14, fontWeight: 800, fontFamily: FONT, color: "#fff" }}>8 min</div>
-          <div style={{ fontSize: 8, fontFamily: FONT, color: accent }}>● Votre chauffeur arrive</div>
+          <div style={{ fontSize: 8, fontFamily: FONT, color: safeTextColor(accent, "#000000") }}>● Votre chauffeur arrive</div>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {["🚗", "🛵", "🚲"].map((icon, i) => (
