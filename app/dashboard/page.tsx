@@ -17,7 +17,12 @@ const tourSteps: TourStep[] = [
   { id: "voice", title: "Choisis ta voix", desc: "Selectionne la voix off de ta video parmi plusieurs options naturelles.", position: "bottom" },
   { id: "generate", title: "Lance la generation", desc: "Clique ici ou appuie sur Ctrl+Entree pour creer ta video.", position: "left" },
   { id: "suggestions", title: "Suggestions rapides", desc: "Clique sur une suggestion pour pre-remplir le prompt automatiquement.", position: "top" },
-  { id: "history", title: "Tes videos", desc: "Retrouve toutes tes videos generees ici. Double-clique pour renommer.", position: "right" },
+  {
+    id: "history",
+    title: "Tes vidéos",
+    desc: "Retrouve toutes tes vidéos générées ici. Double-clique pour renommer.",
+    position: "right",
+  },
   { id: "credits", title: "Tes credits", desc: "Tes videos restantes ce mois. Se renouvelle automatiquement.", position: "right" },
   { id: "server", title: "Statut serveur", desc: "Indique si le serveur de rendu est disponible en temps reel.", position: "right" },
   { id: "download", title: "Telecharger", desc: "Telecharge ta video en 1080p prete a publier.", position: "top" },

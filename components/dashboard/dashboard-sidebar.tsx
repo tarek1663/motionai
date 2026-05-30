@@ -108,7 +108,7 @@ export function DashboardSidebar({
           </button>
         </div>
 
-        <div className="dash-sidebar-scroll">
+        <div id="tour-history" className="dash-sidebar-scroll">
           {loadingVideos ? (
             <div className="dash-sidebar-skeleton-wrap">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -130,9 +130,7 @@ export function DashboardSidebar({
             </div>
           ) : (
             <>
-              <div id="recent-videos">
-                <div id="tour-history" className="dash-eyebrow">{copy.sidebarRecent}</div>
-              </div>
+              <div className="dash-eyebrow">{copy.sidebarRecent}</div>
               {videos.map((video) => (
                 <VideoListItem
                   key={video.id}
