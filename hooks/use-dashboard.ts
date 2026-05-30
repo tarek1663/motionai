@@ -404,6 +404,47 @@ export function useDashboard() {
     if (user) localStorage.removeItem(`motionr_draft_${user.id}`);
   }, [user]);
 
+  const startAppDemoQuestions = useCallback(async () => {
+    if (demoScreenshots.filter(Boolean).length === 0) {
+      showToast("Ajoute au moins un screenshot.", "error");
+      return;
+    }
+    if (!demoDescription.trim()) {
+      showToast("Decris ton app avant de generer.", "error");
+      return;
+    }
+
+    const saved = localStorage.getItem(RENDER_STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
+        if (
+          data.status === "rendering" &&
+          typeof data.timestamp === "number" &&
+          Date.now() - data.timestamp < 30 * 60 * 1000
+        ) {
+          showToast("Une video est deja en cours de generation.", "error");
+          return;
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const creditsData = await fetchCredits();
+    if (creditsData && creditsData.plan !== "business" && creditsData.videos_remaining <= 0) {
+      setShowUpgrade(true);
+      setUpgradeReason("Tu as utilise toutes tes videos ce mois-ci.");
+      return;
+    }
+
+    setQuestions(APP_DEMO_QUESTIONS);
+    setAnswers({});
+    setOtherDetails({});
+    setCurrentQ(0);
+    setScreen("questions");
+  }, [demoScreenshots, demoDescription, showToast]);
+
   const submit = useCallback(async () => {
     const saved = localStorage.getItem(RENDER_STORAGE_KEY);
     if (saved) {
@@ -673,47 +714,6 @@ export function useDashboard() {
     },
     [submit, historyIndex, promptHistory, mode]
   );
-
-  const startAppDemoQuestions = useCallback(async () => {
-    if (demoScreenshots.filter(Boolean).length === 0) {
-      showToast("Ajoute au moins un screenshot.", "error");
-      return;
-    }
-    if (!demoDescription.trim()) {
-      showToast("Decris ton app avant de generer.", "error");
-      return;
-    }
-
-    const saved = localStorage.getItem(RENDER_STORAGE_KEY);
-    if (saved) {
-      try {
-        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
-        if (
-          data.status === "rendering" &&
-          typeof data.timestamp === "number" &&
-          Date.now() - data.timestamp < 30 * 60 * 1000
-        ) {
-          showToast("Une video est deja en cours de generation.", "error");
-          return;
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-
-    const creditsData = await fetchCredits();
-    if (creditsData && creditsData.plan !== "business" && creditsData.videos_remaining <= 0) {
-      setShowUpgrade(true);
-      setUpgradeReason("Tu as utilise toutes tes videos ce mois-ci.");
-      return;
-    }
-
-    setQuestions(APP_DEMO_QUESTIONS);
-    setAnswers({});
-    setOtherDetails({});
-    setCurrentQ(0);
-    setScreen("questions");
-  }, [demoScreenshots, demoDescription, demoFormat, showToast]);
 
   const finishQuestions = useCallback(() => {
     const durationOptionId = answers.duration || "duration_30";
