@@ -38,6 +38,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!state.user) return;
+    if (state.credits?.plan === "free" && state.mode === "script") {
+      state.setMode("ai");
+    }
+  }, [state.user, state.credits?.plan, state.mode, state.setMode]);
+
+  useEffect(() => {
+    if (!state.user) return;
     const onboardingDone = localStorage.getItem(`motionr_onboarding_${state.user.id}`);
     if (!onboardingDone) {
       router.push("/onboarding");

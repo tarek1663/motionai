@@ -29,11 +29,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Vérifier les crédits
     {
       const { data: sub } = await supabase
         .from("subscriptions")
-        .select("*")
+        .select("plan, videos_used, videos_limit")
         .eq("user_id", userId)
         .single();
 
@@ -47,6 +46,9 @@ export async function POST(req: NextRequest) {
       }
       plan = sub?.plan || "free";
     }
+
+    const showWatermark = plan === "free";
+    console.log("💧 Watermark:", showWatermark, "— Plan:", plan);
 
     await supabase.from("videos").insert({
       user_id: userId,
@@ -63,7 +65,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(`${RENDER_URL}/render`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...body, plan }),
+      body: JSON.stringify({ ...body, plan, showWatermark }),
     });
 
     const data = await res.json();

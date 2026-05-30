@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
@@ -17,13 +18,19 @@ import {
 } from "lucide-react";
 import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
 import { MIN_SCRIPT_WORDS, VOICES } from "@/lib/dashboard/constants";
+import { getAvailableDurations, isScriptModeAllowed } from "@/lib/dashboard/plan-limits";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn;
 
 export function DashboardInputScreen(props: Props) {
+  const router = useRouter();
   const [showVoicePanel, setShowVoicePanel] = useState(false);
   const {
+    credits,
+    showToast,
+    duration,
+    setDuration,
     mode,
     setMode,
     prompt,
@@ -50,6 +57,20 @@ export function DashboardInputScreen(props: Props) {
   const scriptWordCount = customScript.trim().split(/\s+/).filter(Boolean).length;
   const canSubmit = currentValue.trim().length > 0 && !isBusy && cooldown === 0;
   const selectedVoice = VOICES.find((voice) => voice.id === selectedVoiceId);
+  const isFreePlan = credits?.plan === "free";
+  const availableDurations = useMemo(
+    () => getAvailableDurations(credits?.plan),
+    [credits?.plan]
+  );
+
+  const handleModeClick = (nextMode: "ai" | "script") => {
+    if (nextMode === "script" && !isScriptModeAllowed(credits?.plan)) {
+      showToast("Le mode Script est disponible a partir du plan Starter →", "info");
+      router.push("/pricing");
+      return;
+    }
+    setMode(nextMode);
+  };
 
   const suggestions: Array<{ icon: LucideIcon; label: string }> = [
     { icon: Rocket, label: "Produit & Demo" },
@@ -100,11 +121,13 @@ export function DashboardInputScreen(props: Props) {
         {[
           { id: "ai", label: "Mode IA", Icon: Sparkles },
           { id: "script", label: "Mon script", Icon: PenSquare },
-        ].map((m, index) => (
+        ].map((m, index) => {
+          const isScriptLocked = m.id === "script" && isFreePlan;
+          return (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <button
               type="button"
-              onClick={() => setMode(m.id as "ai" | "script")}
+              onClick={() => handleModeClick(m.id as "ai" | "script")}
               style={{
                 padding: 0,
                 border: "none",
@@ -112,16 +135,36 @@ export function DashboardInputScreen(props: Props) {
                 color: mode === m.id ? "#171311" : "#8e8680",
                 fontSize: 14,
                 fontWeight: mode === m.id ? 600 : 500,
-                cursor: "pointer",
+                cursor: isScriptLocked ? "not-allowed" : "pointer",
+                opacity: isScriptLocked ? 0.5 : 1,
                 fontFamily: "inherit",
                 transition: "color 0.15s",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
+                position: "relative",
               }}
             >
               <m.Icon size={14} strokeWidth={1.9} />
               {m.label}
+              {isScriptLocked && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    background: "#f59e0b",
+                    color: "#000",
+                    borderRadius: 100,
+                    fontSize: 8,
+                    fontWeight: 800,
+                    padding: "1px 5px",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  PRO
+                </span>
+              )}
             </button>
             {index < 1 && (
               <span
@@ -134,7 +177,8 @@ export function DashboardInputScreen(props: Props) {
               />
             )}
           </div>
-        ))}
+        );
+        })}
       </div>
 
       <div style={{ width: "100%", maxWidth: 720, position: "relative" }}>
@@ -202,6 +246,28 @@ export function DashboardInputScreen(props: Props) {
           >
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <select
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                style={{
+                  background: "#f7f7f7",
+                  border: "1px solid #e8e8e8",
+                  borderRadius: 8,
+                  padding: "5px 10px",
+                  fontSize: 12,
+                  color: "#7b746d",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  outline: "none",
+                }}
+              >
+                {availableDurations.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value)}
@@ -340,6 +406,32 @@ export function DashboardInputScreen(props: Props) {
           </div>
         )}
       </div>
+
+      {isFreePlan && (
+        <div
+          style={{
+            fontSize: 11,
+            color: "rgba(23,19,17,0.35)",
+            textAlign: "center",
+            marginTop: 8,
+            width: "100%",
+            maxWidth: 720,
+          }}
+        >
+          Plan gratuit — max 30s ·{" "}
+          <span
+            role="button"
+            tabIndex={0}
+            style={{ color: "#10B981", cursor: "pointer" }}
+            onClick={() => router.push("/pricing")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") router.push("/pricing");
+            }}
+          >
+            Upgrader pour plus
+          </span>
+        </div>
+      )}
 
       {(draftRestored || prompt.trim() || customScript.trim()) && (
         <div

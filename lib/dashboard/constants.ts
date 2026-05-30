@@ -23,7 +23,7 @@ export const STATUS_LABELS: Record<string, string> = {
   rendering: "Rendu final",
 };
 
-export const DURATIONS = ["15s", "30s", "60s", "2min"] as const;
+export const DURATIONS = ["15s", "30s", "45s", "60s", "90s", "120s"] as const;
 
 export const MIN_SCRIPT_WORDS = 30;
 
@@ -54,8 +54,10 @@ export const SCREENSHOT_USE_CASES = [
 ] as const;
 
 export function durationToSeconds(d: string): string {
-  if (d === "2min") return "120";
+  if (d === "2min" || d === "120s") return "120";
+  if (d === "90s") return "90";
   if (d === "60s") return "60";
+  if (d === "45s") return "45";
   if (d === "15s") return "15";
   return "30";
 }

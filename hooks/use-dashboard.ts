@@ -11,6 +11,12 @@ import {
 import { fetchCredits, type CreditsInfo } from "@/lib/dashboard/credits";
 import { MIN_SCRIPT_WORDS } from "@/lib/dashboard/constants";
 import {
+  clampDuration,
+  getAvailableDurations,
+  getMaxDurationSeconds,
+  isScriptModeAllowed,
+} from "@/lib/dashboard/plan-limits";
+import {
   generateFromPrompt,
   generateFromScreenshot,
   generateFromScript,
@@ -139,6 +145,31 @@ export function useDashboard() {
       setDraftRestored(false);
     },
   };
+
+  useEffect(() => {
+    if (!credits) return;
+    if (!isScriptModeAllowed(credits.plan) && mode === "script") {
+      setMode("ai");
+    }
+    setDuration((prev) => clampDuration(prev, credits.plan));
+  }, [credits, mode]);
+
+  const filterQuestionsForPlan = useCallback(
+    (questions: ClarificationQuestion[], plan?: string | null) => {
+      const maxSec = getMaxDurationSeconds(plan);
+      return questions.map((q) => {
+        if (q.id !== "duration") return q;
+        return {
+          ...q,
+          options: (q.options || []).filter((opt) => {
+            const sec = parseInt(String(opt.label).replace(/\D/g, ""), 10) || 0;
+            return sec <= maxSec;
+          }),
+        };
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -327,7 +358,7 @@ export function useDashboard() {
       });
       const data = await res.json();
       if (data.questions?.length > 0) {
-        setQuestions(data.questions);
+        setQuestions(filterQuestionsForPlan(data.questions, credits?.plan));
         setAnswers({});
         setOtherDetails({});
         setCurrentQ(0);
@@ -378,6 +409,8 @@ export function useDashboard() {
     generatePrompt,
     pollRef,
     generationCallbacks,
+    credits?.plan,
+    filterQuestionsForPlan,
   ]);
 
   const savePromptToHistory = useCallback(
@@ -478,6 +511,11 @@ export function useDashboard() {
     }
 
     if (mode === "script") {
+      if (!isScriptModeAllowed(credits?.plan)) {
+        showToast("Le mode Script est disponible a partir du plan Starter →", "info");
+        router.push("/pricing");
+        return;
+      }
       if (!customScript.trim()) {
         showToast("Ecris ton script avant de generer.", "error");
         return;
@@ -510,6 +548,8 @@ export function useDashboard() {
     selectedVoiceId,
     musicEnabled,
     fetchQuestions,
+    credits?.plan,
+    router,
     loadVideos,
     showToast,
     lastGenerationTime,
@@ -667,7 +707,7 @@ export function useDashboard() {
       duration_45: "45s",
       duration_60: "60s",
     };
-    const nextDuration = durationMap[durationOptionId] || "30s";
+    const nextDuration = clampDuration(durationMap[durationOptionId] || "30s", credits?.plan);
     setDuration(nextDuration);
 
     const qualityOptionId = answers.quality || "quality_fast";
@@ -693,6 +733,11 @@ export function useDashboard() {
     setQuestions([]);
 
     if (mode === "script") {
+      if (!isScriptModeAllowed(credits?.plan)) {
+        showToast("Le mode Script est disponible a partir du plan Starter →", "info");
+        router.push("/pricing");
+        return;
+      }
       setTimeout(() => {
         void generateFromScript({
           script: customScript,
@@ -735,12 +780,20 @@ export function useDashboard() {
     generationCallbacks,
     clearDraft,
     savePromptToHistory,
+    credits?.plan,
+    router,
+    showToast,
   ]);
 
   const skipQuestions = useCallback(() => {
     setScreen("input");
     setQuestions([]);
     if (mode === "script") {
+      if (!isScriptModeAllowed(credits?.plan)) {
+        showToast("Le mode Script est disponible a partir du plan Starter →", "info");
+        router.push("/pricing");
+        return;
+      }
       setTimeout(() => {
         void generateFromScript({
           script: customScript,
