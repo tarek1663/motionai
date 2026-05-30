@@ -95,6 +95,7 @@ export function DashboardShell(state: Props) {
             format={state.format}
             resetCreation={state.resetCreation}
             showToast={state.showToast}
+            credits={state.credits}
           />
         )}
       </main>

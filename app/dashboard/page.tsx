@@ -10,6 +10,7 @@ import {
   isTourTargetVisible,
   type TourStep,
 } from "@/lib/dashboard/tour";
+import { posthog } from "@/lib/posthog";
 
 const tourSteps: TourStep[] = [
   {
@@ -226,7 +227,13 @@ export default function DashboardPage() {
             </span>
           </div>
           <button
-            onClick={() => router.push("/pricing")}
+            onClick={() => {
+              posthog.capture("upgrade_clicked", {
+                from_plan: state.credits?.plan,
+                location: "dashboard",
+              });
+              router.push("/pricing");
+            }}
             style={{
               background: "#f59e0b",
               color: "#0a0a0a",
@@ -269,7 +276,13 @@ export default function DashboardPage() {
             </span>
           </div>
           <button
-            onClick={() => router.push("/pricing")}
+            onClick={() => {
+              posthog.capture("upgrade_clicked", {
+                from_plan: state.credits?.plan,
+                location: "dashboard",
+              });
+              router.push("/pricing");
+            }}
             style={{
               background: "#ef4444",
               color: "#fff",

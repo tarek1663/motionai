@@ -3,11 +3,21 @@
 import { useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { copy } from "@/lib/dashboard/copy";
+import { posthog } from "@/lib/posthog";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
-type Props = Pick<UseDashboardReturn, "videoUrl" | "format" | "resetCreation" | "showToast">;
+type Props = Pick<
+  UseDashboardReturn,
+  "videoUrl" | "format" | "resetCreation" | "showToast" | "credits"
+>;
 
-export function DashboardDoneScreen({ videoUrl, format, resetCreation, showToast }: Props) {
+export function DashboardDoneScreen({
+  videoUrl,
+  format,
+  resetCreation,
+  showToast,
+  credits,
+}: Props) {
   const [copied, setCopied] = useState(false);
   const frameWidth = format === "16:9" ? 480 : format === "1:1" ? 320 : 220;
 
@@ -58,6 +68,11 @@ export function DashboardDoneScreen({ videoUrl, format, resetCreation, showToast
           download
           className="dash-btn-primary"
           aria-label="Télécharger la vidéo"
+          onClick={() => {
+            posthog.capture("video_downloaded", {
+              plan: credits?.plan,
+            });
+          }}
         >
           <Download size={16} strokeWidth={1.75} color="#fff" />
           {copy.download}

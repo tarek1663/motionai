@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import BackButton from "@/components/BackButton";
+import { posthog } from "@/lib/posthog";
 
 const accent = "#10B981";
 
@@ -69,6 +70,12 @@ export default function PricingPage() {
     if (planId === currentPlan) return;
     if (!user) { router.push(`/signup?plan=${planId}`); return; }
     if (planId === "free") return;
+
+    const selectedPlan = plans.find((p) => p.id === planId);
+    posthog.capture("plan_clicked", {
+      plan: planId,
+      price: selectedPlan?.price[billing] ?? 0,
+    });
 
     setLoading(true);
     try {

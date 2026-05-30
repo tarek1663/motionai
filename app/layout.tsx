@@ -6,6 +6,7 @@ import { colors } from "@/lib/colors";
 import { AppBodyShell } from "@/components/ui/app-body-shell";
 import ScrollToTop from "@/components/ScrollToTop";
 import RenderNotification from "@/components/RenderNotification";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -62,11 +63,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             MozOsxFontSmoothing: "grayscale",
           }}
         >
-          <AppBodyShell>
-            <ScrollToTop />
-            <RenderNotification />
-            {children}
-          </AppBodyShell>
+          <PostHogProvider>
+            <AppBodyShell>
+              <ScrollToTop />
+              <RenderNotification />
+              {children}
+            </AppBodyShell>
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>

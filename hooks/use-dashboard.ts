@@ -17,10 +17,17 @@ import {
   isScriptModeAllowed,
 } from "@/lib/dashboard/plan-limits";
 import {
+  clearRenderStorage,
+  readRenderStorage,
+  RENDER_STORAGE_KEY,
+  saveRenderJob,
+} from "@/lib/dashboard/render-storage";
+import {
   generateFromPrompt,
   generateFromScreenshot,
   generateFromScript,
 } from "@/lib/dashboard/generate";
+import { posthog } from "@/lib/posthog";
 import type {
   DashboardScreen,
   DashboardVideo,
@@ -30,8 +37,6 @@ import type {
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
 const COOLDOWN_MS = 45000;
-const RENDER_STORAGE_KEY = "motionr_render";
-
 export function useDashboard() {
   const { user } = useUser();
   const router = useRouter();
@@ -85,22 +90,14 @@ export function useDashboard() {
   const [draftRestored, setDraftRestored] = useState(false);
   const [isGeneratingElsewhere, setIsGeneratingElsewhere] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const trackedVideoUrlRef = useRef<string | null>(null);
 
-  const saveRenderToStorage = useCallback((jobId: string, notifPrompt: string) => {
-    if (typeof window === "undefined") return;
-    console.log("💾 Saving to localStorage:", jobId);
-    localStorage.setItem(
-      RENDER_STORAGE_KEY,
-      JSON.stringify({
-        jobId,
-        prompt: notifPrompt,
-        progress: 0,
-        status: "rendering",
-        timestamp: Date.now(),
-      })
-    );
-    console.log("✅ localStorage saved:", localStorage.getItem(RENDER_STORAGE_KEY));
-  }, []);
+  const saveRenderToStorage = useCallback(
+    (jobId: string, notifPrompt: string) => {
+      saveRenderJob(jobId, notifPrompt, user?.id);
+    },
+    [user?.id]
+  );
 
   const showToast = useCallback(
     (message: string, type: "success" | "error" | "info" = "info") => {
@@ -153,6 +150,24 @@ export function useDashboard() {
     }
     setDuration((prev) => clampDuration(prev, credits.plan));
   }, [credits, mode]);
+
+  useEffect(() => {
+    if (!user) {
+      clearRenderStorage();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (screen !== "done" || !videoUrl || trackedVideoUrlRef.current === videoUrl) {
+      return;
+    }
+    trackedVideoUrlRef.current = videoUrl;
+    posthog.capture("video_generated", {
+      mode,
+      duration,
+      plan: credits?.plan,
+    });
+  }, [screen, videoUrl, mode, duration, credits?.plan]);
 
   const filterQuestionsForPlan = useCallback(
     (questions: ClarificationQuestion[], plan?: string | null) => {
@@ -218,23 +233,21 @@ export function useDashboard() {
 
   useEffect(() => {
     const checkMultiTab = () => {
-      const saved = localStorage.getItem(RENDER_STORAGE_KEY);
-      if (!saved) {
+      const data = readRenderStorage();
+      if (!data) {
         setIsGeneratingElsewhere(false);
         return;
       }
-      try {
-        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
-        if (
-          data.status === "rendering" &&
-          typeof data.timestamp === "number" &&
-          Date.now() - data.timestamp < 30 * 60 * 1000
-        ) {
-          setIsGeneratingElsewhere(true);
-          return;
-        }
-      } catch {
-        // ignore parse errors
+      if (data.userId && user?.id && data.userId !== user.id) {
+        setIsGeneratingElsewhere(false);
+        return;
+      }
+      if (
+        data.status === "rendering" &&
+        Date.now() - data.timestamp < 30 * 60 * 1000
+      ) {
+        setIsGeneratingElsewhere(true);
+        return;
       }
       setIsGeneratingElsewhere(false);
     };
@@ -242,21 +255,12 @@ export function useDashboard() {
     checkMultiTab();
     const handleStorage = (e: StorageEvent) => {
       if (e.key !== RENDER_STORAGE_KEY) return;
-      if (e.newValue) {
-        try {
-          const data = JSON.parse(e.newValue) as { status?: string };
-          setIsGeneratingElsewhere(data.status === "rendering");
-        } catch {
-          setIsGeneratingElsewhere(false);
-        }
-      } else {
-        setIsGeneratingElsewhere(false);
-      }
+      checkMultiTab();
     };
 
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -429,21 +433,15 @@ export function useDashboard() {
   }, [user]);
 
   const submit = useCallback(async () => {
-    const saved = localStorage.getItem(RENDER_STORAGE_KEY);
-    if (saved) {
-      try {
-        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
-        if (
-          data.status === "rendering" &&
-          typeof data.timestamp === "number" &&
-          Date.now() - data.timestamp < 30 * 60 * 1000
-        ) {
-          showToast("Une video est deja en cours de generation.", "error");
-          return;
-        }
-      } catch {
-        // ignore parse errors
-      }
+    const renderData = readRenderStorage();
+    if (
+      renderData &&
+      (!renderData.userId || renderData.userId === user?.id) &&
+      renderData.status === "rendering" &&
+      Date.now() - renderData.timestamp < 30 * 60 * 1000
+    ) {
+      showToast("Une video est deja en cours de generation.", "error");
+      return;
     }
 
     const now = Date.now();
@@ -550,6 +548,7 @@ export function useDashboard() {
     fetchQuestions,
     credits?.plan,
     router,
+    user?.id,
     loadVideos,
     showToast,
     lastGenerationTime,
