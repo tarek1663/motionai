@@ -79,82 +79,109 @@ export async function POST(req: NextRequest) {
             ...imageContent,
             {
               type: "text",
-              text: `Tu es un expert en UI/UX design et motion design.
+              text: `Analyse ces screenshots et génère une interface simplifiée pour une démo vidéo.
 
-Analyse ces screenshots de l'app/SaaS et génère une démo vidéo professionnelle.
-
-DESCRIPTION : ${description}
+APP : ${description}
 FOCUS : ${focusHint}
-FORMAT : ${isMobile ? "iPhone mobile 9:16" : "MacBook desktop 16:9"}
+FORMAT : ${isMobile ? "Mobile iPhone" : "Desktop MacBook"}
+ACCENT : ${accent}
 DURÉE : ${durationSec} secondes
-COULEUR ACCENT : ${accent}
 
-Ta mission :
-1. Analyser visuellement les screenshots
-2. Identifier : nom de l'app, couleurs principales, features clés, layout
-3. Reproduire l'interface de façon simplifiée et améliorée pour la vidéo
-4. Créer un chemin de navigation naturel avec la souris/doigt
-
-RÈGLES :
-- Reproduire FIDÈLEMENT les couleurs et le style de l'app
-- SIMPLIFIER pour la lisibilité vidéo (max 3-4 éléments par écran)
-- AMÉLIORER le design pour qu'il soit premium et professionnel
-- La souris/doigt doit naviguer de façon NATURELLE et LOGIQUE
-- Annotations SOBRES et DISCRÈTES — texte court, flèche fine
-- Présenter uniquement les features clés de l'app
-- NE PAS parler d'autre chose que de l'app
-
-Génère un JSON avec cette structure :
+Génère EXACTEMENT ce JSON — rien d'autre :
 {
-  "appName": "nom de l'app",
-  "primaryColor": "#hex couleur principale détectée",
-  "bgColor": "#hex couleur de fond",
-  "textColor": "#hex couleur du texte",
+  "appName": "Motionr",
+  "primaryColor": "${accent}",
+  "bgColor": "#ffffff",
+  "textColor": "#000000",
   "screens": [
     {
       "id": "screen1",
-      "name": "Landing Page",
+      "name": "Dashboard",
       "duration": 180,
       "bgColor": "#ffffff",
-      "url": "appname.com",
+      "url": "motionr.app",
       "elements": [
         {
           "type": "navbar",
-          "logo": "AppName",
-          "links": ["Features", "Pricing", "Login"],
-          "ctaText": "Get Started",
-          "bgColor": "#hex",
-          "textColor": "#hex"
+          "logo": "Motionr",
+          "links": ["Features", "Pricing"],
+          "ctaText": "Créer",
+          "bgColor": "#ffffff",
+          "textColor": "#000000"
         },
         {
           "type": "hero",
-          "headline": "titre principal",
-          "subline": "sous-titre court",
-          "ctaText": "bouton CTA",
-          "ctaColor": "#hex"
+          "headline": "Crée des vidéos IA",
+          "subline": "Motion design en quelques minutes",
+          "ctaText": "Commencer gratuitement"
+        },
+        {
+          "type": "features",
+          "items": [
+            { "icon": "✨", "title": "IA Script", "desc": "Génération auto" },
+            { "icon": "🎬", "title": "Animations", "desc": "72+ scènes" },
+            { "icon": "⚡", "title": "1080p", "desc": "Rendu rapide" }
+          ]
         }
       ],
       "mousePath": [
-        { "x": 50, "y": 10, "frame": 0, "action": "move" },
-        { "x": 80, "y": 10, "frame": 30, "action": "hover" },
-        { "x": 80, "y": 10, "frame": 50, "action": "click" }
+        { "x": 15, "y": 5, "frame": 0, "action": "move" },
+        { "x": 50, "y": 5, "frame": 30, "action": "hover" },
+        { "x": 75, "y": 5, "frame": 60, "action": "hover" },
+        { "x": 80, "y": 5, "frame": 80, "action": "click" },
+        { "x": 50, "y": 50, "frame": 120, "action": "move" }
       ],
       "annotations": [
+        { "text": "Navigation", "x": 50, "y": 12, "arrowDirection": "up", "frame": 40 },
+        { "text": "Fonctionnalités clés", "x": 30, "y": 75, "arrowDirection": "down", "frame": 100 }
+      ]
+    },
+    {
+      "id": "screen2",
+      "name": "Générateur",
+      "duration": 180,
+      "bgColor": "#0a0a0a",
+      "url": "motionr.app/dashboard",
+      "elements": [
         {
-          "text": "Navigation intuitive",
-          "x": 50,
-          "y": 15,
-          "arrowDirection": "up",
-          "frame": 40
+          "type": "sidebar",
+          "items": ["✏️ Créer", "🎬 Vidéos", "⚙️ Compte"],
+          "activeIndex": 0
+        },
+        {
+          "type": "hero",
+          "headline": "Décris ta vidéo",
+          "subline": "L'IA génère tout automatiquement",
+          "ctaText": "Générer →"
+        },
+        {
+          "type": "card",
+          "title": "Vidéos générées",
+          "value": "1,247",
+          "color": "${accent}"
         }
+      ],
+      "mousePath": [
+        { "x": 50, "y": 50, "frame": 0, "action": "move" },
+        { "x": 50, "y": 70, "frame": 40, "action": "click" },
+        { "x": 75, "y": 85, "frame": 100, "action": "click" }
+      ],
+      "annotations": [
+        { "text": "Prompt IA", "x": 50, "y": 65, "arrowDirection": "up", "frame": 20 },
+        { "text": "Générer", "x": 75, "y": 78, "arrowDirection": "down", "frame": 80 }
       ]
     }
   ],
   "totalFrames": ${totalFrames}
 }
 
-Génère 3-4 écrans qui présentent les features clés.
-Réponds UNIQUEMENT en JSON valide.`,
+IMPORTANT :
+- Adapte le contenu à l'app décrite dans les screenshots
+- Utilise les couleurs détectées dans les screenshots pour bgColor, textColor, primaryColor
+- Chaque element doit avoir type parmi : navbar, hero, features, sidebar, card, chart, table
+- Toutes les valeurs texte (logo, headline, title, desc, links, items) doivent être des STRINGS simples — jamais d'objets JSON imbriqués
+- Garde cette structure exacte avec 2 écrans minimum
+- Réponds UNIQUEMENT avec le JSON — pas de texte avant ou après`,
             },
           ],
         },
