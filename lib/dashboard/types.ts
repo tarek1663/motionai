@@ -15,4 +15,6 @@ export type InputTab = "prompt" | "screenshot";
 
 export type QualityMode = "fast" | "high";
 
-export type ScriptMode = "ai" | "script";
+export type ScriptMode = "ai" | "script" | "appdemo";
+
+export type DemoFormat = "desktop" | "mobile";

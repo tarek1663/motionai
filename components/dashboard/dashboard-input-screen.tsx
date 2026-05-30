@@ -10,11 +10,13 @@ import {
   GraduationCap,
   Mic,
   Newspaper,
+  Monitor,
   PenSquare,
   Rocket,
   Sparkles,
   Zap,
 } from "lucide-react";
+import { AppDemoPanel } from "@/components/dashboard/app-demo-panel";
 import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
 import { MIN_SCRIPT_WORDS, VOICES } from "@/lib/dashboard/constants";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
@@ -43,6 +45,13 @@ export function DashboardInputScreen(props: Props) {
     handlePromptKeyDown,
     clearDraftContent,
     error,
+    demoScreenshots,
+    setDemoScreenshots,
+    demoDescription,
+    setDemoDescription,
+    demoFormat,
+    setDemoFormat,
+    startAppDemoQuestions,
   } = props;
 
   const isBusy = loadingQ || screenshotLoading;
@@ -100,11 +109,12 @@ export function DashboardInputScreen(props: Props) {
         {[
           { id: "ai", label: "Mode IA", Icon: Sparkles },
           { id: "script", label: "Mon script", Icon: PenSquare },
+          { id: "appdemo", label: "App Demo", Icon: Monitor },
         ].map((m, index) => (
           <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <button
               type="button"
-              onClick={() => setMode(m.id as "ai" | "script")}
+              onClick={() => setMode(m.id as "ai" | "script" | "appdemo")}
               style={{
                 padding: 0,
                 border: "none",
@@ -123,7 +133,7 @@ export function DashboardInputScreen(props: Props) {
               <m.Icon size={14} strokeWidth={1.9} />
               {m.label}
             </button>
-            {index === 0 && (
+            {index < 2 && (
               <span
                 aria-hidden="true"
                 style={{
@@ -137,6 +147,18 @@ export function DashboardInputScreen(props: Props) {
         ))}
       </div>
 
+      {mode === "appdemo" ? (
+        <AppDemoPanel
+          demoScreenshots={demoScreenshots}
+          setDemoScreenshots={setDemoScreenshots}
+          demoDescription={demoDescription}
+          setDemoDescription={setDemoDescription}
+          demoFormat={demoFormat}
+          setDemoFormat={setDemoFormat}
+          onGenerate={() => void startAppDemoQuestions()}
+          disabled={isBusy || cooldown > 0}
+        />
+      ) : (
       <div style={{ width: "100%", maxWidth: 720, position: "relative" }}>
         <div
           style={{
@@ -340,8 +362,9 @@ export function DashboardInputScreen(props: Props) {
           </div>
         )}
       </div>
+      )}
 
-      {(draftRestored || prompt.trim() || customScript.trim()) && (
+      {mode !== "appdemo" && (draftRestored || prompt.trim() || customScript.trim()) && (
         <div
           style={{
             marginTop: 8,
@@ -372,7 +395,7 @@ export function DashboardInputScreen(props: Props) {
         </div>
       )}
 
-      {promptHistory.length > 0 && (
+      {mode !== "appdemo" && promptHistory.length > 0 && (
         <div
           style={{
             fontSize: 10,
@@ -387,6 +410,7 @@ export function DashboardInputScreen(props: Props) {
         </div>
       )}
 
+      {mode !== "appdemo" && (
       <div id="tour-suggestions" style={{ marginTop: 20, textAlign: "center" }}>
         <div
           style={{
@@ -437,6 +461,7 @@ export function DashboardInputScreen(props: Props) {
           ))}
         </div>
       </div>
+      )}
 
       {error && (
         <div style={{ marginTop: 14, fontSize: 13, color: "#ef4444", textAlign: "center" }}>

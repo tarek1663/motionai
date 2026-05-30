@@ -10,10 +10,17 @@ import {
 } from "@/lib/dashboard/questions";
 import { fetchCredits, type CreditsInfo } from "@/lib/dashboard/credits";
 import { MIN_SCRIPT_WORDS } from "@/lib/dashboard/constants";
-import { generateFromPrompt, generateFromScreenshot, generateFromScript } from "@/lib/dashboard/generate";
+import { APP_DEMO_QUESTIONS } from "@/lib/dashboard/app-demo-questions";
+import {
+  generateFromPrompt,
+  generateFromScreenshot,
+  generateFromScript,
+  generateFromAppDemo,
+} from "@/lib/dashboard/generate";
 import type {
   DashboardScreen,
   DashboardVideo,
+  DemoFormat,
   QualityMode,
   ScriptMode,
 } from "@/lib/dashboard/types";
@@ -54,6 +61,10 @@ export function useDashboard() {
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState("");
   const [screenshotLoading, setScreenshotLoading] = useState(false);
+
+  const [demoScreenshots, setDemoScreenshots] = useState<string[]>([]);
+  const [demoDescription, setDemoDescription] = useState("");
+  const [demoFormat, setDemoFormat] = useState<DemoFormat>("desktop");
 
   const [videos, setVideos] = useState<DashboardVideo[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
@@ -288,6 +299,9 @@ export function useDashboard() {
     setScreenshotFile(null);
     setScreenshotPreview("");
     setScreenshotLoading(false);
+    setDemoScreenshots([]);
+    setDemoDescription("");
+    setDemoFormat("desktop");
   }, []);
 
   const generatePrompt = useCallback(
@@ -460,6 +474,11 @@ export function useDashboard() {
       return;
     }
 
+    if (mode === "appdemo") {
+      await startAppDemoQuestions();
+      return;
+    }
+
     if (mode === "ai") {
       const validationError = validatePrompt(prompt);
       if (validationError) {
@@ -505,6 +524,7 @@ export function useDashboard() {
     selectedVoiceId,
     musicEnabled,
     fetchQuestions,
+    startAppDemoQuestions,
     loadVideos,
     showToast,
     lastGenerationTime,
@@ -654,6 +674,47 @@ export function useDashboard() {
     [submit, historyIndex, promptHistory, mode]
   );
 
+  const startAppDemoQuestions = useCallback(async () => {
+    if (demoScreenshots.filter(Boolean).length === 0) {
+      showToast("Ajoute au moins un screenshot.", "error");
+      return;
+    }
+    if (!demoDescription.trim()) {
+      showToast("Decris ton app avant de generer.", "error");
+      return;
+    }
+
+    const saved = localStorage.getItem(RENDER_STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved) as { status?: string; timestamp?: number };
+        if (
+          data.status === "rendering" &&
+          typeof data.timestamp === "number" &&
+          Date.now() - data.timestamp < 30 * 60 * 1000
+        ) {
+          showToast("Une video est deja en cours de generation.", "error");
+          return;
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const creditsData = await fetchCredits();
+    if (creditsData && creditsData.plan !== "business" && creditsData.videos_remaining <= 0) {
+      setShowUpgrade(true);
+      setUpgradeReason("Tu as utilise toutes tes videos ce mois-ci.");
+      return;
+    }
+
+    setQuestions(APP_DEMO_QUESTIONS);
+    setAnswers({});
+    setOtherDetails({});
+    setCurrentQ(0);
+    setScreen("questions");
+  }, [demoScreenshots, demoDescription, demoFormat, showToast]);
+
   const finishQuestions = useCallback(() => {
     const durationOptionId = answers.duration || "duration_30";
     const durationMap: Record<string, string> = {
@@ -687,6 +748,50 @@ export function useDashboard() {
     setScreen("input");
     setQuestions([]);
 
+    if (mode === "appdemo") {
+      const demoFormatAnswer = answers.demo_format || "desktop";
+      const resolvedDemoFormat: DemoFormat =
+        demoFormatAnswer === "mobile" ? "mobile" : "desktop";
+      setDemoFormat(resolvedDemoFormat);
+
+      const colorAnswer = answers.color || "🟢 Vert";
+      const colorMap: Record<string, string> = {
+        "🟢 Vert": "#10B981",
+        "🟣 Violet": "#7C3AED",
+        "🔵 Bleu": "#3B82F6",
+        "🟡 Or": "#F59E0B",
+        "🔴 Rouge": "#EF4444",
+        "⚪ Blanc": "#ffffff",
+        "🩷 Rose": "#EC4899",
+        "🩵 Cyan": "#06B6D4",
+      };
+      const color = colorMap[colorAnswer] || "#10B981";
+      setAccentColor(color);
+
+      const focus = answers.focus || "features";
+      setLastGenerationTime(Date.now());
+      savePromptToHistory(demoDescription);
+
+      setTimeout(() => {
+        void generateFromAppDemo({
+          screenshots: demoScreenshots.filter(Boolean),
+          description: demoDescription,
+          demoFormat: resolvedDemoFormat,
+          duration: nextDuration,
+          quality: nextQuality,
+          selectedVoiceId,
+          musicEnabled,
+          accentColorLabel: colorAnswer,
+          focus,
+          pollRef,
+          ...generationCallbacks,
+        });
+        clearDraft();
+        setDraftRestored(false);
+      }, 100);
+      return;
+    }
+
     if (mode === "script") {
       setTimeout(() => {
         void generateFromScript({
@@ -718,6 +823,8 @@ export function useDashboard() {
   }, [
     mode,
     customScript,
+    demoScreenshots,
+    demoDescription,
     prompt,
     questions,
     answers,
@@ -729,6 +836,7 @@ export function useDashboard() {
     pollRef,
     generationCallbacks,
     clearDraft,
+    savePromptToHistory,
   ]);
 
   const skipQuestions = useCallback(() => {
@@ -865,6 +973,13 @@ export function useDashboard() {
     showToast,
     deleteVideo,
     renameVideo,
+    demoScreenshots,
+    setDemoScreenshots,
+    demoDescription,
+    setDemoDescription,
+    demoFormat,
+    setDemoFormat,
+    startAppDemoQuestions,
   };
 }
 
