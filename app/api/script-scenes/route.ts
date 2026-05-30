@@ -128,7 +128,7 @@ FORMES : linedraw, shape, expandingshape
 
 TRANSITIONS : iris, curtain, diagonalwipe, splitvertical, zoomtransition, glitchswitch, pixeldissolve, lightsweep
 
-UI : notification, pulsebutton, uiprogress
+UI : notification, uiprogress
 
 CONTEXTE : quote, timeline, checklist, audioviz, photoreveal, photocollage
 
@@ -225,7 +225,7 @@ Par vidéo tu DOIS inclure au minimum :
 - 1 scène photo si photoQuery pertinent (photoreveal, photocollage)
 - 1 scène mockup SI sujet web/app (iphone, browser, macbook, dashboard)
 - 1 scène accent (accentword, underline, gradienttext, twolines)
-- 1 scène CTA finale (pulsebutton, singleword fort)
+- 1 scène CTA finale (singleword fort)
 
 FONDS — rotation stricte sur chaque scène :
 bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff → bg:#000000 → bg:${accent}...

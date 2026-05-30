@@ -47,7 +47,6 @@ import {
   PixelDissolveScene,
   LightSweepScene,
   NotificationScene,
-  PulseButtonScene,
   UIProgressScene,
   QuoteScene,
   TimelineScene,
@@ -254,8 +253,6 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <LightSweepScene scene={sceneWithIndex} />;
     case "notification":
       return <NotificationScene scene={sceneWithIndex} />;
-    case "pulsebutton":
-      return <PulseButtonScene scene={sceneWithIndex} />;
     case "uiprogress":
       return <UIProgressScene scene={sceneWithIndex} />;
     case "quote":

@@ -55,7 +55,6 @@ export type SceneData = {
     | "pixeldissolve"
     | "lightsweep"
     | "notification"
-    | "pulsebutton"
     | "uiprogress"
     | "quote"
     | "timeline"
@@ -613,7 +612,9 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
   const patternColor =
-    luminance > 0.5 ? "rgba(0,0,0,0.10)" : "rgba(255,255,255,0.10)";
+    luminance > 0.5
+      ? "rgba(0,0,0,0.08)"
+      : "rgba(255,255,255,0.12)";
 
   const rotation = interpolate(
     frame,
@@ -3344,117 +3345,6 @@ export const NotificationScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             }}
           >
             maintenant
-          </div>
-        </div>
-      </AbsoluteFill>
-    </AbsoluteFill>
-  );
-};
-
-// ─── 2. BOUTON PULSE ──────────────────────────────────
-export const PulseButtonScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
-  const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const motion = useContinuousMotion();
-  const bg = scene.bg || "#ffffff";
-  const accent = scene.accentColor || (isLight(bg) ? "#000000" : "#ffffff");
-
-  const enter = spring({
-    frame,
-    fps,
-    config: { damping: 280, stiffness: 80, mass: 0.8 },
-    from: 0,
-    to: 1,
-  });
-
-  const pulse = 1 + Math.sin(frame * 0.12) * 0.04;
-  const glowPulse = 0.3 + Math.sin(frame * 0.12) * 0.15;
-
-  const fadeOut = interpolate(
-    Math.max(0, frame - Math.max(0, durationInFrames - 22)),
-    [0, Math.max(1, 22)],
-    [1, 0],
-    { extrapolateRight: "clamp", easing: E_IN },
-  );
-
-  const scale = interpolate(enter, [0, 1], [0.7, 1]) * pulse;
-  const opacity = Math.min(interpolate(enter, [0, 0.3], [0, 1]), fadeOut);
-
-  const textFade = interpolate(Math.max(0, frame - 16), [0, 18], [0, 1], {
-    extrapolateRight: "clamp",
-    easing: E_OUT,
-  });
-
-  const fontSize = autoFontSize(scene.text || "", 80, 40);
-
-  return (
-    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
-      <GeoBackground bg={bg} geo={scene.geo} />
-      <AbsoluteFill
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-          gap: 40,
-        }}
-      >
-        {scene.text && (
-          <div
-            style={{
-              fontSize,
-              fontWeight: 600,
-              fontFamily: FONT,
-              letterSpacing: "-0.03em",
-              lineHeight: 1,
-              color: mainTextColor(scene, bg),
-            textShadow: mainTextShadow(bg),
-              ...MAIN_TEXT_WRAP,
-              opacity: Math.min(textFade, fadeOut),
-              transform: `translateY(${interpolate(enter, [0, 1], [20, 0])}px)`,
-            }}
-          >
-            {scene.text}
-          </div>
-        )}
-
-        <div
-          style={{
-            position: "relative",
-            transform: `scale(${scale * motion.breathe}) translateY(${motion.floatY}px)`,
-            opacity,
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: -20,
-              borderRadius: 100,
-              background: accent,
-              filter: "blur(20px)",
-              opacity: glowPulse * 0.3,
-            }}
-          />
-          <div
-            style={{
-              position: "relative",
-              background: accent,
-              borderRadius: 100,
-              padding: "18px 48px",
-              boxShadow: `0 8px 32px ${accent}44`,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                fontFamily: FONT,
-                letterSpacing: "-0.02em",
-                color: isLight(accent) ? "#000000" : "#ffffff",
-                ...MAIN_TEXT_WRAP,
-              }}
-            >
-              {scene.buttonText || "Commencer →"}
-            </span>
           </div>
         </div>
       </AbsoluteFill>
