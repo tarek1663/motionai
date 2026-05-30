@@ -1015,6 +1015,140 @@ Style: ${format.voiceStyle}
   };
 }
 
+export type WordTimestampScene = {
+  word: string;
+  startFrame: number;
+  endFrame: number;
+  durationFrames: number;
+};
+
+export async function generateScenesFromWordTimestamps(params: {
+  prompt: string;
+  script: string;
+  totalFrames: number;
+  accentColor: string;
+  wordTimestamps: WordTimestampScene[];
+}): Promise<{ scenes: MotionScene[]; sceneDurations: number[] }> {
+  const { prompt, script, totalFrames, accentColor, wordTimestamps } = params;
+
+  const timestampLine = wordTimestamps
+    .map((w) => `"${w.word}" [${w.startFrame}-${w.endFrame}]`)
+    .join(", ");
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 6000,
+    messages: [
+      {
+        role: "user",
+        content: `Tu es le meilleur directeur artistique motion design au monde.
+
+SCRIPT COMPLET : "${script}"
+DURÉE TOTALE : ${totalFrames} frames à 60fps (${Math.round(totalFrames / 60)}s)
+COULEUR ACCENT : ${accentColor}
+TIMESTAMPS PAR MOT :
+${timestampLine}
+
+Ta mission : créer des scènes visuelles qui suivent EXACTEMENT les mots prononcés.
+
+RÈGLES DE SYNCHRONISATION :
+- Chaque scène doit couvrir un groupe de mots prononcés ensemble
+- Le startFrame de chaque scène = startFrame du premier mot du groupe
+- Le durationFrames = endFrame du dernier mot - startFrame du premier mot
+- Minimum 3 mots par scène, maximum 6 mots par scène
+- Les scènes doivent couvrir TOUTE la durée audio sans trous
+
+RÈGLES VISUELLES :
+- accentColor = ${accentColor} sur TOUTES les scènes
+- Alterner bg:#ffffff → bg:#000000 → bg:${accentColor}
+- geo différent sur chaque scène
+- JAMAIS deux types identiques consécutifs
+- Utiliser TOUT le catalogue d'animations
+- Inclure : strobe, explode, parallax, repeatcut sur les moments forts
+- Inclure : counter, checklist, photoreveal sur les moments informatifs
+- Inclure : iris, curtain, diagonalwipe entre les grandes sections
+
+RÈGLES DE DYNAMISME MAXIMUM :
+- FPS : 60 — chaque animation doit exploiter les 60fps
+- Scènes courtes sur mots forts : 48-72 frames (0.8-1.2s)
+- Scènes moyennes sur phrases : 90-120 frames (1.5-2s)
+- Scènes complexes : 150-180 frames (2.5-3s)
+- Arc narratif : début rapide → milieu informatif → fin explosive
+- Beat drop obligatoire au milieu avec repeatcut ou strobe
+- Dernière scène : pulsebutton ou singleword fort avec accentColor
+- photoreveal avec photoQuery sur 2-3 moments visuels forts
+- Transitions courtes : 40-50 frames max
+
+CATALOGUE COMPLET :
+Texte : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, twolines, gradienttext, accentword, underline, spotlight, hierarchytext
+Stats : counter, multistats, progressbar, socialstats, bgnumber
+Dynamique : strobe, explode, parallax, repeatcut
+Formes : linedraw, shape, expandingshape
+Transitions : iris, curtain, diagonalwipe, splitvertical, pixeldissolve, lightsweep, glitchswitch
+UI : pulsebutton, uiprogress, notification
+Contexte : quote, timeline, checklist, audioviz, photoreveal
+
+FORMAT JSON STRICT :
+{
+  "scenes": [
+    {
+      "type": "singleword",
+      "text": "mot ou groupe de mots",
+      "bg": "#000000",
+      "accentColor": "${accentColor}",
+      "geo": "dots",
+      "startFrame": 0,
+      "durationFrames": 72
+    }
+  ]
+}
+
+IMPORTANT : startFrame et durationFrames doivent correspondre EXACTEMENT aux wordTimestamps.
+Sujet : "${prompt}"
+Réponds UNIQUEMENT en JSON valide.`,
+      },
+    ],
+  });
+
+  const text =
+    response.content[0].type === "text" ? response.content[0].text : "{}";
+  let clean = text
+    .trim()
+    .replace(/^```json\n?/m, "")
+    .replace(/^```\n?/m, "")
+    .replace(/\n?```$/m, "")
+    .trim();
+  const s = clean.indexOf("{");
+  const e = clean.lastIndexOf("}");
+  if (s !== -1 && e !== -1) clean = clean.slice(s, e + 1);
+  clean = clean.replace(/,(\s*[}\]])/g, "$1");
+
+  let result: { scenes?: MotionScene[] };
+  try {
+    result = JSON.parse(clean) as { scenes?: MotionScene[] };
+  } catch {
+    throw new Error("Scènes invalides — réessaie");
+  }
+
+  const scenes = (result.scenes || []).map((scene) => ({
+    ...scene,
+    accentColor: accentColor,
+    durationFrames: Math.max(
+      30,
+      Math.round((scene as { durationFrames?: number }).durationFrames || 72),
+    ),
+    startFrame: Math.round(
+      (scene as { startFrame?: number }).startFrame ?? 0,
+    ),
+  }));
+
+  const sceneDurations = scenes.map((s) =>
+    Math.max(30, (s as { durationFrames?: number }).durationFrames || 72),
+  );
+
+  return { scenes, sceneDurations };
+}
+
 // ÉTAPE 2 — Générer les scènes à partir de la voix
 export async function generateScenesFromVoice(params: {
   prompt: string;

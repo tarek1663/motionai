@@ -150,6 +150,11 @@ export async function generateFromPrompt(params: PromptParams) {
         /* ignore */
       }
     }
+    const voiceDurationSeconds = voiceData.durationSeconds || 30;
+    const totalFrames =
+      voiceData.totalFrames ||
+      Math.round(voiceDurationSeconds * 60);
+
     cb.setProgress(55);
 
     const scenesRes = await fetch("/api/scenes", {
@@ -166,6 +171,8 @@ export async function generateFromPrompt(params: PromptParams) {
         bgAccent: voiceTextData.bgAccent,
         formatId: voiceTextData.formatId,
         phraseTimestamps: voiceData.phraseTimestamps || [],
+        wordTimestamps: voiceData.wordTimestamps || [],
+        totalFrames,
       }),
     });
     const scenesData = await scenesRes.json();
@@ -178,10 +185,7 @@ export async function generateFromPrompt(params: PromptParams) {
     cb.setStatus("rendering");
 
     console.log("📐 Voice duration:", voiceData.durationSeconds);
-    console.log(
-      "📐 totalFrames:",
-      Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60)
-    );
+    console.log("📐 totalFrames:", totalFrames);
 
     const renderRes = await fetch("/api/render", {
       method: "POST",
@@ -189,7 +193,8 @@ export async function generateFromPrompt(params: PromptParams) {
       body: JSON.stringify({
         scenes: scenesData.scenes,
         phraseTimestamps: voiceData.phraseTimestamps || [],
-        totalFrames: Math.round((voiceData.durationSeconds || parseInt(durationSeconds)) * 60),
+        wordTimestamps: voiceData.wordTimestamps || [],
+        totalFrames,
         format,
         quality,
         audioUrl: voiceData.audioUrl,

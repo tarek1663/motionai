@@ -82,17 +82,52 @@ Réponds UNIQUEMENT avec le texte optimisé, une ligne par scène, sans numérot
 
     const durationSec = String(duration || "30");
     const sec = parseInt(durationSec, 10) || 30;
-    const targetScenes =
-      sec <= 15 ? 9 : sec <= 30 ? 18 : sec <= 45 ? 26 : 33;
-    console.log(
-      "🎙️ voice-text duration:",
-      durationSec,
-      "s —",
-      targetScenes,
-      "lignes cible",
-    );
-    const result = await generateVoiceText({ prompt, duration: durationSec });
-    return NextResponse.json(result);
+    console.log("🎙️ voice-text duration:", durationSec, "s — mode continu");
+
+    const [scriptResponse, meta] = await Promise.all([
+      client.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: `Tu es un expert en copywriting pour publicités vidéo premium.
+
+Génère un script voix-off pour une vidéo de ${sec} secondes sur : "${prompt}"
+
+RÈGLES ABSOLUES :
+- Texte fluide et naturel — comme un vrai présentateur
+- PAS de listes, PAS de tirets, PAS de numéros
+- Un seul paragraphe continu qui se lit naturellement
+- Rythme varié — phrases courtes ET longues mélangées
+- Ton : confiant, premium, inspirant
+- Durée : exactement ${sec} secondes à voix normale
+- JAMAIS de pauses artificielles
+- Style Apple/Nike — sobre, fort, émotionnel
+
+Réponds UNIQUEMENT avec le texte du script, rien d'autre.`,
+          },
+        ],
+      }),
+      generateVoiceText({ prompt, duration: durationSec }),
+    ]);
+
+    const script =
+      (scriptResponse.content[0]?.type === "text"
+        ? scriptResponse.content[0].text
+        : ""
+      )?.trim() || meta.voiceoverText;
+
+    return NextResponse.json({
+      script,
+      voiceoverText: script,
+      lines: [script],
+      accentColor: meta.accentColor,
+      bgAccent: meta.bgAccent,
+      bgLight: meta.bgLight,
+      formatId: meta.formatId,
+      formatName: meta.formatName,
+    });
   } catch (err: unknown) {
     console.error("Voice text error:", err);
     return NextResponse.json({ error: getErrorMessage(err) }, { status: 500 });

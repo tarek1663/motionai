@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-type AlignmentPayload = {
-  characters?: string[];
-  character_start_times_seconds?: number[];
-  character_end_times_seconds?: number[];
+type WordTimestampPayload = {
+  word?: string;
+  start?: number;
+  end?: number;
+  startFrame?: number;
+  endFrame?: number;
+  durationFrames?: number;
 };
 
 type PhraseTimestampPayload = {
@@ -22,79 +25,32 @@ type PhraseTimestamp = {
   durationFrames: number;
 };
 
-const buildPhraseTimestampsFromAlignment = (
-  script: string,
-  alignment: AlignmentPayload,
-  fps = 60,
-): PhraseTimestamp[] => {
-  const characters = alignment.characters || [];
-  const charStartTimes = alignment.character_start_times_seconds || [];
-  const charEndTimes = alignment.character_end_times_seconds || [];
-
-  const fullText = characters.join("");
-
-  const lines = script
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
-
-  console.log("🎙️ Lines to sync:", lines);
-  console.log("🎙️ Total characters:", characters.length);
-
-  const phraseTimestamps: PhraseTimestamp[] = [];
-  let searchStart = 0;
-
-  for (const line of lines) {
-    const cleanLine = line.replace(/[.,!?;:]/g, "").toLowerCase();
-    const cleanFull = fullText.replace(/[.,!?;:]/g, "").toLowerCase();
-
-    const pos = cleanFull.indexOf(
-      cleanLine.slice(0, Math.min(10, cleanLine.length)),
-      searchStart,
-    );
-
-    if (pos === -1) {
-      const wordCount = line.split(" ").length;
-      const estimatedDuration = wordCount * 0.4;
-      const lastEnd =
-        phraseTimestamps.length > 0
-          ? phraseTimestamps[phraseTimestamps.length - 1].endFrame / fps
-          : 0;
-
-      phraseTimestamps.push({
-        phrase: line,
-        startFrame: Math.round(lastEnd * fps),
-        endFrame: Math.round((lastEnd + estimatedDuration) * fps),
-        durationFrames: Math.round(estimatedDuration * fps),
-      });
-      continue;
-    }
-
-    const startTime = charStartTimes[pos] || 0;
-    const endPos = Math.min(pos + cleanLine.length, charEndTimes.length - 1);
-    const endTime =
-      charEndTimes[endPos] || startTime + line.split(" ").length * 0.4;
-
-    phraseTimestamps.push({
-      phrase: line,
-      startFrame: Math.round(startTime * fps),
-      endFrame: Math.round(endTime * fps),
-      durationFrames: Math.max(40, Math.round((endTime - startTime) * fps)),
-    });
-
-    searchStart = pos + cleanLine.length;
-  }
-
-  console.log(
-    "🎙️ phraseTimestamps:",
-    phraseTimestamps.map(
-      (p) =>
-        `"${p.phrase.slice(0, 20)}" [${p.startFrame}-${p.endFrame}] ${p.durationFrames}f`,
-    ),
-  );
-
-  return phraseTimestamps;
+type WordTimestamp = {
+  word: string;
+  startFrame: number;
+  endFrame: number;
+  durationFrames: number;
 };
+
+const normalizeWordTimestamps = (
+  wordTimestamps: WordTimestampPayload[],
+  fps = 60,
+): WordTimestamp[] =>
+  wordTimestamps.map((w) => {
+    const startFrame =
+      w.startFrame ?? Math.round((w.start ?? 0) * fps);
+    const endFrame =
+      w.endFrame ?? Math.round((w.end ?? 0) * fps);
+    return {
+      word: w.word ?? "",
+      startFrame,
+      endFrame,
+      durationFrames: Math.max(
+        20,
+        w.durationFrames ?? endFrame - startFrame,
+      ),
+    };
+  });
 
 const normalizePhraseTimestamps = (
   phraseTimestamps: PhraseTimestampPayload[],
@@ -139,34 +95,43 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
     if (!res.ok) return NextResponse.json(data, { status: 500 });
 
-    const alignment = (data.alignment || {}) as AlignmentPayload;
-    console.log(
-      "🎙️ Raw alignment:",
-      JSON.stringify(data.alignment || {}).slice(0, 500),
+    const wordTimestamps = normalizeWordTimestamps(
+      (data.wordTimestamps as WordTimestampPayload[]) || [],
     );
 
-    const phraseTimestamps =
-      script && alignment.characters?.length
-        ? buildPhraseTimestampsFromAlignment(script, alignment)
-        : normalizePhraseTimestamps(
-            (data.phraseTimestamps as PhraseTimestampPayload[]) || [],
-          );
+    const phraseTimestamps = normalizePhraseTimestamps(
+      (data.phraseTimestamps as PhraseTimestampPayload[]) || [],
+    );
 
-    console.log("🎙️ phraseTimestamps generated:", phraseTimestamps);
+    console.log(
+      "🎙️ wordTimestamps:",
+      wordTimestamps.slice(0, 5).map(
+        (w) => `"${w.word}" [${w.startFrame}-${w.endFrame}]`,
+      ),
+    );
+
+    const totalFrames =
+      data.totalFrames ??
+      (wordTimestamps.length > 0
+        ? wordTimestamps[wordTimestamps.length - 1].endFrame
+        : phraseTimestamps.length > 0
+          ? phraseTimestamps[phraseTimestamps.length - 1].endFrame
+          : Math.round((data.durationSeconds || 30) * 60));
 
     const totalDuration =
       data.durationSeconds ??
       data.duration ??
-      (phraseTimestamps.length > 0
-        ? phraseTimestamps[phraseTimestamps.length - 1].endFrame / 60
-        : 30);
+      totalFrames / 60;
 
     return NextResponse.json({
       ...data,
       audioUrl: data.audioUrl,
+      script,
       duration: totalDuration,
       durationSeconds: data.durationSeconds ?? totalDuration,
+      wordTimestamps,
       phraseTimestamps,
+      totalFrames,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Erreur voix";

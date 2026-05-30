@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateScenesFromVoice } from "@/lib/claude";
+import { generateScenesFromVoice, generateScenesFromWordTimestamps } from "@/lib/claude";
 import { getErrorMessage } from "@/lib/utils";
 
 const buildSystemPrompt = (
@@ -148,6 +148,8 @@ export async function POST(req: NextRequest) {
       bgLight,
       bgAccent,
       phraseTimestamps,
+      wordTimestamps,
+      totalFrames,
       formatId,
     } = await req.json();
     if (!voiceoverText?.trim()) {
@@ -155,25 +157,38 @@ export async function POST(req: NextRequest) {
     }
 
     const durationSec = Math.round(Number(audioDuration) || 30);
-    const systemPrompt = buildSystemPrompt(
-      prompt || voiceoverText,
-      durationSec,
-      accentColor || "#10B981",
-    );
+    const accent = accentColor || "#10B981";
+    const useWordSync =
+      Array.isArray(wordTimestamps) && wordTimestamps.length >= 3;
 
-    const result = await generateScenesFromVoice({
-      prompt,
-      voiceoverText,
-      audioDuration,
-      format,
-      accentColor,
-      bgDark,
-      bgLight,
-      bgAccent,
-      phraseTimestamps,
-      formatId,
-      systemPrompt,
-    });
+    const result = useWordSync
+      ? await generateScenesFromWordTimestamps({
+          prompt: prompt || voiceoverText,
+          script: voiceoverText,
+          totalFrames:
+            totalFrames ||
+            wordTimestamps[wordTimestamps.length - 1]?.endFrame ||
+            durationSec * 60,
+          accentColor: accent,
+          wordTimestamps,
+        })
+      : await generateScenesFromVoice({
+          prompt,
+          voiceoverText,
+          audioDuration,
+          format,
+          accentColor,
+          bgDark,
+          bgLight,
+          bgAccent,
+          phraseTimestamps,
+          formatId,
+          systemPrompt: buildSystemPrompt(
+            prompt || voiceoverText,
+            durationSec,
+            accent,
+          ),
+        });
 
     const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
     const PHOTO_TYPES = new Set(["photoreveal", "photocollage"]);
@@ -223,9 +238,20 @@ export async function POST(req: NextRequest) {
     );
 
     const sceneDurations = scenesWithPhotos.map((scene, i) => {
-      const fromScene = (scene as { durationFrames?: number }).durationFrames;
-      if (fromScene && fromScene >= 40) {
-        return { durationFrames: Math.min(150, Math.round(fromScene)) };
+      const fromScene = scene as {
+        startFrame?: number;
+        durationFrames?: number;
+      };
+
+      if (useWordSync && fromScene.startFrame !== undefined) {
+        return {
+          startFrame: Math.round(fromScene.startFrame),
+          durationFrames: Math.max(30, Math.round(fromScene.durationFrames || 72)),
+        };
+      }
+
+      if (fromScene.durationFrames && fromScene.durationFrames >= 40) {
+        return { durationFrames: Math.min(150, Math.round(fromScene.durationFrames)) };
       }
       if (
         Array.isArray(phraseTimestamps) &&
