@@ -42,6 +42,12 @@ UI : notification, pulsebutton, uiprogress
 
 CONTEXTE : quote, timeline, checklist, audioviz, photoreveal, photocollage
 
+EFFETS DYNAMIQUES — utiliser avec parcimonie pour les moments forts :
+- strobe: texte avec flash rapide à l'entrée — pour les mots très impactants
+- explode: texte qui explose à la sortie — pour les révélations
+- parallax: fond et texte bougent en sens opposés — pour la profondeur
+- repeatcut: même mot répété 3x avec fonds alternés — pour l'emphase
+
 RÈGLES ABSOLUES :
 1. MINIMUM ${minScenes} scènes
 2. JAMAIS deux types identiques consécutifs
