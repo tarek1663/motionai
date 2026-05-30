@@ -83,6 +83,7 @@ async function pollRender(
     cb.setVideoUrl,
     cb.setScreen,
     cb.setError,
+    cb.setStatus,
     cb.onVideosRefresh,
     cb.onCreditsRefresh
   );

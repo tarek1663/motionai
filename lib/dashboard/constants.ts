@@ -20,6 +20,7 @@ export const STATUS_LABELS: Record<string, string> = {
   scripting: "Écriture du script",
   voice: "Synthèse vocale",
   music: "Musique de fond",
+  queued: "En file d'attente",
   rendering: "Rendu final",
 };
 

@@ -92,7 +92,13 @@ export async function GET(
       }
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json({
+      status: data.status,
+      progress: data.progress ?? 0,
+      videoUrl: data.videoUrl ?? null,
+      url: data.videoUrl ?? null,
+      error: data.error ?? null,
+    });
   } catch (err: any) {
     console.error("Polling error:", err.message);
     return NextResponse.json({ status: "error", error: err.message });

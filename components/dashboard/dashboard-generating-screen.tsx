@@ -65,6 +65,49 @@ export function DashboardGeneratingScreen({
         <div className="dash-progress-fill" style={{ width: `${progress}%` }} />
       </div>
       <div className="dash-progress-pct">{progress}%</div>
+
+      {status === "queued" && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            background: "rgba(245,158,11,0.08)",
+            border: "1px solid rgba(245,158,11,0.15)",
+            borderRadius: 10,
+            padding: "10px 14px",
+            marginTop: 12,
+            maxWidth: 420,
+          }}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span
+            style={{
+              fontSize: 12,
+              color: "rgba(255,255,255,0.5)",
+              fontFamily: "-apple-system, sans-serif",
+              lineHeight: 1.45,
+              textAlign: "left",
+            }}
+          >
+            Forte utilisation des serveurs — votre vidéo peut prendre quelques minutes
+            supplémentaires.
+          </span>
+        </div>
+      )}
     </div>
   );
 }

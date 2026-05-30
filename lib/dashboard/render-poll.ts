@@ -8,6 +8,7 @@ export function startRenderPoll(
   setVideoUrl: (url: string) => void,
   setScreen: (screen: DashboardScreen) => void,
   setError: (msg: string) => void,
+  setStatus?: (status: string) => void,
   onDone?: () => void,
   onCreditsRefresh?: () => void,
   onPipelineEnd?: () => void
@@ -25,7 +26,19 @@ export function startRenderPoll(
       }
 
       const statusData = await statusRes.json();
-      if (typeof statusData.progress === "number" && statusData.progress > 0) {
+
+      if (statusData.status === "queued") {
+        setStatus?.("queued");
+        setProgress(0);
+        return;
+      }
+
+      if (statusData.status === "rendering") {
+        setStatus?.("rendering");
+        if (typeof statusData.progress === "number") {
+          setProgress(statusData.progress);
+        }
+      } else if (typeof statusData.progress === "number" && statusData.progress > 0) {
         setProgress(statusData.progress);
       }
 
