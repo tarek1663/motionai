@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { checkGenerationLimits, incrementVideoCount } from "@/lib/check-limits";
 import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
@@ -29,23 +30,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    {
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("plan, videos_used, videos_limit")
-        .eq("user_id", userId)
-        .single();
-
-      if (sub && sub.plan !== "business" && sub.videos_used >= sub.videos_limit) {
-        return NextResponse.json({
-          error: "Limite atteinte",
+    const limits = await checkGenerationLimits(userId);
+    if (!limits.allowed) {
+      return NextResponse.json(
+        {
+          error: limits.reason,
+          remainingToday: limits.remainingToday,
+          remainingThisMonth: limits.remainingThisMonth,
           upgrade: true,
-          plan: sub.plan,
-          limit: sub.videos_limit,
-        }, { status: 403 });
-      }
-      plan = sub?.plan || "free";
+        },
+        { status: 429 }
+      );
     }
+
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("plan")
+      .eq("user_id", userId)
+      .single();
+    plan = sub?.plan || "free";
 
     const showWatermark = plan === "free";
     console.log("💧 Watermark:", showWatermark, "— Plan:", plan);
@@ -69,6 +72,11 @@ export async function POST(req: NextRequest) {
     });
 
     const data = await res.json();
+    if (!res.ok) {
+      return NextResponse.json(data, { status: res.status });
+    }
+
+    await incrementVideoCount(userId);
     return NextResponse.json(data);
   } catch (err: any) {
     console.error("Render error:", err.message);

@@ -289,6 +289,57 @@ export default function DashboardPage() {
 
       <DashboardShell {...state} onStartTour={startTour} />
 
+      {state.credits && state.screen === "input" && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 16,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 50,
+            display: "flex",
+            gap: 12,
+            fontSize: 12,
+            color: "rgba(255,255,255,0.3)",
+            background: "rgba(23,19,17,0.88)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 999,
+            padding: "8px 16px",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                color:
+                  (state.credits.remainingToday ?? 0) > 2
+                    ? "rgba(255,255,255,0.5)"
+                    : "#f59e0b",
+                fontWeight: 600,
+              }}
+            >
+              {state.credits.remainingToday ?? 0}
+            </span>
+            /{state.credits.dailyLimit ?? 0} aujourd&apos;hui
+          </span>
+          <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+          <span>
+            <span
+              style={{
+                color:
+                  (state.credits.remainingThisMonth ?? 0) > 5
+                    ? "rgba(255,255,255,0.5)"
+                    : "#f59e0b",
+                fontWeight: 600,
+              }}
+            >
+              {state.credits.remainingThisMonth ?? state.credits.videos_remaining}
+            </span>
+            /{state.credits.monthlyLimit ?? state.credits.videos_limit} ce mois
+          </span>
+        </div>
+      )}
+
       {showTour && currentTourStep && (
         <TourTooltip
           key={`${currentTourStep.id}-${tourStep}`}

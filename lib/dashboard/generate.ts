@@ -20,10 +20,15 @@ type GenerationCallbacks = {
 
 function handleRenderError(
   res: Response,
-  data: { error?: string; upgrade?: boolean },
+  data: {
+    error?: string;
+    upgrade?: boolean;
+    remainingToday?: number;
+    remainingThisMonth?: number;
+  },
   cb: GenerationCallbacks
 ): boolean {
-  if (res.status === 403 && data.upgrade) {
+  if ((res.status === 403 || res.status === 429) && (data.upgrade || res.status === 429)) {
     cb.onUpgradeRequired?.(data.error || "Limite atteinte");
     cb.setScreen("input");
     return true;

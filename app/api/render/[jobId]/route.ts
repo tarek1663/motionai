@@ -68,11 +68,7 @@ export async function GET(
             .eq("user_id", userId)
             .single();
 
-          if (currentSub) {
-            await supabase.from("subscriptions")
-              .update({ videos_used: (currentSub.videos_used || 0) + 1 })
-              .eq("user_id", userId);
-          }
+          // videos_used est incrémenté au lancement du rendu (POST /api/render)
         }
       } catch (saveErr: any) {
         console.error("Save error:", saveErr.message);

@@ -198,6 +198,46 @@ export function DashboardSidebar({
               <div className="dash-credits-meta">
                 {credits.videos_used}/{credits.videos_limit} vidéos · {credits.videos_remaining} restantes
               </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  marginTop: 8,
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.3)",
+                  flexWrap: "wrap",
+                }}
+              >
+                <span>
+                  <span
+                    style={{
+                      color:
+                        (credits.remainingToday ?? 0) > 2
+                          ? "rgba(255,255,255,0.5)"
+                          : "#f59e0b",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {credits.remainingToday ?? 0}
+                  </span>
+                  /{credits.dailyLimit ?? 0} aujourd&apos;hui
+                </span>
+                <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                <span>
+                  <span
+                    style={{
+                      color:
+                        (credits.remainingThisMonth ?? 0) > 5
+                          ? "rgba(255,255,255,0.5)"
+                          : "#f59e0b",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {credits.remainingThisMonth ?? credits.videos_remaining}
+                  </span>
+                  /{credits.monthlyLimit ?? credits.videos_limit} ce mois
+                </span>
+              </div>
             </div>
           </>
         )}

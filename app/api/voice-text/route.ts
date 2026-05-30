@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { checkGenerationLimits } from "@/lib/check-limits";
 import { generateVoiceText } from "@/lib/claude";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -9,6 +11,23 @@ export async function POST(req: NextRequest) {
   console.log("🔑 Key exists:", !!process.env.ANTHROPIC_API_KEY);
   console.log("🔑 Key prefix:", process.env.ANTHROPIC_API_KEY?.slice(0, 15));
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    const limits = await checkGenerationLimits(userId);
+    if (!limits.allowed) {
+      return NextResponse.json(
+        {
+          error: limits.reason,
+          remainingToday: limits.remainingToday,
+          remainingThisMonth: limits.remainingThisMonth,
+        },
+        { status: 429 }
+      );
+    }
+
     const { prompt, duration, mode, customScript } = await req.json();
 
     if (mode === "script" && customScript?.trim()) {

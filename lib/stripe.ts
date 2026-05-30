@@ -9,22 +9,24 @@ export const getStripe = () => {
   });
 };
 
+import { PLANS as APP_PLANS } from "@/lib/plans";
+
 export const PLANS = {
   free: {
     name: "Gratuit",
     price_monthly: 0,
     price_yearly: 0,
-    videos_limit: 3,
-    duration_limit: 30,
-    watermark: true,
+    videos_limit: APP_PLANS.free.monthlyVideos,
+    duration_limit: APP_PLANS.free.maxDuration,
+    watermark: APP_PLANS.free.watermark,
   },
   starter: {
     name: "Starter",
     price_monthly: 23,
     price_yearly: 13,
-    videos_limit: 60,
-    duration_limit: 120,
-    watermark: false,
+    videos_limit: APP_PLANS.starter.monthlyVideos,
+    duration_limit: APP_PLANS.starter.maxDuration,
+    watermark: APP_PLANS.starter.watermark,
     stripe_monthly: process.env.STRIPE_STARTER_MONTHLY!,
     stripe_yearly: process.env.STRIPE_STARTER_YEARLY!,
   },
@@ -32,9 +34,9 @@ export const PLANS = {
     name: "Pro",
     price_monthly: 45,
     price_yearly: 35,
-    videos_limit: 150,
-    duration_limit: 120,
-    watermark: false,
+    videos_limit: APP_PLANS.pro.monthlyVideos,
+    duration_limit: APP_PLANS.pro.maxDuration,
+    watermark: APP_PLANS.pro.watermark,
     stripe_monthly: process.env.STRIPE_PRO_MONTHLY!,
     stripe_yearly: process.env.STRIPE_PRO_YEARLY!,
   },
@@ -42,9 +44,9 @@ export const PLANS = {
     name: "Business",
     price_monthly: 120,
     price_yearly: 99,
-    videos_limit: 999999,
-    duration_limit: 120,
-    watermark: false,
+    videos_limit: APP_PLANS.business.monthlyVideos,
+    duration_limit: APP_PLANS.business.maxDuration,
+    watermark: APP_PLANS.business.watermark,
     stripe_monthly: process.env.STRIPE_BUSINESS_MONTHLY!,
     stripe_yearly: process.env.STRIPE_BUSINESS_YEARLY!,
   },

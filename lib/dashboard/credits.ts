@@ -6,6 +6,13 @@ export type CreditsInfo = {
   videos_used: number;
   videos_limit: number;
   videos_remaining: number;
+  videosToday?: number;
+  videosThisMonth?: number;
+  monthlyLimit?: number;
+  dailyLimit?: number;
+  canGenerate?: boolean;
+  remainingToday?: number;
+  remainingThisMonth?: number;
   reset_date?: string;
   period_end?: string;
   has_active_subscription?: boolean;
@@ -30,13 +37,26 @@ export async function checkCreditsBeforeGenerate(
 ): Promise<boolean> {
   const data = await fetchCredits();
   if (!data) return true;
-  if (data.plan !== "business" && data.videos_remaining <= 0) {
-    setError(
-      "Tu as atteint ta limite de vidéos ce mois-ci. Upgrade ton plan pour continuer."
-    );
+
+  if (data.canGenerate === false) {
+    if ((data.remainingToday ?? 1) <= 0) {
+      setError(
+        `Limite journaliere atteinte (${data.dailyLimit ?? 0} videos/jour). Reviens demain ou upgrade ton plan.`
+      );
+    } else {
+      setError(
+        `Limite mensuelle atteinte (${data.monthlyLimit ?? 0} videos/mois). Upgrade ton plan pour continuer.`
+      );
+    }
     setScreen("input");
     return false;
   }
+
+  if (data.plan !== "business" && (data.videos_remaining ?? 0) <= 0) {
+    setError("Tu as atteint ta limite de videos ce mois-ci. Upgrade ton plan pour continuer.");
+    setScreen("input");
+    return false;
+  }
+
   return true;
 }
-

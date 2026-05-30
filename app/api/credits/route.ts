@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { PLANS, type PlanId } from "@/lib/plans";
 import { supabase } from "@/lib/supabase";
 
 export async function GET() {
@@ -14,14 +15,17 @@ export async function GET() {
       .single();
 
     if (!sub) {
+      const resetDate = new Date();
+      resetDate.setMonth(resetDate.getMonth() + 1);
       const { data: newSub } = await supabase
         .from("subscriptions")
         .insert({
           user_id: userId,
           plan: "free",
           videos_used: 0,
-          videos_limit: 3,
-          reset_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+          videos_limit: PLANS.free.monthlyVideos,
+          videos_today: 0,
+          reset_date: resetDate.toISOString(),
         })
         .select()
         .single();
@@ -29,15 +33,32 @@ export async function GET() {
     }
 
     if (sub?.reset_date && new Date(sub.reset_date) < new Date()) {
+      const nextReset = new Date();
+      nextReset.setMonth(nextReset.getMonth() + 1);
       await supabase
         .from("subscriptions")
         .update({
           videos_used: 0,
-          reset_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+          reset_date: nextReset.toISOString(),
         })
         .eq("user_id", userId);
       if (sub) sub.videos_used = 0;
     }
+
+    const plan = (sub?.plan || "free") as PlanId;
+    const planConfig = PLANS[plan] ?? PLANS.free;
+
+    const today = new Date().toISOString().split("T")[0];
+    const lastVideoDate = sub?.last_video_date?.split("T")[0];
+    const videosToday = lastVideoDate === today ? sub?.videos_today || 0 : 0;
+    const videosThisMonth = sub?.videos_used || 0;
+
+    const monthlyLimit = planConfig.monthlyVideos;
+    const dailyLimit = planConfig.dailyVideos;
+    const remainingToday = Math.max(0, dailyLimit - videosToday);
+    const remainingThisMonth = Math.max(0, monthlyLimit - videosThisMonth);
+    const canGenerate =
+      videosToday < dailyLimit && videosThisMonth < monthlyLimit;
 
     const planNames: Record<string, string> = {
       free: "Gratuit",
@@ -51,18 +72,25 @@ export async function GET() {
     const trialDaysLeft = periodEnd
       ? Math.max(0, Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
       : null;
-    const plan = sub?.plan || "free";
     const isTrial = trialDaysLeft !== null && trialDaysLeft <= 4 && plan !== "free";
-    const planOrder = ["free", "starter", "pro", "business"];
     const hasActiveSubscription = plan !== "free";
 
     return NextResponse.json({
-      plan: plan,
-      planName: planNames[plan],
-      planOrder: planOrder.indexOf(plan),
-      videos_used: sub?.videos_used || 0,
-      videos_limit: sub?.videos_limit || 3,
-      videos_remaining: Math.max(0, (sub?.videos_limit || 3) - (sub?.videos_used || 0)),
+      plan,
+      planName: planNames[plan] || planConfig.name,
+      planConfig,
+      planOrder: ["free", "starter", "pro", "business"].indexOf(plan),
+      tokensBalance: 0,
+      videosThisMonth,
+      videosToday,
+      monthlyLimit,
+      dailyLimit,
+      canGenerate,
+      remainingToday,
+      remainingThisMonth,
+      videos_used: videosThisMonth,
+      videos_limit: monthlyLimit,
+      videos_remaining: remainingThisMonth,
       reset_date: sub?.reset_date,
       period_end: sub?.period_end,
       trialDaysLeft,
