@@ -3,63 +3,70 @@ import { MotionVideo, MotionVideoProps } from "./MotionVideo";
 
 const fps = 60;
 
-const getDimensions = (fmt: string) => {
-  if (fmt === "16:9") return { width: 1920, height: 1080 };
-  if (fmt === "1:1")  return { width: 1080, height: 1080 };
-  return { width: 1080, height: 1920 };
-};
+const testScenes = [
+  { type: "singleword", text: "Nike.", bg: "#000000", accentColor: "#ffffff", geo: "dots", durationFrames: 60 },
+  { type: "beatdrop", bg: "#ff0000", accentColor: "#ff0000", durationFrames: 20 },
+  { type: "zoombrute", text: "Puissant.", bg: "#ffffff", accentColor: "#000000", geo: "grid", durationFrames: 80 },
+  { type: "strobe", text: "Impact.", bg: "#000000", accentColor: "#ffffff", geo: "circles", durationFrames: 70 },
+  { type: "explode", text: "Boom.", bg: "#ffffff", accentColor: "#000000", durationFrames: 80 },
+  { type: "parallax", text: "Profond.", bg: "#000000", accentColor: "#ffffff", geo: "diagonal", durationFrames: 100 },
+  { type: "shake", text: "Choc.", bg: "#ffffff", accentColor: "#000000", geo: "cross", durationFrames: 80 },
+  { type: "droptext", text: "Chute.", bg: "#000000", accentColor: "#ffffff", geo: "dots", durationFrames: 90 },
+  { type: "repeatcut", text: "Encore.", bg: "#ffffff", accentColor: "#000000", durationFrames: 90 },
+  { type: "singleword", text: "Vite.", bg: "#000000", accentColor: "#ffffff", geo: "grid", durationFrames: 50 },
+  { type: "singleword", text: "Plus.", bg: "#ffffff", accentColor: "#000000", geo: "dots", durationFrames: 40 },
+  { type: "singleword", text: "Encore.", bg: "#000000", accentColor: "#ffffff", geo: "circles", durationFrames: 30 },
+] as MotionVideoProps["scenes"];
 
-// Démo — aperçu batch 3 dans Remotion Studio
-const demoScenes = [
-  { type: "logoreveal", text: "MotionAI", text2: "✦", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "brandintro", text: "MOTION AI", text2: "EST. 2024", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "geometric", text: "Innovation.", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "liquid", text: "Plein à ras bord.", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "heartbeat", text: "En pleine forme.", bg: "#0a0a0a", accentColor: "#ff375f" },
-  { type: "audiowaveform", text: "Son premium.", text2: "ElevenLabs", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "vinyl", text: "Midnight Dreams.", text2: "MotionAI Records", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "scoreboard", text: "Mi-temps", text2: "Finale 2024", counterTo: 3, bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "infographic", text: "98%:Satisfaction|2min:Génération|1080p:Qualité|72:Scènes", text2: "MotionAI en chiffres", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "pullquote", text: "La meilleure app de motion design que j'ai jamais utilisée.", text2: "— Marie L., Créatrice", bg: "#ffffff", accentColor: "#7C3AED" },
-  { type: "magazinecover", text: "L'IA qui crée.", text2: "MOTION", bg: "#0a0a0a", accentColor: "#7C3AED" },
-  { type: "cta", text: "Essaie maintenant.", text2: "Gratuit →", bg: "#7C3AED", accentColor: "#ffffff" },
-] as any[];
+const testSceneDurations = [
+  { startFrame: 0, durationFrames: 60 },
+  { startFrame: 60, durationFrames: 20 },
+  { startFrame: 80, durationFrames: 80 },
+  { startFrame: 160, durationFrames: 70 },
+  { startFrame: 230, durationFrames: 80 },
+  { startFrame: 310, durationFrames: 100 },
+  { startFrame: 410, durationFrames: 80 },
+  { startFrame: 490, durationFrames: 90 },
+  { startFrame: 580, durationFrames: 90 },
+  { startFrame: 670, durationFrames: 50 },
+  { startFrame: 720, durationFrames: 40 },
+  { startFrame: 760, durationFrames: 30 },
+];
 
-const demoTotal = 30 * fps; // 1800 frames
-const demoDurations = demoScenes.map(() => Math.round(demoTotal / demoScenes.length));
+const testTotalFrames = 790;
 
 const RemotionRoot = () => (
   <Composition
     id="MotionVideo"
     component={MotionVideo}
-    durationInFrames={7200}
+    durationInFrames={testTotalFrames}
     fps={fps}
     width={1080}
     height={1920}
     defaultProps={{
       audioSrc: null,
-      scenes: demoScenes,
-      sceneDurations: demoDurations,
-      totalFrames: demoTotal,
+      musicSrc: null,
+      scenes: testScenes,
+      sceneDurations: testSceneDurations,
+      totalFrames: testTotalFrames,
       musicVolume: 0.12,
     } as MotionVideoProps}
     calculateMetadata={async ({ props }) => {
       const p = props as MotionVideoProps;
       const sceneDurationsAdjusted = (p.sceneDurations || []).map((d) => {
-        if (typeof d === "number") return Math.max(120, d);
+        if (typeof d === "number") return Math.max(40, d);
         return {
           ...d,
-          durationFrames: Math.max(120, d.durationFrames || 120),
+          durationFrames: Math.max(40, d.durationFrames || 40),
         };
       });
 
-      const total = Number.isFinite(p.totalFrames) && p.totalFrames > 0
-        ? p.totalFrames
-        : 1800;
+      const total =
+        Number.isFinite(p.totalFrames) && p.totalFrames > 0
+          ? p.totalFrames
+          : testTotalFrames;
 
-      console.log("📐 calculateMetadata totalFrames:", total, "=", total / 60, "seconds");
-
-      const fmt = (p as any).format || "9:16";
+      const fmt = (p as { format?: string }).format || "9:16";
       const w = fmt === "16:9" ? 1920 : 1080;
       const h = fmt === "16:9" ? 1080 : fmt === "1:1" ? 1080 : 1920;
 
@@ -70,7 +77,9 @@ const RemotionRoot = () => (
         height: h,
         props: {
           ...p,
-          sceneDurations: sceneDurationsAdjusted.length ? sceneDurationsAdjusted : p.sceneDurations,
+          sceneDurations: sceneDurationsAdjusted.length
+            ? sceneDurationsAdjusted
+            : p.sceneDurations,
         },
       };
     }}
