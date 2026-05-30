@@ -56,18 +56,44 @@ RÈGLES ABSOLUES :
    - JAMAIS couper un groupe nominal ou une expression
    - Les mots courts seuls sont OK : "Simple." "Puissant." "Gratuit."
 6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
-7. DURÉES PAR TYPE DE SCÈNE — courtes et rythmées :
-   - Mot court (singleword, zoomword, scalein...) → durationFrames: 60
-   - Phrase courte (maskreveal, slideword...) → durationFrames: 80
-   - Phrase longue (staggerwords, fadeupl...) → durationFrames: 90
-   - Stats/chiffres (counter, multistats...) → durationFrames: 120
-   - Mockup/complexe (iphone, dashboard...) → durationFrames: 150
-   - Transition (iris, curtain...) → durationFrames: 50
-   - JAMAIS plus de 150 frames par scène
+7. RÈGLES DE DURÉE — STYLE APPLE/NIKE :
+   - Mots courts et forts (1-2 mots) → 50-60 frames MAX — rapide et impactant
+   - Phrases moyennes (3-4 mots) → 70-90 frames
+   - Phrases longues (5-6 mots) → 90-110 frames
+   - Stats et chiffres → 120-150 frames — laisse le temps de lire
+   - Mockups et UI → 150-180 frames
+   - Transitions → 40-50 frames — très rapides
+   RÈGLE ÉNERGIE :
+   - Commence fort — les 3 premières scènes très courtes (50-60 frames)
+   - Monte en intensité vers le milieu
+   - Pic d'énergie à 60% de la vidéo — scène la plus impactante
+   - Descend doucement vers le CTA final
+   - Alterne TOUJOURS : scène courte → scène longue → scène courte
+   - JAMAIS 3 scènes de même durée consécutives
 8. accentColor = ${accent} sur TOUTES les scènes
 9. UTILISE TOUT LE CATALOGUE — minimum 10 types différents
 10. photoreveal/photocollage : ajoute photoQuery en anglais descriptif
 11. websiteUrl obligatoire sur iphone/macbook/browser (ex: "spotify.com")
+
+RÈGLE TRANSITIONS OBLIGATOIRES :
+- Insère une transition toutes les 4-5 scènes
+- Après un bloc de stats → transition obligatoire
+- Avant le CTA final → transition obligatoire
+- Choisis des transitions rapides et énergiques : iris, glitchswitch, pixeldissolve, diagonalwipe
+- JAMAIS deux transitions identiques dans la même vidéo
+
+RÈGLE ALTERNANCE VISUELLE :
+- Scène SIMPLE : 1 mot, fond uni, pas de geo → crée du contraste
+- Scène COMPLEXE : mockup, checklist, stats, photo → crée de l'info
+- Toujours alterner : simple → complexe → simple → complexe
+- Après chaque scène complexe → scène simple de respiration (1 mot, 50 frames)
+- Exemple :
+  1. "Nike." — simple — 50f
+  2. checklist features — complexe — 150f
+  3. "Puissant." — simple — 50f
+  4. counter 50M users — complexe — 120f
+  5. iris transition — 40f
+  6. "Just Do It." — simple — 60f
 
 RÈGLE DIVERSITÉ VISUELLE OBLIGATOIRE :
 Par vidéo tu DOIS inclure au minimum :
@@ -96,7 +122,7 @@ FORMAT JSON STRICT :
       "bg": "#000000",
       "accentColor": "${accent}",
       "geo": "dots",
-      "durationFrames": 60
+      "durationFrames": 55
     }
   ]
 }
