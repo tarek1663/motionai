@@ -341,7 +341,7 @@ const SceneGeoBackground: React.FC<{
 const getUIProgressStepLabels = (scene: SceneData): string[] => {
   const raw = scene.steps;
   if (!Array.isArray(raw) || raw.length === 0) {
-    return ["Étape 1", "Étape 2", "Étape 3"];
+    return [];
   }
   if (typeof raw[0] === "string") {
     return raw;
@@ -545,6 +545,7 @@ const GEO_MAP: Record<string, React.FC<{ bg: string }>> = {
 // ═══════════════════════════════════════════════════════
 
 const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
+  const activeGeo = geo && geo !== "none" ? geo : "dots";
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const isShortScene = durationInFrames < 70;
@@ -579,11 +580,7 @@ const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
     transformOrigin: "center center",
   };
 
-  if (!geo || geo === "none") {
-    return <div style={base} />;
-  }
-
-  if (geo === "circles") {
+  if (activeGeo === "circles") {
     return (
       <div style={base}>
         {[120, 240, 360, 480, 620, 760].map((radius, i) => (
@@ -605,7 +602,7 @@ const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
     );
   }
 
-  if (geo === "perspective") {
+  if (activeGeo === "perspective") {
     return (
       <div style={{ ...base, overflow: "hidden" }}>
         <div
@@ -689,7 +686,7 @@ const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
     },
   };
 
-  return <div style={patterns[geo] || base} />;
+  return <div style={patterns[activeGeo] || patterns.dots} />;
 };
 
 // ─── SINGLEWORD ───────────────────────────────────────
@@ -1795,11 +1792,8 @@ export const MultiStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const motion = useContinuousMotion();
   const bg = scene.bg || "#ffffff";
 
-  const stats = scene.stats || [
-    { value: 10000, label: "utilisateurs", suffix: "+" },
-    { value: 72, label: "animations", suffix: "" },
-    { value: 98, label: "satisfaction", suffix: "%" },
-  ];
+  const stats = scene.stats || [];
+  if (stats.length === 0) return null;
 
   const { opacity: fadeOut } = useAppleTiming();
 
@@ -3174,9 +3168,10 @@ export const NotificationScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
     { extrapolateRight: "clamp", easing: E_IN },
   );
   const fontSize = autoFontSize(scene.text || "", 80, 40);
-  const notifTitle = scene.notifTitle || "Motionr";
-  const notifText = scene.notifText || "Notification";
-  const notifIcon = scene.notifIcon || "🎬";
+  const notifTitle = scene.notifTitle || "";
+  const notifText = scene.notifText || scene.text || "";
+  const notifIcon = scene.notifIcon || "";
+  if (!notifTitle && !notifText) return null;
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -3429,6 +3424,7 @@ export const UIProgressScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const cardY = interpolate(cardEnter, [0, 1], [40, 0]);
   const cardScale = interpolate(cardEnter, [0, 1], [0.94, 1]);
   const steps = getUIProgressStepLabels(scene);
+  if (steps.length === 0 && !scene.text?.trim()) return null;
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -3470,7 +3466,7 @@ export const UIProgressScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 color: isLight(bg) ? "#000000" : "#ffffff",
               }}
             >
-              {scene.text || "Génération vidéo"}
+              {scene.text || ""}
             </div>
             <div
               style={{
@@ -3713,11 +3709,7 @@ export const TimelineScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const steps = (() => {
     const raw = scene.steps;
     if (!Array.isArray(raw) || raw.length === 0) {
-      return [
-        { number: "01", label: "Découverte" },
-        { number: "02", label: "Création" },
-        { number: "03", label: "Livraison" },
-      ];
+      return [];
     }
     if (typeof raw[0] === "string") {
       return raw.map((label, i) => ({
@@ -3727,6 +3719,7 @@ export const TimelineScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     }
     return raw;
   })();
+  if (steps.length === 0) return null;
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -3876,9 +3869,8 @@ export const ChecklistScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const bg = scene.bg || "#ffffff";
   const accent = scene.accentColor || (isLight(bg) ? "#000000" : "#34c759");
   const opacity = sceneOpacity(frame, durationInFrames);
-  const items = scene.items?.length
-    ? scene.items
-    : ["Script validé", "Voix off", "Export 4K"];
+  const items = scene.items || [];
+  if (items.length === 0) return null;
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
@@ -5323,7 +5315,7 @@ export const MacBookScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 color: "#555", marginLeft: 8, textAlign: "center",
                 fontFamily: FONT,
               }}>
-                {scene.websiteUrl || scene.url || "motionr.app"}
+                {scene.websiteUrl || scene.url || ""}
               </div>
             </div>
             {/* Contenu écran */}
@@ -5522,7 +5514,7 @@ export const BrowserScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 fontSize: 10, color: isLight(bg) ? "#999" : "#555",
                 fontFamily: FONT, zIndex: 1,
               }}>
-                {scene.websiteUrl || scene.url || "motionr.app"}
+                {scene.websiteUrl || scene.url || ""}
               </span>
             </div>
           </div>
@@ -5559,7 +5551,11 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const enter = spring({ frame, fps, config: { damping: 260, stiffness: 70, mass: 1 }, from: 0, to: 1 });
   const { opacity: fadeOut } = useAppleTiming();
 
-  const bars = [65, 82, 45, 90, 71, 55, 88];
+  const stats = scene.stats || [];
+  const bars = stats.slice(0, 7).map((s) =>
+    Math.min(100, Math.max(8, Math.round((s.value % 1000) / 10 || 50))),
+  );
+  if (stats.length === 0 && !scene.dashTitle && !scene.text?.trim()) return null;
   const fontSize = autoFontSize(scene.text || "", 60, 32);
 
   return (
@@ -5591,18 +5587,11 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               color: isLight(bg) ? "#000" : "#fff",
               letterSpacing: "-0.02em",
             }}>
-              {scene.dashTitle || "Analytics"}
-            </div>
-            <div style={{
-              fontSize: 11, fontWeight: 600, fontFamily: FONT,
-              color: accent, padding: "3px 8px",
-              background: accent + "18", borderRadius: 100,
-            }}>
-              +24%
+              {scene.dashTitle || scene.text || ""}
             </div>
           </div>
 
-          {/* Barres */}
+          {bars.length > 0 && (
           <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 80 }}>
             {bars.map((h, i) => {
               const barH = interpolate(
@@ -5620,21 +5609,19 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               );
             })}
           </div>
+          )}
 
-          {/* Stats row */}
+          {stats.length > 0 && (
           <div style={{
             display: "flex", gap: 12, marginTop: 16,
           }}>
-            {[
-              { label: "Vues", value: "24.5K" },
-              { label: "Clics", value: "8.2K" },
-              { label: "Conv.", value: "12%" },
-            ].map((s, i) => {
+            {stats.slice(0, 3).map((s, i) => {
               const statEnter = interpolate(
                 Math.max(0, frame - 24 - i * 8),
                 [0, 18], [0, 1],
                 { extrapolateRight: "clamp", easing: E_OUT }
               );
+              const displayValue = `${s.prefix || ""}${s.value.toLocaleString("fr-FR")}${s.suffix || ""}`;
               return (
                 <div key={i} style={{
                   flex: 1, padding: "8px",
@@ -5645,7 +5632,7 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                     fontSize: 16, fontWeight: 700, fontFamily: FONT,
                     color: i === 0 ? accent : isLight(bg) ? "#000" : "#fff",
                     letterSpacing: "-0.03em",
-                  }}>{s.value}</div>
+                  }}>{displayValue}</div>
                   <div style={{
                     fontSize: 10, fontFamily: FONT,
                     color: isLight(bg) ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.4)",
@@ -5654,9 +5641,10 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               );
             })}
           </div>
+          )}
         </div>
 
-        {scene.text && (
+        {scene.text && scene.text !== scene.dashTitle && (
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
@@ -5679,11 +5667,8 @@ export const ChatScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const bg = scene.bg || "#ffffff";
   const accent = safeAccent(scene.accentColor, bg);
 
-  const messages = scene.messages || [
-    { text: "Comment ça marche ?", isUser: false },
-    { text: "Décris ton idée.", isUser: true },
-    { text: "Vidéo générée en 2 min.", isUser: true },
-  ];
+  const messages = scene.messages || [];
+  if (messages.length === 0) return null;
 
   const { opacity: fadeOut } = useAppleTiming();
 
@@ -6014,12 +5999,8 @@ export const HorizontalTimelineScene: React.FC<{ scene: SceneData }> = ({ scene 
   const bg = scene.bg || "#ffffff";
   const accent = safeAccent(scene.accentColor, bg);
 
-  const events = scene.events || [
-    { year: "2022", label: "Lancement" },
-    { year: "2023", label: "10K users" },
-    { year: "2024", label: "Series A" },
-    { year: "2025", label: "1M vidéos" },
-  ];
+  const events = scene.events || [];
+  if (events.length === 0) return null;
 
   const lineW = interpolate(frame, [4, 40], [0, 100], {
     extrapolateRight: "clamp", easing: E_OUT,

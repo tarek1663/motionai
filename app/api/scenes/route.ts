@@ -69,6 +69,13 @@ RÈGLES ABSOLUES :
 2. JAMAIS deux types identiques consécutifs
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
+
+RÈGLE GEO ABSOLUE — SANS EXCEPTION :
+- TOUTES les scènes DOIVENT avoir un champ "geo"
+- Si tu oublies geo sur une scène → la vidéo sera rejetée
+- Rotation obligatoire : dots → grid → circles → diagonal → cross → lines → perspective → radial → dots...
+- JAMAIS deux geo identiques consécutifs
+- geo s'applique sur TOUS les types de scènes sans exception
 5. RÈGLE TEXTE PAR SCÈNE :
    - Garde les groupes de mots naturels ensemble — ne jamais couper une expression
    - 2 à 6 mots par scène selon le rythme
