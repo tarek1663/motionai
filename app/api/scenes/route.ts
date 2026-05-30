@@ -102,6 +102,14 @@ RÈGLES ABSOLUES :
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
 
+RÈGLE CONTRASTE ABSOLUE :
+- JAMAIS accentColor similaire au bg
+- Sur bg vert (#10B981) → texte BLANC (#ffffff) ou NOIR (#000000) uniquement
+- Sur bg:#10B981 → accentColor: "#ffffff" pas "#0a7c54"
+- Sur bg accent → le texte DOIT être blanc ou noir
+- Règle : si bg est une couleur vive → texte blanc ou noir OBLIGATOIRE
+- JAMAIS de texte coloré sur fond de même couleur
+
 RÈGLE GEO ABSOLUE — SANS EXCEPTION :
 - TOUTES les scènes DOIVENT avoir un champ "geo"
 - Si tu oublies geo sur une scène → la vidéo sera rejetée

@@ -163,67 +163,35 @@ export type SceneData = {
 // ---------------------------------------------------------
 // HELPERS
 // ---------------------------------------------------------
-const isLight = (hex: string): boolean => {
+const getLuminance = (hex: string): number => {
   try {
     const h = hex.replace("#", "");
-    if (h.length < 6) return true;
-    const r = parseInt(h.slice(0, 2), 16);
-    const g = parseInt(h.slice(2, 4), 16);
-    const b = parseInt(h.slice(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.5;
+    if (h.length < 6) return 0;
+    const r = parseInt(h.slice(0, 2), 16) / 255;
+    const g = parseInt(h.slice(2, 4), 16) / 255;
+    const b = parseInt(h.slice(4, 6), 16) / 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b;
   } catch {
-    return true;
+    return 0;
   }
 };
 
-const textColor = (bg: string): string => {
-  try {
-    const h = bg.replace("#", "");
-    if (h.length < 6) return "#ffffff";
-    const r = parseInt(h.slice(0, 2), 16);
-    const g = parseInt(h.slice(2, 4), 16);
-    const b = parseInt(h.slice(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.5 ? "#000000" : "#ffffff";
-  } catch {
-    return "#ffffff";
-  }
+const textColor = (bg: string): string =>
+  getLuminance(bg) > 0.5 ? "#000000" : "#ffffff";
+
+const isLight = (bg: string): boolean => getLuminance(bg) > 0.5;
+
+const safeAccent = (accent: string | undefined, bg: string): string => {
+  if (!accent) return textColor(bg);
+  const accentLum = getLuminance(accent);
+  const bgLum = getLuminance(bg);
+  const diff = Math.abs(accentLum - bgLum);
+  if (diff < 0.3) return textColor(bg);
+  return accent;
 };
-
-const safeTextColor = (textCol: string, bg: string): string => {
-  try {
-    const bgH = bg.replace("#", "");
-    const tH = textCol.replace("#", "");
-
-    if (bgH.length < 6 || tH.length < 6) return textColor(bg);
-
-    const bgR = parseInt(bgH.slice(0, 2), 16);
-    const bgG = parseInt(bgH.slice(2, 4), 16);
-    const bgB = parseInt(bgH.slice(4, 6), 16);
-
-    const tR = parseInt(tH.slice(0, 2), 16);
-    const tG = parseInt(tH.slice(2, 4), 16);
-    const tB = parseInt(tH.slice(4, 6), 16);
-
-    const diff = Math.abs(bgR - tR) + Math.abs(bgG - tG) + Math.abs(bgB - tB);
-
-    if (diff < 100) {
-      return textColor(bg);
-    }
-    return textCol;
-  } catch {
-    return textColor(bg);
-  }
-};
-
-const safeAccent = (accentColor: string | undefined, bg: string): string =>
-  accentColor || (isLight(bg) ? "#000000" : "#ffffff");
 
 const mainTextColor = (scene: SceneData, bg: string): string =>
-  scene.textAccent
-    ? safeTextColor(safeAccent(scene.accentColor, bg), bg)
-    : textColor(bg);
+  scene.textAccent ? safeAccent(scene.accentColor, bg) : textColor(bg);
 
 export const getPhotoDisplayText = (scene: SceneData): string =>
   scene.text || scene.photoQuery?.split(" ").slice(0, 3).join(" ") || "";
@@ -1870,7 +1838,7 @@ export const ProgressBarScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             fontFamily: FONT,
             letterSpacing: "-0.05em",
             lineHeight: 1,
-            color: safeTextColor(accent, bg),
+            color: safeAccent(accent, bg),
             fontVariantNumeric: "tabular-nums",
           }}
         >
@@ -3569,7 +3537,7 @@ export const UIProgressScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 fontSize: 16,
                 fontWeight: 700,
                 fontFamily: FONT,
-                color: safeTextColor(accent, bg),
+                color: safeAccent(accent, bg),
               }}
             >
               {Math.round(barProgress)}%
@@ -3780,7 +3748,7 @@ export const QuoteScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                   fontSize: 18,
                   fontWeight: 600,
                   fontFamily: FONT,
-                  color: safeTextColor(accent, bg),
+                  color: safeAccent(accent, bg),
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
                 }}
@@ -3862,7 +3830,7 @@ export const TimelineScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                     fontSize: 16,
                     fontWeight: 700,
                     fontFamily: FONT,
-                    color: safeTextColor(accent, bg),
+                    color: safeAccent(accent, bg),
                     flexShrink: 0,
                   }}
                 >
@@ -3926,7 +3894,7 @@ export const SocialStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           opacity,
         }}
       >
-        <div style={{ color: safeTextColor(accent, bg), marginBottom: 8 }}>
+        <div style={{ color: safeAccent(accent, bg), marginBottom: 8 }}>
           <PlatformIcon platform={platform} size={40} />
         </div>
         <div
@@ -4487,7 +4455,7 @@ export const GradientTextScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             <div style={{
               fontSize, fontWeight: 800, fontFamily: FONT,
               letterSpacing: "-0.04em", lineHeight: 1,
-              color: safeTextColor(accent, bg),
+              color: safeAccent(accent, bg),
               whiteSpace: "nowrap",
               transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])})`,
             }}>
@@ -4798,7 +4766,7 @@ export const TwoLinesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               fontFamily: FONT,
               letterSpacing: "0.08em",
               lineHeight: 1,
-              color: safeTextColor(accent, bg),
+              color: safeAccent(accent, bg),
               whiteSpace: "nowrap",
               textTransform: "uppercase",
               textAlign: "center",
@@ -5036,7 +5004,7 @@ const renderKnownUI = (siteName: string, accent: string, frame: number) => {
         <div style={{ background: "#1a1a1a", borderRadius: 10, padding: "8px" }}>
           <div style={{ fontSize: 8, fontFamily: FONT, color: "#888", marginBottom: 4 }}>EN ROUTE</div>
           <div style={{ fontSize: 14, fontWeight: 800, fontFamily: FONT, color: "#fff" }}>8 min</div>
-          <div style={{ fontSize: 8, fontFamily: FONT, color: safeTextColor(accent, "#000000") }}>● Votre chauffeur arrive</div>
+          <div style={{ fontSize: 8, fontFamily: FONT, color: safeAccent(accent, "#000000") }}>● Votre chauffeur arrive</div>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {["🚗", "🛵", "🚲"].map((icon, i) => (
