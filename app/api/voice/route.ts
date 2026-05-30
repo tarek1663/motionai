@@ -119,6 +119,11 @@ export async function POST(req: NextRequest) {
     if (!res.ok) return NextResponse.json(data, { status: 500 });
 
     const alignment = (data.alignment || {}) as AlignmentPayload;
+    console.log(
+      "🎙️ Raw alignment:",
+      JSON.stringify(data.alignment || {}).slice(0, 500),
+    );
+
     const phraseTimestamps =
       script && alignment.characters?.length
         ? buildPhraseTimestampsFromAlignment(script, alignment)
@@ -126,6 +131,7 @@ export async function POST(req: NextRequest) {
             (data.phraseTimestamps as PhraseTimestampPayload[]) || [],
           );
 
+    console.log("🎙️ phraseTimestamps generated:", phraseTimestamps);
     console.log(
       "🎙️ phraseTimestamps:",
       phraseTimestamps.map(
