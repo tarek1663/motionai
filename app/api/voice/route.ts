@@ -15,78 +15,99 @@ type PhraseTimestampPayload = {
   durationFrames?: number;
 };
 
+type PhraseTimestamp = {
+  phrase: string;
+  startFrame: number;
+  endFrame: number;
+  durationFrames: number;
+};
+
 const buildPhraseTimestampsFromAlignment = (
   script: string,
   alignment: AlignmentPayload,
   fps = 60,
-) => {
+): PhraseTimestamp[] => {
   const characters = alignment.characters || [];
   const charStartTimes = alignment.character_start_times_seconds || [];
   const charEndTimes = alignment.character_end_times_seconds || [];
-  const lines = script.split("\n").filter((l) => l.trim());
 
-  let charIndex = 0;
-  return lines
-    .map((line) => {
-      const cleanLine = line.trim();
-      if (!cleanLine) return null;
+  const fullText = characters.join("");
 
-      while (
-        charIndex < characters.length &&
-        typeof characters[charIndex] === "string" &&
-        /\s/.test(characters[charIndex])
-      ) {
-        charIndex += 1;
-      }
+  const lines = script
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
 
-      const lineChars = cleanLine.replace(/\s/g, "").length;
-      const startTime = charStartTimes[charIndex] || 0;
+  console.log("🎙️ Lines to sync:", lines);
+  console.log("🎙️ Total characters:", characters.length);
 
-      let endCharIdx = charIndex;
-      let charsFound = 0;
-      while (endCharIdx < characters.length && charsFound < lineChars) {
-        if (characters[endCharIdx] && characters[endCharIdx] !== " ") {
-          charsFound += 1;
-        }
-        endCharIdx += 1;
-      }
+  const phraseTimestamps: PhraseTimestamp[] = [];
+  let searchStart = 0;
 
-      const endTime =
-        charEndTimes[Math.max(0, endCharIdx - 1)] || startTime + 1.5;
-      charIndex = endCharIdx;
+  for (const line of lines) {
+    const cleanLine = line.replace(/[.,!?;:]/g, "").toLowerCase();
+    const cleanFull = fullText.replace(/[.,!?;:]/g, "").toLowerCase();
 
-      const startFrame = Math.round(startTime * fps);
-      const endFrame = Math.round(endTime * fps);
+    const pos = cleanFull.indexOf(
+      cleanLine.slice(0, Math.min(10, cleanLine.length)),
+      searchStart,
+    );
 
-      return {
-        phrase: cleanLine,
-        startFrame,
-        endFrame,
-        durationFrames: Math.max(60, endFrame - startFrame),
-      };
-    })
-    .filter(Boolean) as Array<{
-    phrase: string;
-    startFrame: number;
-    endFrame: number;
-    durationFrames: number;
-  }>;
+    if (pos === -1) {
+      const wordCount = line.split(" ").length;
+      const estimatedDuration = wordCount * 0.4;
+      const lastEnd =
+        phraseTimestamps.length > 0
+          ? phraseTimestamps[phraseTimestamps.length - 1].endFrame / fps
+          : 0;
+
+      phraseTimestamps.push({
+        phrase: line,
+        startFrame: Math.round(lastEnd * fps),
+        endFrame: Math.round((lastEnd + estimatedDuration) * fps),
+        durationFrames: Math.round(estimatedDuration * fps),
+      });
+      continue;
+    }
+
+    const startTime = charStartTimes[pos] || 0;
+    const endPos = Math.min(pos + cleanLine.length, charEndTimes.length - 1);
+    const endTime =
+      charEndTimes[endPos] || startTime + line.split(" ").length * 0.4;
+
+    phraseTimestamps.push({
+      phrase: line,
+      startFrame: Math.round(startTime * fps),
+      endFrame: Math.round(endTime * fps),
+      durationFrames: Math.max(40, Math.round((endTime - startTime) * fps)),
+    });
+
+    searchStart = pos + cleanLine.length;
+  }
+
+  console.log(
+    "🎙️ phraseTimestamps:",
+    phraseTimestamps.map(
+      (p) =>
+        `"${p.phrase.slice(0, 20)}" [${p.startFrame}-${p.endFrame}] ${p.durationFrames}f`,
+    ),
+  );
+
+  return phraseTimestamps;
 };
 
 const normalizePhraseTimestamps = (
   phraseTimestamps: PhraseTimestampPayload[],
-) =>
+): PhraseTimestamp[] =>
   phraseTimestamps.map((p) => {
-    const startFrame =
-      p.startFrame ?? Math.round((p.startTime ?? 0) * 60);
-    const endFromTime =
-      p.endTime != null ? Math.round(p.endTime * 60) : null;
+    const startFrame = p.startFrame ?? Math.round((p.startTime ?? 0) * 60);
+    const endFromTime = p.endTime != null ? Math.round(p.endTime * 60) : null;
     const endFrame = p.endFrame ?? endFromTime ?? startFrame + 90;
     const durationFrames =
       p.durationFrames ??
       (p.startTime != null && p.endTime != null
-        ? Math.max(60, Math.round((p.endTime - p.startTime) * 60))
-        : Math.max(60, endFrame - startFrame));
+        ? Math.max(40, Math.round((p.endTime - p.startTime) * 60))
+        : Math.max(40, endFrame - startFrame));
 
     return {
       phrase: p.phrase ?? "",
@@ -132,12 +153,6 @@ export async function POST(req: NextRequest) {
           );
 
     console.log("🎙️ phraseTimestamps generated:", phraseTimestamps);
-    console.log(
-      "🎙️ phraseTimestamps:",
-      phraseTimestamps.map(
-        (p) => `"${p.phrase.slice(0, 20)}" [${p.startFrame}-${p.endFrame}]`,
-      ),
-    );
 
     const totalDuration =
       data.durationSeconds ??
