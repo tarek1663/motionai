@@ -6339,6 +6339,9 @@ export const RepeatCutScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: textColor(currentBg),
             whiteSpace: "nowrap",
+            transform: `scale(${interpolate(flashIn, [0, 1], [0.92, 1])})`,
+          }}
+        >
           {scene.text}
         </div>
       </AbsoluteFill>
