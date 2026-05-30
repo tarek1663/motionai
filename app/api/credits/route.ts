@@ -8,61 +8,60 @@ export async function GET() {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
-    const userSelect =
-      "plan, videos_this_month, videos_today, last_video_date, monthly_reset_date, tokens_balance";
-
-    let { data: user } = await supabase
-      .from("User")
-      .select(userSelect)
-      .eq("clerk_id", userId)
+    let { data: sub } = await supabase
+      .from("subscriptions")
+      .select(
+        "plan, videos_used, videos_limit, period_end, videos_today, last_video_date, reset_date, monthly_reset_date, stripe_customer_id"
+      )
+      .eq("user_id", userId)
       .single();
 
-    if (!user) {
+    if (!sub) {
       const resetDate = new Date();
       resetDate.setMonth(resetDate.getMonth() + 1);
-      const { data: newUser } = await supabase
-        .from("User")
+      const { data: newSub } = await supabase
+        .from("subscriptions")
         .insert({
-          clerk_id: userId,
+          user_id: userId,
           plan: "free",
-          videos_this_month: 0,
+          videos_used: 0,
+          videos_limit: PLANS.free.monthlyVideos,
           videos_today: 0,
+          reset_date: resetDate.toISOString(),
           monthly_reset_date: resetDate.toISOString().split("T")[0],
         })
-        .select(userSelect)
+        .select(
+          "plan, videos_used, videos_limit, period_end, videos_today, last_video_date, reset_date, monthly_reset_date, stripe_customer_id"
+        )
         .single();
-      user = newUser;
+      sub = newSub;
     }
 
-    if (user?.monthly_reset_date && new Date(user.monthly_reset_date) < new Date()) {
+    const monthlyReset = sub?.reset_date || sub?.monthly_reset_date;
+    if (monthlyReset && new Date(monthlyReset) < new Date()) {
       const nextReset = new Date();
       nextReset.setMonth(nextReset.getMonth() + 1);
       await supabase
-        .from("User")
+        .from("subscriptions")
         .update({
-          videos_this_month: 0,
+          videos_used: 0,
+          reset_date: nextReset.toISOString(),
           monthly_reset_date: nextReset.toISOString().split("T")[0],
         })
-        .eq("clerk_id", userId);
-      if (user) user.videos_this_month = 0;
+        .eq("user_id", userId);
+      if (sub) sub.videos_used = 0;
     }
 
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("period_end, stripe_customer_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    const plan = (user?.plan || "free") as PlanId;
+    const plan = (sub?.plan || "free") as PlanId;
     const planConfig = PLANS[plan] ?? PLANS.free;
 
     const today = new Date().toISOString().split("T")[0];
-    const lastVideoDate = user?.last_video_date?.split("T")[0];
-    const videosToday = lastVideoDate === today ? user?.videos_today || 0 : 0;
-    const videosThisMonth = user?.videos_this_month || 0;
-
+    const lastVideoDate = sub?.last_video_date?.split("T")[0];
+    const videosToday = lastVideoDate === today ? sub?.videos_today || 0 : 0;
+    const videosThisMonth = sub?.videos_used || 0;
     const monthlyLimit = planConfig.monthlyVideos;
     const dailyLimit = planConfig.dailyVideos;
+    const videosLimit = sub?.videos_limit || monthlyLimit;
     const remainingToday = Math.max(0, dailyLimit - videosToday);
     const remainingThisMonth = Math.max(0, monthlyLimit - videosThisMonth);
     const canGenerate =
@@ -88,18 +87,20 @@ export async function GET() {
       planName: planNames[plan] || planConfig.name,
       planConfig,
       planOrder: ["free", "starter", "pro", "business"].indexOf(plan),
-      tokensBalance: user?.tokens_balance ?? 0,
-      videosThisMonth,
+      tokensBalance: 0,
+      videosUsed: videosThisMonth,
+      videosLimit,
       videosToday,
+      videosThisMonth,
       monthlyLimit,
       dailyLimit,
       canGenerate,
       remainingToday,
       remainingThisMonth,
       videos_used: videosThisMonth,
-      videos_limit: monthlyLimit,
+      videos_limit: videosLimit,
       videos_remaining: remainingThisMonth,
-      reset_date: user?.monthly_reset_date,
+      reset_date: sub?.reset_date || sub?.monthly_reset_date,
       period_end: sub?.period_end,
       trialDaysLeft,
       isTrial,

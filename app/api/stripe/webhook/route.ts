@@ -80,22 +80,14 @@ export async function POST(req: NextRequest) {
             stripe_subscription_id: subId ?? null,
             videos_limit: plan.videos_limit,
             videos_used: 0,
+            videos_today: 0,
             period_end: periodEnd.toISOString(),
             reset_date: periodEnd.toISOString(),
+            monthly_reset_date: periodEnd.toISOString().split("T")[0],
             updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id" }
         );
-
-        await supabase
-          .from("User")
-          .update({
-            plan: planId,
-            videos_this_month: 0,
-            videos_today: 0,
-            monthly_reset_date: periodEnd.toISOString().split("T")[0],
-          })
-          .eq("clerk_id", userId);
 
         try {
           const email = session.customer_details?.email || session.customer_email;
@@ -133,13 +125,6 @@ export async function POST(req: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq("stripe_subscription_id", subscription.id);
-
-        if (subRecord?.user_id) {
-          await supabase
-            .from("User")
-            .update({ plan: "free" })
-            .eq("clerk_id", subRecord.user_id);
-        }
 
         console.log("Subscription supprimée pour", subRecord?.user_id || "unknown");
         break;
@@ -191,13 +176,6 @@ export async function POST(req: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq("stripe_subscription_id", subscription.id);
-
-          if (subRecord?.user_id) {
-            await supabase
-              .from("User")
-              .update({ plan: "free" })
-              .eq("clerk_id", subRecord.user_id);
-          }
 
           console.log("Subscription annulée pour", subRecord?.user_id || "unknown");
         }

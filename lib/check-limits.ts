@@ -1,11 +1,12 @@
 import { supabase } from "@/lib/supabase";
 import { PLANS, type PlanId } from "@/lib/plans";
 
-type UserRow = {
+type SubscriptionRow = {
   plan: string | null;
-  videos_this_month: number | null;
+  videos_used: number | null;
   videos_today: number | null;
   last_video_date: string | null;
+  reset_date: string | null;
   monthly_reset_date: string | null;
 };
 
@@ -13,44 +14,51 @@ function todayDateString() {
   return new Date().toISOString().split("T")[0];
 }
 
-function getVideosToday(row: UserRow) {
+function getVideosToday(row: SubscriptionRow) {
   const today = todayDateString();
   const lastDate = row.last_video_date?.split("T")[0];
   return lastDate === today ? row.videos_today || 0 : 0;
 }
 
-function getVideosThisMonth(row: UserRow) {
-  if (row.monthly_reset_date && new Date(row.monthly_reset_date) < new Date()) {
-    return 0;
-  }
-  return row.videos_this_month || 0;
+function getMonthlyResetDate(row: SubscriptionRow) {
+  return row.reset_date || row.monthly_reset_date;
 }
 
-async function getOrCreateUser(userId: string): Promise<UserRow | null> {
-  let { data: user } = await supabase
-    .from("User")
-    .select("plan, videos_this_month, videos_today, last_video_date, monthly_reset_date")
-    .eq("clerk_id", userId)
+function getVideosThisMonth(row: SubscriptionRow) {
+  const resetDate = getMonthlyResetDate(row);
+  if (resetDate && new Date(resetDate) < new Date()) {
+    return 0;
+  }
+  return row.videos_used || 0;
+}
+
+async function getOrCreateSubscription(userId: string): Promise<SubscriptionRow | null> {
+  let { data: sub } = await supabase
+    .from("subscriptions")
+    .select("plan, videos_used, videos_today, last_video_date, reset_date, monthly_reset_date")
+    .eq("user_id", userId)
     .maybeSingle();
 
-  if (!user) {
+  if (!sub) {
     const resetDate = new Date();
     resetDate.setMonth(resetDate.getMonth() + 1);
     const { data: created } = await supabase
-      .from("User")
+      .from("subscriptions")
       .insert({
-        clerk_id: userId,
+        user_id: userId,
         plan: "free",
-        videos_this_month: 0,
+        videos_used: 0,
+        videos_limit: PLANS.free.monthlyVideos,
         videos_today: 0,
+        reset_date: resetDate.toISOString(),
         monthly_reset_date: resetDate.toISOString().split("T")[0],
       })
-      .select("plan, videos_this_month, videos_today, last_video_date, monthly_reset_date")
+      .select("plan, videos_used, videos_today, last_video_date, reset_date, monthly_reset_date")
       .single();
-    user = created;
+    sub = created;
   }
 
-  return user;
+  return sub;
 }
 
 export async function checkGenerationLimits(userId: string): Promise<{
@@ -59,29 +67,31 @@ export async function checkGenerationLimits(userId: string): Promise<{
   remainingToday?: number;
   remainingThisMonth?: number;
 }> {
-  const user = await getOrCreateUser(userId);
-  if (!user) {
+  const sub = await getOrCreateSubscription(userId);
+  if (!sub) {
     return { allowed: false, reason: "Compte introuvable." };
   }
 
-  const plan = (user.plan || "free") as PlanId;
+  const plan = (sub.plan || "free") as PlanId;
   const config = PLANS[plan] ?? PLANS.free;
 
-  if (user.monthly_reset_date && new Date(user.monthly_reset_date) < new Date()) {
+  const resetDate = getMonthlyResetDate(sub);
+  if (resetDate && new Date(resetDate) < new Date()) {
     const nextReset = new Date();
     nextReset.setMonth(nextReset.getMonth() + 1);
     await supabase
-      .from("User")
+      .from("subscriptions")
       .update({
-        videos_this_month: 0,
+        videos_used: 0,
+        reset_date: nextReset.toISOString(),
         monthly_reset_date: nextReset.toISOString().split("T")[0],
       })
-      .eq("clerk_id", userId);
-    user.videos_this_month = 0;
+      .eq("user_id", userId);
+    sub.videos_used = 0;
   }
 
-  const videosToday = getVideosToday(user);
-  const videosThisMonth = getVideosThisMonth(user);
+  const videosToday = getVideosToday(sub);
+  const videosThisMonth = getVideosThisMonth(sub);
 
   if (videosToday >= config.dailyVideos) {
     return {
@@ -110,30 +120,39 @@ export async function checkGenerationLimits(userId: string): Promise<{
 
 export async function incrementVideoCount(userId: string) {
   const today = new Date().toISOString();
-  const user = await getOrCreateUser(userId);
-  if (!user) return;
+  const sub = await getOrCreateSubscription(userId);
+  if (!sub) return;
 
   const todayDate = todayDateString();
-  const lastDate = user.last_video_date?.split("T")[0];
-  const videosToday = lastDate === todayDate ? (user.videos_today || 0) + 1 : 1;
+  const lastDate = sub.last_video_date?.split("T")[0];
+  const videosToday = lastDate === todayDate ? (sub.videos_today || 0) + 1 : 1;
 
-  let videosThisMonth = (user.videos_this_month || 0) + 1;
-  let monthlyResetDate = user.monthly_reset_date;
+  let videosThisMonth = (sub.videos_used || 0) + 1;
+  let resetDate = sub.reset_date;
+  let monthlyResetDate = sub.monthly_reset_date;
 
-  if (monthlyResetDate && new Date(monthlyResetDate) < new Date()) {
+  const monthlyReset = getMonthlyResetDate(sub);
+  if (monthlyReset && new Date(monthlyReset) < new Date()) {
     videosThisMonth = 1;
     const nextReset = new Date();
     nextReset.setMonth(nextReset.getMonth() + 1);
+    resetDate = nextReset.toISOString();
     monthlyResetDate = nextReset.toISOString().split("T")[0];
   }
 
+  const plan = (sub.plan || "free") as PlanId;
+  const monthlyLimit = PLANS[plan]?.monthlyVideos ?? PLANS.free.monthlyVideos;
+
   await supabase
-    .from("User")
+    .from("subscriptions")
     .update({
       videos_today: videosToday,
-      videos_this_month: videosThisMonth,
+      videos_used: videosThisMonth,
+      videos_limit: monthlyLimit,
       last_video_date: today,
+      reset_date: resetDate,
       monthly_reset_date: monthlyResetDate,
+      updated_at: today,
     })
-    .eq("clerk_id", userId);
+    .eq("user_id", userId);
 }
