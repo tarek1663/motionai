@@ -1,41 +1,105 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { useDashboard } from "@/hooks/use-dashboard";
-
-type TourStep = {
-  id: string;
-  title: string;
-  desc: string;
-  position: "top" | "bottom" | "left" | "right";
-};
+import {
+  filterAvailableTourSteps,
+  getTourTargetId,
+  isTourTargetVisible,
+  type TourStep,
+} from "@/lib/dashboard/tour";
 
 const tourSteps: TourStep[] = [
-  { id: "mode", title: "Mode IA ou Script", desc: "Choisis entre laisser l'IA ecrire ton script ou ecrire le tien.", position: "bottom" },
-  { id: "voice", title: "Choisis ta voix", desc: "Selectionne la voix off de ta video parmi plusieurs options naturelles.", position: "bottom" },
-  { id: "generate", title: "Lance la generation", desc: "Clique ici ou appuie sur Ctrl+Entree pour creer ta video.", position: "left" },
-  { id: "suggestions", title: "Suggestions rapides", desc: "Clique sur une suggestion pour pre-remplir le prompt automatiquement.", position: "top" },
+  {
+    id: "mode",
+    title: "Mode IA ou Script",
+    desc: "Choisis entre laisser l'IA ecrire ton script ou ecrire le tien.",
+    position: "bottom",
+  },
+  {
+    id: "voice",
+    title: "Choisis ta voix",
+    desc: "Selectionne la voix off de ta video parmi plusieurs options naturelles.",
+    position: "bottom",
+  },
+  {
+    id: "generate",
+    title: "Lance la generation",
+    desc: "Clique ici ou appuie sur Ctrl+Entree pour creer ta video.",
+    position: "left",
+  },
+  {
+    id: "suggestions",
+    title: "Suggestions rapides",
+    desc: "Clique sur une suggestion pour pre-remplir le prompt automatiquement.",
+    position: "top",
+  },
   {
     id: "history",
     title: "Tes vidéos",
     desc: "Retrouve toutes tes vidéos générées ici. Double-clique pour renommer.",
     position: "right",
   },
-  { id: "credits", title: "Tes credits", desc: "Tes videos restantes ce mois. Se renouvelle automatiquement.", position: "right" },
-  { id: "server", title: "Statut serveur", desc: "Indique si le serveur de rendu est disponible en temps reel.", position: "right" },
+  {
+    id: "credits",
+    title: "Tes credits",
+    desc: "Tes videos restantes ce mois. Se renouvelle automatiquement.",
+    position: "right",
+  },
+  {
+    id: "server",
+    title: "Statut serveur",
+    desc: "Indique si le serveur de rendu est disponible en temps reel.",
+    position: "right",
+  },
   { id: "download", title: "Telecharger", desc: "Telecharge ta video en 1080p prete a publier.", position: "top" },
   { id: "share", title: "Partager", desc: "Copie le lien direct de ta video pour la partager instantanement.", position: "top" },
-  { id: "notification", title: "Suivi en temps reel", desc: "La progression s'affiche ici meme si tu navigues sur d'autres pages.", position: "bottom" },
+  {
+    id: "notification",
+    title: "Suivi en temps reel",
+    desc: "La progression s'affiche ici meme si tu navigues sur d'autres pages.",
+    position: "bottom",
+  },
 ];
 
 export default function DashboardPage() {
   const router = useRouter();
   const state = useDashboard();
   const [showTour, setShowTour] = useState(false);
+  const [activeTourSteps, setActiveTourSteps] = useState<TourStep[]>(tourSteps);
   const [tourStep, setTourStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const refreshActiveTourSteps = useCallback(() => {
+    const available = filterAvailableTourSteps(tourSteps);
+    setActiveTourSteps(available);
+    return available;
+  }, []);
+
+  const startTour = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const available = refreshActiveTourSteps();
+      if (available.length === 0) return;
+      setTourStep(0);
+      setShowTour(true);
+    });
+  }, [refreshActiveTourSteps]);
+
+  const dismissTour = useCallback(() => {
+    if (state.user) localStorage.setItem(`motionr_tour_${state.user.id}`, "done");
+    setShowTour(false);
+    setTourStep(0);
+  }, [state.user]);
+
+  const goToNextTourStep = useCallback(() => {
+    if (tourStep >= activeTourSteps.length - 1) {
+      dismissTour();
+      return;
+    }
+    setTourStep((prev) => prev + 1);
+  }, [tourStep, activeTourSteps.length, dismissTour]);
 
   useEffect(() => {
     document.title = "Studio — Motionr";
@@ -60,10 +124,10 @@ export default function DashboardPage() {
     if (!state.user) return;
     const tourDone = localStorage.getItem(`motionr_tour_${state.user.id}`);
     if (!tourDone) {
-      const timer = window.setTimeout(() => setShowTour(true), 1000);
+      const timer = window.setTimeout(() => startTour(), 1000);
       return () => window.clearTimeout(timer);
     }
-  }, [state.user]);
+  }, [state.user, startTour]);
 
   useEffect(() => {
     if (!state.user) return;
@@ -113,10 +177,7 @@ export default function DashboardPage() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  const dismissTour = () => {
-    if (state.user) localStorage.setItem(`motionr_tour_${state.user.id}`, "done");
-    setShowTour(false);
-  };
+  const currentTourStep = activeTourSteps[tourStep];
 
   return (
     <>
@@ -226,27 +287,16 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <DashboardShell
-        {...state}
-        onStartTour={() => {
-          setTourStep(0);
-          setShowTour(true);
-        }}
-      />
+      <DashboardShell {...state} onStartTour={startTour} />
 
-      {showTour && tourStep < tourSteps.length && (
+      {showTour && currentTourStep && (
         <TourTooltip
-          step={tourSteps[tourStep]}
-          targetId={`tour-${tourSteps[tourStep].id}`}
+          key={`${currentTourStep.id}-${tourStep}`}
+          step={currentTourStep}
+          targetId={getTourTargetId(currentTourStep.id)}
           current={tourStep}
-          total={tourSteps.length}
-          onNext={() => {
-            if (tourStep < tourSteps.length - 1) {
-              setTourStep((prev) => prev + 1);
-            } else {
-              dismissTour();
-            }
-          }}
+          total={activeTourSteps.length}
+          onNext={goToNextTourStep}
         />
       )}
     </>
@@ -267,33 +317,48 @@ function TourTooltip({
   total: number;
 }) {
   const [pos, setPos] = useState({ top: 24, left: 24 });
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const el = document.getElementById(targetId);
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+    setReady(false);
 
-    let top = 0;
-    let left = 0;
-    if (step.position === "bottom") {
-      top = rect.bottom + 12;
-      left = rect.left + rect.width / 2 - 150;
-    } else if (step.position === "top") {
-      top = rect.top - 130;
-      left = rect.left + rect.width / 2 - 150;
-    } else if (step.position === "right") {
-      top = rect.top + rect.height / 2 - 60;
-      left = rect.right + 12;
-    } else {
-      top = rect.top + rect.height / 2 - 60;
-      left = rect.left - 312;
-    }
+    const updatePosition = () => {
+      const el = document.getElementById(targetId);
+      if (!el || !isTourTargetVisible(el)) {
+        onNext();
+        return;
+      }
 
-    left = Math.max(12, Math.min(left, window.innerWidth - 312));
-    top = Math.max(12, Math.min(top, window.innerHeight - 180));
-    setPos({ top, left });
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [targetId, step.position]);
+      const rect = el.getBoundingClientRect();
+
+      let top = 0;
+      let left = 0;
+      if (step.position === "bottom") {
+        top = rect.bottom + 12;
+        left = rect.left + rect.width / 2 - 150;
+      } else if (step.position === "top") {
+        top = rect.top - 130;
+        left = rect.left + rect.width / 2 - 150;
+      } else if (step.position === "right") {
+        top = rect.top + rect.height / 2 - 60;
+        left = rect.right + 12;
+      } else {
+        top = rect.top + rect.height / 2 - 60;
+        left = rect.left - 312;
+      }
+
+      left = Math.max(12, Math.min(left, window.innerWidth - 312));
+      top = Math.max(12, Math.min(top, window.innerHeight - 180));
+      setPos({ top, left });
+      setReady(true);
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
+    const frame = window.requestAnimationFrame(updatePosition);
+    return () => window.cancelAnimationFrame(frame);
+  }, [targetId, step.position, onNext]);
+
+  if (!ready) return null;
 
   return (
     <>
@@ -372,7 +437,8 @@ function TourCutout({ targetId }: { targetId: string }) {
   useEffect(() => {
     const updateRect = () => {
       const el = document.getElementById(targetId);
-      if (el) setRect(el.getBoundingClientRect());
+      if (el && isTourTargetVisible(el)) setRect(el.getBoundingClientRect());
+      else setRect(null);
     };
     updateRect();
     window.addEventListener("resize", updateRect);
@@ -407,7 +473,8 @@ function TargetHighlight({ targetId }: { targetId: string }) {
   useEffect(() => {
     const updateRect = () => {
       const el = document.getElementById(targetId);
-      if (el) setRect(el.getBoundingClientRect());
+      if (el && isTourTargetVisible(el)) setRect(el.getBoundingClientRect());
+      else setRect(null);
     };
     updateRect();
     window.addEventListener("resize", updateRect);
