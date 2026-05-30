@@ -1,9 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { sendCancellationEmail, sendWelcomeEmail } from "@/lib/emails";
 import { getStripe, PLANS, PlanId } from "@/lib/stripe";
 import { supabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
+
+const planDisplayNames: Record<string, string> = {
+  free: "Free",
+  starter: "Starter",
+  pro: "Pro",
+  business: "Business",
+};
+
+async function getStripeCustomerEmail(
+  customerId: string | Stripe.Customer | Stripe.DeletedCustomer | null
+): Promise<string> {
+  if (!customerId || typeof customerId !== "string") return "";
+  const customer = await getStripe().customers.retrieve(customerId);
+  if ("deleted" in customer) return "";
+  return customer.email || "";
+}
+
+function formatPeriodEnd(timestamp: number) {
+  return new Date(timestamp * 1000).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -37,7 +62,10 @@ export async function POST(req: NextRequest) {
         const plan = PLANS[planId];
         if (!plan) break;
 
-        const subId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+        const subId =
+          typeof session.subscription === "string"
+            ? session.subscription
+            : session.subscription?.id;
         const customerId =
           typeof session.customer === "string" ? session.customer : session.customer?.id;
 
@@ -60,36 +88,54 @@ export async function POST(req: NextRequest) {
         );
 
         try {
-          if (session.customer_details?.email || session.customer_email) {
-            await fetch("https://api.resend.com/emails", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                from: "Motionr <hello@motionr.app>",
-                to: session.customer_details?.email || session.customer_email,
-                subject: "Bienvenue sur Motionr ! 🎬",
-                html: `
-                  <h1>Bienvenue sur Motionr !</h1>
-                  <p>Ton abonnement est actif. Tu peux maintenant générer des vidéos motion design professionnelles.</p>
-                  <a href="https://motionai-two.vercel.app/dashboard">Créer ma première vidéo →</a>
-                `,
-              }),
-            });
+          const email = session.customer_details?.email || session.customer_email;
+          if (email && process.env.RESEND_API_KEY) {
+            const firstName =
+              session.customer_details?.name?.split(" ")[0] ||
+              session.customer_details?.name ||
+              "there";
+            await sendWelcomeEmail(email, firstName);
           }
         } catch (emailErr) {
-          console.error("Email error:", emailErr);
+          console.error("Welcome email error:", emailErr);
         }
 
         console.log("Plan activé:", planId, "pour", userId);
         break;
       }
 
-      case "customer.subscription.deleted":
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+
+        const { data: subRecord } = await supabase
+          .from("subscriptions")
+          .select("user_id, plan")
+          .eq("stripe_subscription_id", subscription.id)
+          .maybeSingle();
+
+        await supabase
+          .from("subscriptions")
+          .update({
+            plan: "free",
+            videos_limit: 3,
+            stripe_subscription_id: null,
+            cancel_at_period_end: false,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_subscription_id", subscription.id);
+
+        console.log("Subscription supprimée pour", subRecord?.user_id || "unknown");
+        break;
+      }
+
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
+
+        const { data: subRecord } = await supabase
+          .from("subscriptions")
+          .select("user_id, plan, stripe_customer_id")
+          .eq("stripe_subscription_id", subscription.id)
+          .maybeSingle();
 
         if (subscription.cancel_at_period_end) {
           await supabase
@@ -99,15 +145,25 @@ export async function POST(req: NextRequest) {
               period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
             .eq("stripe_subscription_id", subscription.id);
+
+          try {
+            const customerEmail = await getStripeCustomerEmail(subscription.customer);
+            if (customerEmail && process.env.RESEND_API_KEY) {
+              const planName =
+                planDisplayNames[subRecord?.plan || "starter"] || "Starter";
+              await sendCancellationEmail(
+                customerEmail,
+                "there",
+                planName,
+                formatPeriodEnd(subscription.current_period_end)
+              );
+            }
+          } catch (emailErr) {
+            console.error("Cancellation email error:", emailErr);
+          }
         }
 
         if (subscription.status === "canceled") {
-          const { data: subRecord } = await supabase
-            .from("subscriptions")
-            .select("user_id, stripe_customer_id")
-            .eq("stripe_subscription_id", subscription.id)
-            .maybeSingle();
-
           await supabase
             .from("subscriptions")
             .update({
@@ -119,39 +175,7 @@ export async function POST(req: NextRequest) {
             })
             .eq("stripe_subscription_id", subscription.id);
 
-          try {
-            let customerEmail = "";
-            if (subscription.customer && typeof subscription.customer === "string") {
-              const customer = await getStripe().customers.retrieve(subscription.customer);
-              if (!("deleted" in customer)) {
-                customerEmail = customer.email || "";
-              }
-            }
-
-            if (customerEmail && process.env.RESEND_API_KEY) {
-              await fetch("https://api.resend.com/emails", {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  from: "Motionr <hello@motionr.app>",
-                  to: customerEmail,
-                  subject: "Ton abonnement Motionr a ete annule",
-                  html: `
-                    <h2>Abonnement annule</h2>
-                    <p>Ton abonnement Motionr est maintenant termine. Tu es repasse sur le plan gratuit (3 videos/mois).</p>
-                    <p>Tu peux te reabonner a tout moment sur <a href="https://motionai-two.vercel.app/pricing">motionr.app/pricing</a></p>
-                  `,
-                }),
-              });
-            }
-          } catch {
-            // ignore email failure
-          }
-
-          console.log("Subscription annulee pour", subRecord?.user_id || "unknown");
+          console.log("Subscription annulée pour", subRecord?.user_id || "unknown");
         }
         break;
       }
