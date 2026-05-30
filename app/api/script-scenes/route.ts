@@ -144,6 +144,16 @@ RÈGLES ABSOLUES :
 3. Alterner bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
 
+RÈGLE COULEUR TEXTE ABSOLUE :
+- Le texte principal est TOUJOURS blanc sur fond noir ou noir sur fond blanc
+- JAMAIS un seul mot en couleur accent au milieu d'une phrase
+- La couleur accent est réservée UNIQUEMENT pour :
+  • Les scènes accentword (toute la phrase en accent)
+  • Les scènes underline (ligne sous le texte)
+  • Les éléments UI (boutons, barres, icônes)
+  • Les chiffres dans counter/progressbar
+- JAMAIS colorer un mot isolé dans une phrase normale
+
 RÈGLE CONTRASTE ABSOLUE :
 - JAMAIS accentColor similaire au bg
 - Sur bg vert (#10B981) → texte BLANC (#ffffff) ou NOIR (#000000) uniquement

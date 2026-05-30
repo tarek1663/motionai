@@ -6540,10 +6540,7 @@ export const WordGroupsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             <span
               key={i}
               style={{
-                color:
-                  i === 0 && (groups[currentGroup]?.length || 0) > 1
-                    ? accent
-                    : textColor(bg),
+                color: textColor(bg),
               }}
             >
               {word}
