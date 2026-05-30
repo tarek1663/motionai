@@ -1080,13 +1080,29 @@ RÈGLES DE DYNAMISME MAXIMUM :
 - Transitions courtes : 40-50 frames max
 
 CATALOGUE COMPLET :
-Texte : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, twolines, gradienttext, accentword, underline, spotlight, hierarchytext
+Texte : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, twolines, gradienttext, accentword, underline, spotlight, hierarchytext, karaoke, wordgroups
 Stats : counter, multistats, progressbar, socialstats, bgnumber
 Dynamique : strobe, explode, parallax, repeatcut
 Formes : linedraw, shape, expandingshape
 Transitions : iris, curtain, diagonalwipe, splitvertical, pixeldissolve, lightsweep, glitchswitch
 UI : pulsebutton, uiprogress, notification
 Contexte : quote, timeline, checklist, audioviz, photoreveal
+
+NOUVELLES SCÈNES TEXTE LONG :
+- karaoke: phrase complète affichée, mots qui s'illuminent en accent un par un — IDÉAL pour phrases de 5-10 mots
+- wordgroups: groupes de 2 mots qui apparaissent en séquence avec indicateur — IDÉAL pour phrases de 4-8 mots
+
+RÈGLE TEXTE LONG OBLIGATOIRE :
+- Phrase de 5 mots ou plus → utiliser OBLIGATOIREMENT karaoke ou wordgroups
+- JAMAIS afficher une phrase longue avec singleword, maskreveal ou slideword
+- Alterner karaoke et wordgroups dans la même vidéo
+- Sur karaoke : durationFrames = nombre de mots × 25 minimum
+- Sur wordgroups : durationFrames = nombre de groupes × 60 minimum
+
+RÈGLE IMAGES OBLIGATOIRE :
+- Inclure photoreveal ou photocollage sur au moins 30% des scènes
+- photoQuery en anglais descriptif et précis
+- Alterner scènes texte → scène photo → scènes texte → scène photo
 
 FORMAT JSON STRICT :
 {

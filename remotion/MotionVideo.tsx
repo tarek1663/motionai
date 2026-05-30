@@ -79,6 +79,8 @@ import {
   ExplodeScene,
   ParallaxScene,
   RepeatCutScene,
+  KaraokeScene,
+  WordGroupsScene,
   DynamicVignette,
 } from "./templates/scenes";
 
@@ -267,6 +269,10 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <ParallaxScene scene={sceneWithIndex} />;
     case "repeatcut":
       return <RepeatCutScene scene={sceneWithIndex} />;
+    case "karaoke":
+      return <KaraokeScene scene={sceneWithIndex} />;
+    case "wordgroups":
+      return <WordGroupsScene scene={sceneWithIndex} />;
     default:
       return <SingleWordScene scene={sceneWithIndex} />;
   }

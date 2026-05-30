@@ -86,7 +86,9 @@ export type SceneData = {
     | "strobe"
     | "explode"
     | "parallax"
-    | "repeatcut";
+    | "repeatcut"
+    | "karaoke"
+    | "wordgroups";
   text?: string;
   durationFrames?: number;
   url?: string;
@@ -6337,10 +6339,195 @@ export const RepeatCutScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: textColor(currentBg),
             whiteSpace: "nowrap",
-            transform: `scale(${interpolate(flashIn, [0, 1], [0.92, 1])})`,
+          {scene.text}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── KARAOKÉ ──────────────────────────────────────────
+// Texte complet affiché, mots qui s'illuminent un par un
+export const KaraokeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+  const accent = safeAccent(scene.accentColor, bg);
+
+  const words = (scene.text || "").split(" ");
+  const fadeOut = safeFadeOut(frame, durationInFrames);
+  const fadeIn = safeFadeIn(frame);
+  const opacity = Math.min(fadeIn, fadeOut);
+
+  const framesPerWord = durationInFrames / Math.max(words.length, 1);
+  const fontSize = autoFontSize(scene.text || "", 80, 40);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo} />
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "0 60px",
+          opacity,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "0.25em",
+            textAlign: "center",
           }}
         >
-          {scene.text}
+          {words.map((word, i) => {
+            const wordStart = i * framesPerWord;
+            const isActive = frame >= wordStart;
+
+            const wordProgress = interpolate(
+              frame,
+              [wordStart, wordStart + Math.min(8, framesPerWord * 0.3)],
+              [0, 1],
+              {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+                easing: E_OUT,
+              },
+            );
+
+            return (
+              <span
+                key={i}
+                style={{
+                  fontSize,
+                  fontWeight: 700,
+                  fontFamily: FONT,
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.2,
+                  color: isActive
+                    ? accent
+                    : isLight(bg)
+                      ? "rgba(0,0,0,0.2)"
+                      : "rgba(255,255,255,0.2)",
+                  display: "inline-block",
+                  transform: isActive
+                    ? `scale(${interpolate(wordProgress, [0, 1], [0.95, 1])})`
+                    : "scale(1)",
+                  textShadow: isActive ? `0 0 20px ${accent}66` : "none",
+                }}
+              >
+                {word}
+              </span>
+            );
+          })}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── WORD GROUPS ──────────────────────────────────────
+// Groupes de 2-3 mots qui apparaissent en séquence
+export const WordGroupsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#ffffff";
+  const accent = safeAccent(scene.accentColor, bg);
+
+  const words = (scene.text || "").split(" ");
+  const fadeOut = safeFadeOut(frame, durationInFrames);
+
+  const groups: string[][] = [];
+  for (let i = 0; i < words.length; i += 2) {
+    groups.push(words.slice(i, Math.min(i + 2, words.length)));
+  }
+
+  const framesPerGroup = Math.max(1, Math.floor(durationInFrames / Math.max(groups.length, 1)));
+  const currentGroup = Math.min(
+    Math.floor(frame / framesPerGroup),
+    groups.length - 1,
+  );
+  const groupFrame = frame % framesPerGroup;
+
+  const enter = spring({
+    frame: groupFrame,
+    fps,
+    config: { damping: 280, stiffness: 100, mass: 0.7 },
+    from: 0,
+    to: 1,
+  });
+
+  const fontSize = autoFontSize(groups[currentGroup]?.join(" ") || "", 130, 60);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo} />
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          opacity: fadeOut,
+        }}
+      >
+        <div
+          style={{
+            fontSize,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: textColor(bg),
+            whiteSpace: "nowrap",
+            opacity: interpolate(enter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(enter, [0, 1], [30, 0])}px) scale(${interpolate(enter, [0, 1], [0.88, 1])})`,
+            filter: `blur(${interpolate(enter, [0, 0.5, 1], [8, 1, 0])}px)`,
+            textShadow: isLight(bg)
+              ? "0 2px 12px rgba(0,0,0,0.08)"
+              : "0 2px 20px rgba(0,0,0,0.4)",
+          }}
+        >
+          {(groups[currentGroup] || []).map((word, i) => (
+            <span
+              key={i}
+              style={{
+                color:
+                  i === 0 && (groups[currentGroup]?.length || 0) > 1
+                    ? accent
+                    : textColor(bg),
+              }}
+            >
+              {word}
+              {i < (groups[currentGroup]?.length || 0) - 1 ? " " : ""}
+            </span>
+          ))}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: 40,
+            display: "flex",
+            gap: 6,
+          }}
+        >
+          {groups.map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: i === currentGroup ? 20 : 6,
+                height: 3,
+                borderRadius: 100,
+                background:
+                  i === currentGroup
+                    ? accent
+                    : isLight(bg)
+                      ? "rgba(0,0,0,0.15)"
+                      : "rgba(255,255,255,0.15)",
+              }}
+            />
+          ))}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

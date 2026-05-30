@@ -3,36 +3,50 @@ import { MotionVideo, MotionVideoProps } from "./MotionVideo";
 
 const fps = 60;
 
-const testScenes = [
-  { type: "singleword", text: "Nike.", bg: "#000000", accentColor: "#ffffff", geo: "dots", durationFrames: 60 },
-  { type: "strobe", text: "Impact.", bg: "#000000", accentColor: "#ffffff", geo: "circles", durationFrames: 70 },
-  { type: "explode", text: "Boom.", bg: "#ffffff", accentColor: "#000000", durationFrames: 80 },
-  { type: "parallax", text: "Profond.", bg: "#000000", accentColor: "#ffffff", geo: "diagonal", durationFrames: 100 },
-  { type: "repeatcut", text: "Encore.", bg: "#ffffff", accentColor: "#000000", durationFrames: 90 },
-  { type: "singleword", text: "Vite.", bg: "#000000", accentColor: "#ffffff", geo: "grid", durationFrames: 50 },
-  { type: "singleword", text: "Plus.", bg: "#ffffff", accentColor: "#000000", geo: "dots", durationFrames: 40 },
-  { type: "singleword", text: "Just Do It.", bg: "#000000", accentColor: "#ffffff", geo: "circles", durationFrames: 60 },
-] as MotionVideoProps["scenes"];
-
-const testSceneDurations = [
-  { startFrame: 0, durationFrames: 60 },
-  { startFrame: 60, durationFrames: 70 },
-  { startFrame: 130, durationFrames: 80 },
-  { startFrame: 210, durationFrames: 100 },
-  { startFrame: 310, durationFrames: 90 },
-  { startFrame: 400, durationFrames: 50 },
-  { startFrame: 450, durationFrames: 40 },
-  { startFrame: 490, durationFrames: 60 },
-];
-
-const testTotalFrames = 550;
-
 const defaultProps = {
+  scenes: [
+    {
+      type: "karaoke",
+      text: "Nike révolutionne le sport mondial depuis 1964",
+      bg: "#000000",
+      accentColor: "#ffffff",
+      geo: "dots",
+      durationFrames: 180,
+    },
+    {
+      type: "wordgroups",
+      text: "Just Do It chaque jour sans exception",
+      bg: "#ffffff",
+      accentColor: "#000000",
+      geo: "grid",
+      durationFrames: 180,
+    },
+    {
+      type: "karaoke",
+      text: "Les meilleurs athlètes portent Nike partout dans le monde",
+      bg: "#000000",
+      accentColor: "#10B981",
+      geo: "circles",
+      durationFrames: 240,
+    },
+    {
+      type: "wordgroups",
+      text: "Performance style confort innovation",
+      bg: "#10B981",
+      accentColor: "#ffffff",
+      geo: "diagonal",
+      durationFrames: 160,
+    },
+  ],
+  sceneDurations: [
+    { startFrame: 0, durationFrames: 180 },
+    { startFrame: 180, durationFrames: 180 },
+    { startFrame: 360, durationFrames: 240 },
+    { startFrame: 600, durationFrames: 160 },
+  ],
+  totalFrames: 760,
   audioSrc: null,
   musicSrc: null,
-  scenes: testScenes,
-  sceneDurations: testSceneDurations,
-  totalFrames: testTotalFrames,
   musicVolume: 0.12,
 } as MotionVideoProps;
 
@@ -58,7 +72,7 @@ const RemotionRoot = () => (
       const total =
         Number.isFinite(p.totalFrames) && p.totalFrames > 0
           ? p.totalFrames
-          : testTotalFrames;
+          : 760;
 
       const fmt = (p as { format?: string }).format || "9:16";
       const w = fmt === "16:9" ? 1920 : 1080;
