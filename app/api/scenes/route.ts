@@ -49,7 +49,14 @@ RÈGLES ABSOLUES :
 4. geo OBLIGATOIRE sur chaque scène — varier : dots, grid, circles, diagonal, cross, lines, radial, perspective
 5. Texte MAX 4 mots par scène
 6. Inclure obligatoirement : 1-2 counter/stats, 1 checklist ou timeline, 1-2 transitions, des mockups SI pertinent
-7. durationFrames : texte court=80, phrase=100, stats=150, mockup=180, transition=70
+7. DURÉES PAR TYPE DE SCÈNE — courtes et rythmées :
+   - Mot court (singleword, zoomword, scalein...) → durationFrames: 60
+   - Phrase courte (maskreveal, slideword...) → durationFrames: 80
+   - Phrase longue (staggerwords, fadeupl...) → durationFrames: 90
+   - Stats/chiffres (counter, multistats...) → durationFrames: 120
+   - Mockup/complexe (iphone, dashboard...) → durationFrames: 150
+   - Transition (iris, curtain...) → durationFrames: 50
+   - JAMAIS plus de 150 frames par scène
 8. accentColor = ${accent} sur TOUTES les scènes
 9. UTILISE TOUT LE CATALOGUE — minimum 10 types différents
 10. photoreveal/photocollage : ajoute photoQuery en anglais descriptif
@@ -82,7 +89,7 @@ FORMAT JSON STRICT :
       "bg": "#000000",
       "accentColor": "${accent}",
       "geo": "dots",
-      "durationFrames": 80
+      "durationFrames": 60
     }
   ]
 }
@@ -178,8 +185,8 @@ export async function POST(req: NextRequest) {
 
     const sceneDurations = scenesWithPhotos.map((scene, i) => {
       const fromScene = (scene as { durationFrames?: number }).durationFrames;
-      if (fromScene && fromScene >= 60) {
-        return { durationFrames: Math.round(fromScene) };
+      if (fromScene && fromScene >= 40) {
+        return { durationFrames: Math.min(150, Math.round(fromScene)) };
       }
       if (
         Array.isArray(phraseTimestamps) &&
@@ -194,12 +201,12 @@ export async function POST(req: NextRequest) {
         return {
           startFrame: Math.round(phrase.startFrame),
           endFrame: Math.round(phrase.endFrame),
-          durationFrames: Math.max(60, Math.round(phrase.durationFrames)),
+          durationFrames: Math.min(150, Math.max(40, Math.round(phrase.durationFrames))),
         };
       }
       const fallback = result.sceneDurations[i];
       return typeof fallback === "number"
-        ? { durationFrames: Math.max(60, fallback) }
+        ? { durationFrames: Math.min(150, Math.max(40, fallback)) }
         : { durationFrames: 90 };
     });
 
