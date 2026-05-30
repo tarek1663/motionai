@@ -8,50 +8,58 @@ export async function GET() {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
-    let { data: sub } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", userId)
+    const userSelect =
+      "plan, videos_this_month, videos_today, last_video_date, monthly_reset_date, tokens_balance";
+
+    let { data: user } = await supabase
+      .from("User")
+      .select(userSelect)
+      .eq("clerk_id", userId)
       .single();
 
-    if (!sub) {
+    if (!user) {
       const resetDate = new Date();
       resetDate.setMonth(resetDate.getMonth() + 1);
-      const { data: newSub } = await supabase
-        .from("subscriptions")
+      const { data: newUser } = await supabase
+        .from("User")
         .insert({
-          user_id: userId,
+          clerk_id: userId,
           plan: "free",
-          videos_used: 0,
-          videos_limit: PLANS.free.monthlyVideos,
+          videos_this_month: 0,
           videos_today: 0,
-          reset_date: resetDate.toISOString(),
+          monthly_reset_date: resetDate.toISOString().split("T")[0],
         })
-        .select()
+        .select(userSelect)
         .single();
-      sub = newSub;
+      user = newUser;
     }
 
-    if (sub?.reset_date && new Date(sub.reset_date) < new Date()) {
+    if (user?.monthly_reset_date && new Date(user.monthly_reset_date) < new Date()) {
       const nextReset = new Date();
       nextReset.setMonth(nextReset.getMonth() + 1);
       await supabase
-        .from("subscriptions")
+        .from("User")
         .update({
-          videos_used: 0,
-          reset_date: nextReset.toISOString(),
+          videos_this_month: 0,
+          monthly_reset_date: nextReset.toISOString().split("T")[0],
         })
-        .eq("user_id", userId);
-      if (sub) sub.videos_used = 0;
+        .eq("clerk_id", userId);
+      if (user) user.videos_this_month = 0;
     }
 
-    const plan = (sub?.plan || "free") as PlanId;
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("period_end, stripe_customer_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    const plan = (user?.plan || "free") as PlanId;
     const planConfig = PLANS[plan] ?? PLANS.free;
 
     const today = new Date().toISOString().split("T")[0];
-    const lastVideoDate = sub?.last_video_date?.split("T")[0];
-    const videosToday = lastVideoDate === today ? sub?.videos_today || 0 : 0;
-    const videosThisMonth = sub?.videos_used || 0;
+    const lastVideoDate = user?.last_video_date?.split("T")[0];
+    const videosToday = lastVideoDate === today ? user?.videos_today || 0 : 0;
+    const videosThisMonth = user?.videos_this_month || 0;
 
     const monthlyLimit = planConfig.monthlyVideos;
     const dailyLimit = planConfig.dailyVideos;
@@ -80,7 +88,7 @@ export async function GET() {
       planName: planNames[plan] || planConfig.name,
       planConfig,
       planOrder: ["free", "starter", "pro", "business"].indexOf(plan),
-      tokensBalance: 0,
+      tokensBalance: user?.tokens_balance ?? 0,
       videosThisMonth,
       videosToday,
       monthlyLimit,
@@ -91,7 +99,7 @@ export async function GET() {
       videos_used: videosThisMonth,
       videos_limit: monthlyLimit,
       videos_remaining: remainingThisMonth,
-      reset_date: sub?.reset_date,
+      reset_date: user?.monthly_reset_date,
       period_end: sub?.period_end,
       trialDaysLeft,
       isTrial,
