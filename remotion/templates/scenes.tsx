@@ -199,6 +199,15 @@ export const getPhotoDisplayText = (scene: SceneData): string =>
 const mainTextShadow = (bg: string): string =>
   isLight(bg) ? "0 2px 12px rgba(0,0,0,0.08)" : "0 2px 20px rgba(0,0,0,0.4)";
 
+const MAIN_TEXT_WRAP: React.CSSProperties = {
+  maxWidth: "90%",
+  textAlign: "center",
+  wordBreak: "break-word",
+  overflowWrap: "break-word",
+  whiteSpace: "normal",
+  padding: "0 40px",
+};
+
 const safeFadeOut = (frame: number, durationInFrames: number, duration = 22) => {
   const start = Math.max(0, durationInFrames - duration);
   const end = Math.max(start + 1, durationInFrames);
@@ -366,14 +375,15 @@ const getUIProgressStepLabels = (scene: SceneData): string[] => {
   return raw.map((s) => s.label);
 };
 
-const autoFontSize = (text: string, max = 160, min = 60): number => {
-  const len = (text || "").replace(/\s+/g, " ").trim().length;
+const autoFontSize = (text: string, max: number, min: number): number => {
+  const len = text.length;
   if (len <= 4) return max;
   if (len <= 8) return Math.round(max * 0.85);
-  if (len <= 12) return Math.round(max * 0.7);
+  if (len <= 14) return Math.round(max * 0.7);
   if (len <= 20) return Math.round(max * 0.55);
-  if (len <= 30) return Math.round(max * 0.45);
-  return Math.max(min, Math.round(max * 0.35));
+  if (len <= 30) return Math.round(max * 0.42);
+  if (len <= 45) return Math.round(max * 0.32);
+  return Math.max(min, Math.round(max * 0.25));
 };
 
 // ─── TWEMOJI ICON ─────────────────────────────────────
@@ -774,7 +784,7 @@ export const SingleWordScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             opacity,
             transform: `translateY(${y + motion.floatY}px) scale(${scale * motion.breathe})`,
             filter: `blur(${blur}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             overflow: "hidden",
           }}
         >
@@ -819,7 +829,7 @@ export const MaskRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               letterSpacing: "-0.03em",
               lineHeight: 1,
               color: isLight(bg) ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               userSelect: "none",
             }}
           >
@@ -841,7 +851,7 @@ export const MaskRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 lineHeight: 1,
                 color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-                whiteSpace: "nowrap",
+                ...MAIN_TEXT_WRAP,
               }}
             >
               {scene.text}
@@ -901,7 +911,7 @@ export const SlideWordScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               textShadow: mainTextShadow(bg),
               opacity,
               transform: `translateX(${x}px)`,
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               overflow: "hidden",
             }}
           >
@@ -948,7 +958,7 @@ export const ZoomWordScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             opacity,
             transform: `scale(${scale * motion.breathe}) translateY(${motion.floatY}px)`,
             filter: `blur(${blur}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             overflow: "hidden",
           }}
         >
@@ -984,7 +994,7 @@ export const FadeUpLettersScene: React.FC<{ scene: SceneData }> = ({ scene }) =>
           opacity: fadeOut,
         }}
       >
-        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", maxWidth: "100%", padding: "0 40px" }}>
           {words.map((word, wi) => (
               <span key={wi} style={{ display: "inline-flex" }}>
                 {word.split("").map((letter, i) => {
@@ -1057,7 +1067,7 @@ export const BlurInScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             textShadow: mainTextShadow(bg),
             opacity,
             filter: `blur(${blur}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1104,7 +1114,7 @@ export const ScaleInScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             opacity,
             transform: `scale(${scale * motion.breathe}) translateY(${motion.floatY}px)`,
             filter: `blur(${blur}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1151,7 +1161,7 @@ export const SlideUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               textShadow: mainTextShadow(bg),
               opacity,
               transform: `translateY(${y}px)`,
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
             }}
           >
             {scene.text}
@@ -1202,7 +1212,7 @@ export const ClipTopScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               lineHeight: 1,
               color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
             }}
           >
             {scene.text}
@@ -1233,7 +1243,7 @@ export const StaggerWordsScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           opacity: fadeOut,
         }}
       >
-        <div style={{ display: "flex", gap: "0.3em", whiteSpace: "nowrap", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", maxWidth: "100%", padding: "0 40px" }}>
           {words.map((word, i) => {
             const delay = i * 10;
             const enter = spring({
@@ -1302,7 +1312,7 @@ export const FadePureScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1349,7 +1359,7 @@ export const TrackingScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               appleOpacity,
             ),
             transform: `scale(${scaleCompensate})`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1395,7 +1405,7 @@ export const RotateInScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             textShadow: mainTextShadow(bg),
             opacity,
             transform: `translateY(${y + motion.floatY}px) rotate(${rotate + motion.microRotate}deg) scale(${motion.breathe})`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1444,7 +1454,7 @@ export const GeoBgTestScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
             opacity,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -1462,7 +1472,6 @@ export const GeoBgTestScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const motion = useContinuousMotion();
   const bg = scene.bg || "#ffffff";
   const photoUrl = scene.photoUrl || "";
   const displayText = getPhotoDisplayText(scene);
@@ -1492,26 +1501,25 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          gap: 32,
-          padding: "60px 80px",
+          gap: 24,
+          padding: "60px 40px",
           opacity: fadeOut,
-          textAlign: "center",
         }}
       >
         {displayText && (
           <div
             style={{
               fontSize,
-              fontWeight: 600,
+              fontWeight: 700,
               fontFamily: FONT,
               letterSpacing: "-0.03em",
-              lineHeight: 1,
-              color: mainTextColor(scene, bg),
-            textShadow: mainTextShadow(bg),
-              opacity: textFadeIn,
-              transform: `translateY(${textY + motion.floatY}px) scale(${motion.breathe})`,
-              whiteSpace: "nowrap",
+              lineHeight: 1.2,
+              color: textColor(bg),
               textAlign: "center",
+              maxWidth: "90%",
+              wordBreak: "break-word",
+              opacity: textFadeIn,
+              transform: `translateY(${textY}px)`,
             }}
           >
             {displayText}
@@ -1521,8 +1529,7 @@ export const PhotoRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
         {photoUrl && (
           <div
             style={{
-              width: "78%",
-              maxWidth: 560,
+              width: "85%",
               aspectRatio: "16/9",
               borderRadius: 16,
               overflow: "hidden",
@@ -1659,7 +1666,7 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             textShadow: mainTextShadow(bg),
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `translateY(${interpolate(textEnter, [0, 1], [20, 0]) + motion.floatY}px) scale(${motion.breathe})`,
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               textAlign: "center",
             }}
           >
@@ -1744,7 +1751,7 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             fontVariantNumeric: "tabular-nums",
             textAlign: "center",
           }}
@@ -1923,7 +1930,7 @@ export const MultiStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                   color: mainTextColor(scene, bg),
                   textShadow: mainTextShadow(bg),
                   fontVariantNumeric: "tabular-nums",
-                  whiteSpace: "nowrap",
+                  ...MAIN_TEXT_WRAP,
                 }}
               >
                 {current >= 1000 ? `${(current / 1000).toFixed(0)}K` : current}
@@ -1965,7 +1972,7 @@ export const AccentWordScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           opacity: fadeOut,
         }}
       >
-        <div style={{ display: "flex", gap: "0.25em", whiteSpace: "nowrap", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "0.25em", flexWrap: "wrap", justifyContent: "center", maxWidth: "100%", padding: "0 40px" }}>
           {words.map((word, i) => {
             const delay = i * 8;
             const enter = spring({
@@ -2048,7 +2055,7 @@ export const UnderlineScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
               transform: `translateY(${textY + motion.floatY}px) scale(${motion.breathe})`,
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               paddingBottom: 12,
             }}
           >
@@ -2137,7 +2144,7 @@ export const ColorShiftScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: textColor2,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2198,7 +2205,7 @@ export const LineDrawScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             textShadow: mainTextShadow(bg),
             opacity: textFade,
             transform: `translateY(${textY + motion.floatY}px) scale(${motion.breathe})`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2288,7 +2295,7 @@ export const ShapeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             opacity: Math.min(interpolate(textEnter, [0, 1], [0, 1]), fadeOut),
             transform: `scale(${interpolate(textEnter, [0, 1], [0.92, 1]) * motion.breathe}) translateY(${motion.floatY}px)`,
             filter: `blur(${interpolate(textEnter, [0, 0.5, 1], [6, 1, 0])}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             zIndex: 1,
           }}
         >
@@ -2371,7 +2378,7 @@ export const ExpandingShapeScene: React.FC<{ scene: SceneData }> = ({ scene }) =
             opacity: Math.min(interpolate(textEnter, [0, 1], [0, 1]), fadeOut),
             transform: `scale(${interpolate(textEnter, [0, 1], [0.92, 1]) * motion.breathe}) translateY(${motion.floatY}px)`,
             filter: `blur(${interpolate(textEnter, [0, 0.5, 1], [6, 1, 0])}px)`,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2462,7 +2469,7 @@ export const WipeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
             opacity: Math.min(textFade, textFadeOut),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2536,7 +2543,7 @@ export const FlashScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
             opacity: Math.min(textFade, textFadeOut),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2610,7 +2617,7 @@ export const ColorFadeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
             opacity: Math.min(textFade, textFadeOut),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2692,7 +2699,7 @@ export const SplitVerticalScene: React.FC<{ scene: SceneData }> = ({ scene }) =>
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -2755,7 +2762,7 @@ export const ZoomTransitionScene: React.FC<{ scene: SceneData }> = ({ scene }) =
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
@@ -2819,7 +2826,7 @@ export const IrisScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -2898,7 +2905,7 @@ export const CurtainScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -2964,7 +2971,7 @@ export const DiagonalWipeScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -3009,7 +3016,7 @@ export const GlitchSwitchScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity,
             transform: `translate(${glitchX}px, ${glitchY}px)`,
           }}
@@ -3026,7 +3033,7 @@ export const GlitchSwitchScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
               letterSpacing: "-0.03em",
               lineHeight: 1,
               color: scene.accentColor || "#10B981",
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               opacity: 0.4,
               transform: `translate(${-glitchX * 1.5}px, ${glitchY}px)`,
               mixBlendMode: "screen",
@@ -3113,7 +3120,7 @@ export const PixelDissolveScene: React.FC<{ scene: SceneData }> = ({ scene }) =>
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -3176,7 +3183,7 @@ export const LightSweepScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -3251,7 +3258,7 @@ export const NotificationScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             lineHeight: 1,
             color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
           }}
         >
@@ -3322,7 +3329,7 @@ export const NotificationScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
                 letterSpacing: "-0.01em",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
+                ...MAIN_TEXT_WRAP,
               }}
             >
               {notifText}
@@ -3401,7 +3408,7 @@ export const PulseButtonScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               lineHeight: 1,
               color: mainTextColor(scene, bg),
             textShadow: mainTextShadow(bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               opacity: Math.min(textFade, fadeOut),
               transform: `translateY(${interpolate(enter, [0, 1], [20, 0])}px)`,
             }}
@@ -3443,7 +3450,7 @@ export const PulseButtonScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 fontFamily: FONT,
                 letterSpacing: "-0.02em",
                 color: isLight(accent) ? "#000000" : "#ffffff",
-                whiteSpace: "nowrap",
+                ...MAIN_TEXT_WRAP,
               }}
             >
               {scene.buttonText || "Commencer →"}
@@ -4089,7 +4096,7 @@ export const ColorLettersScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           opacity: fadeOut,
         }}
       >
-        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", maxWidth: "100%", padding: "0 40px" }}>
           {words.map((word, wi) => (
               <span key={wi} style={{ display: "inline-flex" }}>
                 {word.split("").map((letter, i) => {
@@ -4181,7 +4188,7 @@ export const GradientScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: tColor,
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(interpolate(enter, [0, 1], [0, 1]), fadeOut),
             transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])}) translateY(${interpolate(enter, [0, 1], [24, 0])}px)`,
             filter: `blur(${interpolate(enter, [0, 0.5, 1], [8, 1, 0])}px)`,
@@ -4324,7 +4331,7 @@ export const SpotlightScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: mainTextColor(scene, bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: interpolate(enter, [0, 1], [0, 1]),
             transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])}) translateY(${interpolate(enter, [0, 1], [24, 0])}px)`,
             filter: `blur(${interpolate(enter, [0, 0.5, 1], [8, 1, 0])}px)`,
@@ -4403,7 +4410,7 @@ export const NoiseScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: mainTextColor(scene, bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])}) translateY(${interpolate(enter, [0, 1], [24, 0])}px)`,
             filter: `blur(${interpolate(enter, [0, 0.5, 1], [8, 1, 0])}px)`,
             textShadow: mainTextShadow(bg),
@@ -4443,7 +4450,7 @@ export const GradientTextScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             fontSize, fontWeight: 800, fontFamily: FONT,
             letterSpacing: "-0.04em", lineHeight: 1,
             color: isLight(bg) ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)",
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])})`,
           }}>
             {scene.text}
@@ -4456,7 +4463,7 @@ export const GradientTextScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
               fontSize, fontWeight: 800, fontFamily: FONT,
               letterSpacing: "-0.04em", lineHeight: 1,
               color: safeAccent(accent, bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               transform: `scale(${interpolate(enter, [0, 1], [0.92, 1])})`,
             }}>
               {scene.text}
@@ -4502,7 +4509,7 @@ export const EraseLettersScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           opacity: interpolate(globalEnter, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
         }}
       >
-        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", gap: "0.3em", flexWrap: "wrap", justifyContent: "center", maxWidth: "100%", padding: "0 40px" }}>
           {words.map((word, wi) => (
               <span key={wi} style={{ display: "inline-flex" }}>
                 {word.split("").map((letter, i) => {
@@ -4596,7 +4603,7 @@ export const SplitLinesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                 letterSpacing: "-0.03em",
                 lineHeight: 1,
                 color: lineColor,
-                whiteSpace: "nowrap",
+                ...MAIN_TEXT_WRAP,
                 textAlign: "center",
                 opacity: interpolate(enter, [0, 1], [0, 1]),
                 transform: `translateY(${interpolate(enter, [0, 1], [30, 0]) + motion.floatY}px) scale(${motion.breathe})`,
@@ -4682,7 +4689,7 @@ export const BgNumberScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: mainTextColor(scene, bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: Math.min(interpolate(textEnter, [0, 1], [0, 1]), fadeOut),
             transform: `scale(${interpolate(textEnter, [0, 1], [0.92, 1]) * motion.breathe}) translateY(${motion.floatY}px) translateY(${interpolate(textEnter, [0, 1], [24, 0])}px)`,
             filter: `blur(${interpolate(textEnter, [0, 0.5, 1], [8, 1, 0])}px)`,
@@ -4747,7 +4754,7 @@ export const TwoLinesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
             color: mainTextColor(scene, bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             textAlign: "center",
             opacity: interpolate(enter1, [0, 1], [0, 1]),
             transform: `translateY(${interpolate(enter1, [0, 1], [30, 0])}px) scale(${interpolate(enter1, [0, 1], [0.92, 1])})`,
@@ -4767,7 +4774,7 @@ export const TwoLinesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               letterSpacing: "0.08em",
               lineHeight: 1,
               color: safeAccent(accent, bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               textTransform: "uppercase",
               textAlign: "center",
               opacity: interpolate(enter2, [0, 1], [0, 1]),
@@ -4810,7 +4817,7 @@ export const WeightRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             alignItems: "center",
             padding: "0 80px",
             textAlign: "center",
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {words.map((word, i) => {
@@ -4825,7 +4832,7 @@ export const WeightRevealScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
                   letterSpacing: weight > 600 ? "-0.04em" : "0.02em",
                   lineHeight: 1,
                   color: mainTextColor(scene, bg),
-                  whiteSpace: "nowrap",
+                  ...MAIN_TEXT_WRAP,
                   textShadow: mainTextShadow(bg),
                   textAlign: "center",
                   display: "inline-block",
@@ -5309,7 +5316,7 @@ export const IPhoneScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: interpolate(enter, [0, 1], [0, 1]),
           }}>
             {scene.text}
@@ -5404,7 +5411,7 @@ export const MacBookScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: screenOpacity,
           }}>
             {scene.text}
@@ -5498,7 +5505,7 @@ export const DoubleDeviceScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: interpolate(textEnter, [0, 1], [0, 1]),
             transform: `translateY(${interpolate(textEnter, [0, 1], [16, 0])}px)`,
           }}>
@@ -5593,7 +5600,7 @@ export const BrowserScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: contentFade,
           }}>
             {scene.text}
@@ -5712,7 +5719,7 @@ export const DashboardScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: interpolate(enter, [0, 1], [0, 1]),
           }}>
             {scene.text}
@@ -5865,7 +5872,7 @@ export const NetworkScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             <div style={{
               fontSize, fontWeight: 600, fontFamily: FONT,
               letterSpacing: "-0.03em", lineHeight: 1,
-              color: textColor(bg), whiteSpace: "nowrap",
+              color: textColor(bg), ...MAIN_TEXT_WRAP,
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `translateY(${interpolate(textEnter, [0, 1], [16, 0])}px)`,
             }}>
@@ -5941,7 +5948,7 @@ export const DataFlowScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             <div style={{
               fontSize, fontWeight: 700, fontFamily: FONT,
               letterSpacing: "-0.03em", lineHeight: 1,
-              color: textColor(bg), whiteSpace: "nowrap",
+              color: textColor(bg), ...MAIN_TEXT_WRAP,
               textShadow: `0 0 30px ${bg}, 0 0 60px ${bg}`,
             }}>
               {scene.text}
@@ -6042,7 +6049,7 @@ export const WorldMapScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             <div style={{
               fontSize, fontWeight: 600, fontFamily: FONT,
               letterSpacing: "-0.03em", lineHeight: 1,
-              color: textColor(bg), whiteSpace: "nowrap",
+              color: textColor(bg), ...MAIN_TEXT_WRAP,
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `translateY(${interpolate(textEnter, [0, 1], [16, 0])}px)`,
             }}>
@@ -6161,7 +6168,7 @@ export const HorizontalTimelineScene: React.FC<{ scene: SceneData }> = ({ scene 
           <div style={{
             fontSize, fontWeight: 600, fontFamily: FONT,
             letterSpacing: "-0.03em", lineHeight: 1,
-            color: textColor(bg), whiteSpace: "nowrap",
+            color: textColor(bg), ...MAIN_TEXT_WRAP,
             opacity: interpolate(textEnter, [0, 1], [0, 1]),
             transform: `translateY(${interpolate(textEnter, [0, 1], [16, 0])}px)`,
           }}>
@@ -6213,7 +6220,7 @@ export const StrobeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
             color: textColor(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             transform: `scale(${interpolate(enter, [0, 1], [0.9, 1])})`,
             filter: `blur(${interpolate(enter, [0, 0.3, 1], [4, 0, 0])}px)`,
           }}
@@ -6251,7 +6258,7 @@ export const ExplodeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
-        <div style={{ display: "flex", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", maxWidth: "100%", padding: "0 40px", flexWrap: "wrap", justifyContent: "center" }}>
           {letters.map((letter, i) => {
             const enterOpacity = interpolate(enter, [0, 1], [0, 1]);
             const angle = (i / letters.length) * Math.PI * 2;
@@ -6332,7 +6339,7 @@ export const ParallaxScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
             color: textColor(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             transform: `translateX(${textX + interpolate(enter, [0, 1], [-40, 0])}px) scale(${interpolate(enter, [0, 1], [0.95, 1])})`,
             filter: `blur(${interpolate(enter, [0, 0.4, 1], [6, 0, 0])}px)`,
           }}
@@ -6383,7 +6390,7 @@ export const RepeatCutScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
             color: textColor(currentBg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             transform: `scale(${interpolate(flashIn, [0, 1], [0.92, 1])})`,
           }}
         >
@@ -6426,8 +6433,10 @@ export const KaraokeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "center",
-            gap: "0.25em",
+            gap: "0.3em",
             textAlign: "center",
+            padding: "0 50px",
+            maxWidth: "100%",
           }}
         >
           {words.map((word, i) => {
@@ -6527,7 +6536,7 @@ export const WordGroupsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.03em",
             lineHeight: 1,
             color: textColor(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: interpolate(enter, [0, 1], [0, 1]),
             transform: `translateY(${interpolate(enter, [0, 1], [30, 0])}px) scale(${interpolate(enter, [0, 1], [0.88, 1])})`,
             filter: `blur(${interpolate(enter, [0, 0.5, 1], [8, 1, 0])}px)`,
@@ -6640,7 +6649,7 @@ export const EmojiScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               letterSpacing: "-0.03em",
               lineHeight: 1,
               color: textColor(bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `translateY(${interpolate(textEnter, [0, 1], [20, 0])}px)`,
             }}
@@ -6718,7 +6727,7 @@ export const EmojiBurstScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               letterSpacing: "-0.04em",
               lineHeight: 1,
               color: textColor(bg),
-              whiteSpace: "nowrap",
+              ...MAIN_TEXT_WRAP,
               opacity: interpolate(textEnter, [0, 1], [0, 1]),
               transform: `scale(${interpolate(textEnter, [0, 1], [0.9, 1])})`,
             }}
@@ -6798,7 +6807,7 @@ export const ParticlesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
             color: textColor(bg),
-            whiteSpace: "nowrap",
+            ...MAIN_TEXT_WRAP,
             opacity: interpolate(textEnter, [0, 1], [0, 1]),
             transform: `translateY(${interpolate(textEnter, [0, 1], [24, 0])}px) scale(${interpolate(textEnter, [0, 1], [0.92, 1])})`,
             filter: `blur(${interpolate(textEnter, [0, 0.5, 1], [8, 1, 0])}px)`,
