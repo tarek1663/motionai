@@ -155,36 +155,68 @@ const recalcSceneDurations = (scenes) => {
 };
 
 const syncScenesWithVoice = (scenes, wordTimestamps, fps = 60) => {
-  if (scenes?.[0]?.startFrame !== undefined) {
+  if (!scenes || scenes.length === 0) return [];
+
+  if (scenes[0]?.startFrame !== undefined) {
     console.log("🎙️ Using Claude-generated timestamps directly");
-    return scenes.map((scene) => ({
-      startFrame: scene.startFrame || 0,
-      durationFrames: Math.max(30, scene.durationFrames || 80),
+    const synced = scenes.map((scene) => ({
+      startFrame: Math.max(0, scene.startFrame || 0),
+      durationFrames: Math.max(40, scene.durationFrames || 80),
     }));
+
+    for (let i = 1; i < synced.length; i++) {
+      const prev = synced[i - 1];
+      const prevEnd = prev.startFrame + prev.durationFrames;
+      if (synced[i].startFrame > prevEnd) {
+        prev.durationFrames += synced[i].startFrame - prevEnd;
+      }
+    }
+
+    if (wordTimestamps && wordTimestamps.length > 0) {
+      const totalVoiceFrames =
+        wordTimestamps[wordTimestamps.length - 1]?.endFrame || 0;
+      if (totalVoiceFrames > 0 && synced.length > 0) {
+        const lastScene = synced[synced.length - 1];
+        const lastEnd = lastScene.startFrame + lastScene.durationFrames;
+        if (lastEnd < totalVoiceFrames) {
+          lastScene.durationFrames += totalVoiceFrames - lastEnd;
+          console.log(
+            "🎙️ Extended last scene to cover full audio:",
+            totalVoiceFrames - lastEnd,
+            "extra frames",
+          );
+        }
+      }
+    }
+
+    return synced;
   }
 
-  const phraseTimestamps = wordTimestamps;
+  const totalVoiceFrames =
+    wordTimestamps?.length > 0
+      ? wordTimestamps[wordTimestamps.length - 1]?.endFrame || 1800
+      : 1800;
 
-  if (!phraseTimestamps || phraseTimestamps.length === 0) {
-    console.log("⚠️ No wordTimestamps — using fixed durations");
-    return recalcSceneDurations(scenes);
-  }
-
-  const totalFrames =
-    phraseTimestamps[phraseTimestamps.length - 1]?.endFrame || 1800;
   const totalSceneDuration = scenes.reduce(
     (acc, s) => acc + (s.durationFrames || 80),
     0,
   );
-
   let currentFrame = 0;
-  return scenes.map((scene) => {
+
+  const synced = scenes.map((scene) => {
     const ratio = (scene.durationFrames || 80) / totalSceneDuration;
-    const duration = Math.max(30, Math.round(ratio * totalFrames));
+    const duration = Math.max(40, Math.round(ratio * totalVoiceFrames));
     const result = { startFrame: currentFrame, durationFrames: duration };
     currentFrame += duration;
     return result;
   });
+
+  const totalSynced = synced.reduce((acc, s) => acc + s.durationFrames, 0);
+  if (synced.length > 0 && totalSynced < totalVoiceFrames) {
+    synced[synced.length - 1].durationFrames += totalVoiceFrames - totalSynced;
+  }
+
+  return synced;
 };
 
 const generateMockupContent = (scene, prompt) => {

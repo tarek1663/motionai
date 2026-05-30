@@ -414,6 +414,17 @@ export const MotionVideo: React.FC<MotionVideoProps> = ({
         />
       )}
 
+      <Sequence from={0} durationInFrames={durationInFrames}>
+        <AbsoluteFill
+          style={{
+            background: "#000000",
+            zIndex: -1,
+          }}
+        >
+          <GeoBackground bg="#000000" geo="dots" />
+        </AbsoluteFill>
+      </Sequence>
+
       {allScenes.map((scene, index) => {
         const ts = timings[index];
         const fromTiming = getSceneTiming(
