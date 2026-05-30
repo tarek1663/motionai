@@ -9,8 +9,35 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const twemoji = require("@twemoji/api");
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const TWEMOJI_CDN = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg";
+
+const getTwemojiSvgUrl = (emoji) => {
+  if (!emoji || typeof emoji !== "string") return null;
+  try {
+    const codepoint = twemoji.convert.toCodePoint(emoji.trim());
+    return `${TWEMOJI_CDN}/${codepoint}.svg`;
+  } catch {
+    return null;
+  }
+};
+
+const enrichEmojiScenes = (scenes) =>
+  (scenes || []).map((scene) => {
+    if (scene?.emoji) {
+      return { ...scene, twemojiUrl: getTwemojiSvgUrl(scene.emoji) };
+    }
+    if (Array.isArray(scene?.emojis) && scene.emojis.length > 0) {
+      return {
+        ...scene,
+        twemojiUrls: scene.emojis.map(getTwemojiSvgUrl).filter(Boolean),
+      };
+    }
+    return scene;
+  });
 
 const app = express();
 app.use(cors());
@@ -844,16 +871,17 @@ app.post("/render", async (req, res) => {
           generateMockupContent(scene, prompt || ""),
         );
         const enrichedWithAI = await enrichMockupsWithAI(enrichedWithMockup, prompt || "");
+        const enrichedWithEmoji = enrichEmojiScenes(enrichedWithAI);
 
         console.log(
           "📱 Scene types:",
-          enrichedWithAI.map(
+          enrichedWithEmoji.map(
             (s) => `${s.type}:${s.mockupType || s.mockupData?.type || "none"}`,
           ),
         );
 
         const sceneDurations = syncScenesWithVoice(
-          enrichedWithAI,
+          enrichedWithEmoji,
           wordTimestamps.length ? wordTimestamps : phraseTimestamps,
           60,
         );
@@ -868,13 +896,13 @@ app.post("/render", async (req, res) => {
             : 0;
         const adjustedTotalFrames = Math.max(
           requestedTotalFrames || lastSceneEnd || computedTotalFrames || 1800,
-          enrichedWithAI.length * 30,
+          enrichedWithEmoji.length * 30,
         );
 
-        console.log("🎬 Total frames:", adjustedTotalFrames, "— Scenes:", enrichedWithAI.length);
+        console.log("🎬 Total frames:", adjustedTotalFrames, "— Scenes:", enrichedWithEmoji.length);
 
         const inputProps = {
-          scenes: enrichedWithAI,
+          scenes: enrichedWithEmoji,
           sceneDurations,
           totalFrames: adjustedTotalFrames,
           phraseTimestamps,

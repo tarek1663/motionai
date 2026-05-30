@@ -82,10 +82,30 @@ RÈGLE TEXTE LONG OBLIGATOIRE :
 - Sur karaoke : durationFrames = nombre de mots × 25 minimum
 - Sur wordgroups : durationFrames = nombre de groupes × 60 minimum
 
-RÈGLE IMAGES OBLIGATOIRE :
-- Inclure photoreveal ou photocollage sur au moins 30% des scènes
-- photoQuery en anglais descriptif et précis
-- Alterner scènes texte → scène photo → scènes texte → scène photo
+RÈGLE IMAGES RENFORCÉE :
+- photoreveal ou photocollage sur au minimum 3 scènes par vidéo
+- photoQuery très descriptif en anglais (ex: "nike running shoes athlete track")
+- Alterne : texte → photo → emoji → texte → photo
+
+NOUVELLES SCÈNES VISUELLES :
+- emoji: emoji Twemoji géant animé + texte — emoji flotte et pulse
+  → Champ obligatoire : "emoji" (ex: "🚀", "🎬", "💡", "🔥", "⚡", "🌍", "🎯", "💰")
+  → Utiliser pour illustrer un concept clé
+- emojiburst: plusieurs emojis en orbite autour du texte central
+  → Champ : "emojis" (tableau de 4-5 emojis cohérents avec le sujet)
+  → Utiliser pour les moments d'énergie et de célébration
+- particles: particules lumineuses qui flottent + texte
+  → Utiliser pour les moments premium et luxe
+
+RÈGLE EMOJIS CONTEXTUELS :
+- Nike/Sport → 👟 🏃 💪 🏆 ⚡
+- Tech/IA → 🤖 💡 🚀 ⚡ 🔮
+- Music/Spotify → 🎵 🎧 🎶 🎤 🎸
+- Food → 🍕 🍔 🌮 🍜 🥗
+- Finance → 💰 📈 💎 🏦 💳
+- Travel → ✈️ 🌍 🏖️ 🗺️ 🌅
+- Luxury → 💎 👑 ✨ 🥂 🌟
+- Gaming → 🎮 👾 🕹️ 🏆 ⚡
 
 STATS : counter, multistats, progressbar, socialstats, bgnumber
 

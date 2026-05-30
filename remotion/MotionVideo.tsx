@@ -81,6 +81,9 @@ import {
   RepeatCutScene,
   KaraokeScene,
   WordGroupsScene,
+  EmojiScene,
+  EmojiBurstScene,
+  ParticlesScene,
   DynamicVignette,
 } from "./templates/scenes";
 
@@ -273,6 +276,12 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <KaraokeScene scene={sceneWithIndex} />;
     case "wordgroups":
       return <WordGroupsScene scene={sceneWithIndex} />;
+    case "emoji":
+      return <EmojiScene scene={sceneWithIndex} />;
+    case "emojiburst":
+      return <EmojiBurstScene scene={sceneWithIndex} />;
+    case "particles":
+      return <ParticlesScene scene={sceneWithIndex} />;
     default:
       return <SingleWordScene scene={sceneWithIndex} />;
   }

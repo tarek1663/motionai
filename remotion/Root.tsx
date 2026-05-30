@@ -6,45 +6,46 @@ const fps = 60;
 const defaultProps = {
   scenes: [
     {
-      type: "karaoke",
-      text: "Nike révolutionne le sport mondial depuis 1964",
+      type: "emoji",
+      text: "Performance.",
       bg: "#000000",
       accentColor: "#ffffff",
       geo: "dots",
-      durationFrames: 180,
+      emoji: "👟",
+      durationFrames: 120,
     },
     {
-      type: "wordgroups",
-      text: "Just Do It chaque jour sans exception",
+      type: "emojiburst",
+      text: "Just Do It.",
       bg: "#ffffff",
       accentColor: "#000000",
       geo: "grid",
-      durationFrames: 180,
+      emojis: ["👟", "🏃", "💪", "🏆", "⚡"],
+      durationFrames: 150,
     },
     {
-      type: "karaoke",
-      text: "Les meilleurs athlètes portent Nike partout dans le monde",
+      type: "particles",
+      text: "Premium.",
       bg: "#000000",
       accentColor: "#10B981",
       geo: "circles",
-      durationFrames: 240,
+      durationFrames: 120,
     },
     {
-      type: "wordgroups",
-      text: "Performance style confort innovation",
-      bg: "#10B981",
-      accentColor: "#ffffff",
+      type: "emoji",
+      text: "Mondial.",
+      bg: "#ffffff",
+      accentColor: "#000000",
       geo: "diagonal",
-      durationFrames: 160,
+      emoji: "🌍",
+      durationFrames: 120,
     },
   ],
-  sceneDurations: [
-    { startFrame: 0, durationFrames: 180 },
-    { startFrame: 180, durationFrames: 180 },
-    { startFrame: 360, durationFrames: 240 },
-    { startFrame: 600, durationFrames: 160 },
-  ],
-  totalFrames: 760,
+  sceneDurations: Array.from({ length: 4 }, (_, i) => ({
+    startFrame: i * 130,
+    durationFrames: 130,
+  })),
+  totalFrames: 520,
   audioSrc: null,
   musicSrc: null,
   musicVolume: 0.12,
@@ -72,7 +73,7 @@ const RemotionRoot = () => (
       const total =
         Number.isFinite(p.totalFrames) && p.totalFrames > 0
           ? p.totalFrames
-          : 760;
+          : 520;
 
       const fmt = (p as { format?: string }).format || "9:16";
       const w = fmt === "16:9" ? 1920 : 1080;

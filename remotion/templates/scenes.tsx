@@ -88,8 +88,14 @@ export type SceneData = {
     | "parallax"
     | "repeatcut"
     | "karaoke"
-    | "wordgroups";
+    | "wordgroups"
+    | "emoji"
+    | "emojiburst"
+    | "particles";
   text?: string;
+  emoji?: string;
+  emojis?: string[];
+  emojiSize?: number;
   durationFrames?: number;
   url?: string;
   dashTitle?: string;
@@ -358,6 +364,29 @@ const autoFontSize = (text: string, max = 160, min = 60): number => {
   if (len <= 30) return Math.round(max * 0.45);
   return Math.max(min, Math.round(max * 0.35));
 };
+
+// ─── TWEMOJI ICON ─────────────────────────────────────
+export const emojiToTwemojiUrl = (emoji: string): string => {
+  const codepoint = [...emoji]
+    .map((c) => c.codePointAt(0)?.toString(16))
+    .filter(Boolean)
+    .join("-");
+  return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${codepoint}.svg`;
+};
+
+const TwemojiIcon: React.FC<{
+  emoji: string;
+  size?: number;
+  style?: React.CSSProperties;
+}> = ({ emoji, size = 80, style }) => (
+  <img
+    src={emojiToTwemojiUrl(emoji)}
+    width={size}
+    height={size}
+    alt=""
+    style={{ objectFit: "contain", ...style }}
+  />
+);
 
 // ═══════════════════════════════════════════════════════
 // FONDS GÉOMÉTRIQUES SOBRES — À SÉLECTIONNER
@@ -6512,6 +6541,241 @@ export const WordGroupsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               }}
             />
           ))}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── 1. EMOJI SCENE ───────────────────────────────────
+export const EmojiScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = scene.bg || "#ffffff";
+  const emoji = scene.emoji || "✨";
+  const size = scene.emojiSize || 160;
+
+  const enter = spring({
+    frame,
+    fps,
+    config: { damping: 12, stiffness: 300, mass: 0.6 },
+    from: 0,
+    to: 1,
+  });
+  const textEnter = spring({
+    frame: Math.max(0, frame - 16),
+    fps,
+    config: { damping: 280, stiffness: 80 },
+    from: 0,
+    to: 1,
+  });
+
+  const { opacity } = useAppleTiming();
+
+  const rotate = Math.sin(frame * 0.04) * 8;
+  const floatY = Math.sin(frame * 0.05) * 6;
+  const pulse = 1 + Math.sin(frame * 0.06) * 0.04;
+
+  const fontSize = autoFontSize(scene.text || "", 80, 40);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          gap: 24,
+          opacity,
+        }}
+      >
+        <div
+          style={{
+            transform: `translateY(${floatY + interpolate(enter, [0, 1], [60, 0])}px) scale(${interpolate(enter, [0, 1], [0.3, 1]) * pulse}) rotate(${interpolate(enter, [0, 1], [-20, rotate])}deg)`,
+            filter: `blur(${interpolate(enter, [0, 0.4, 1], [12, 2, 0])}px)`,
+          }}
+        >
+          <TwemojiIcon emoji={emoji} size={size} />
+        </div>
+
+        {scene.text && (
+          <div
+            style={{
+              fontSize,
+              fontWeight: 700,
+              fontFamily: FONT,
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
+              color: textColor(bg),
+              whiteSpace: "nowrap",
+              opacity: interpolate(textEnter, [0, 1], [0, 1]),
+              transform: `translateY(${interpolate(textEnter, [0, 1], [20, 0])}px)`,
+            }}
+          >
+            {scene.text}
+          </div>
+        )}
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── 2. EMOJI BURST ───────────────────────────────────
+export const EmojiBurstScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+
+  const emojis = scene.emojis?.length ? scene.emojis : ["✨", "🚀", "💥", "⚡", "🔥"];
+  const { opacity } = useAppleTiming();
+
+  const textEnter = spring({
+    frame: Math.max(0, frame - 20),
+    fps,
+    config: { damping: 280, stiffness: 80 },
+    from: 0,
+    to: 1,
+  });
+  const fontSize = autoFontSize(scene.text || "", 100, 48);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+      <AbsoluteFill style={{ opacity }}>
+        {emojis.map((emoji, i) => {
+          const angle = (i / emojis.length) * Math.PI * 2 + frame * 0.02;
+          const radius = 160 + Math.sin(frame * 0.03 + i) * 20;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+
+          const emojiEnter = spring({
+            frame: Math.max(0, frame - i * 6),
+            fps,
+            config: { damping: 14, stiffness: 300 },
+            from: 0,
+            to: 1,
+          });
+
+          return (
+            <AbsoluteFill
+              key={i}
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  transform: `translate(${x}px, ${y}px) scale(${interpolate(emojiEnter, [0, 1], [0, 1])}) rotate(${angle * 30}deg)`,
+                  opacity: interpolate(emojiEnter, [0, 1], [0, 0.85]),
+                }}
+              >
+                <TwemojiIcon emoji={emoji} size={48} />
+              </div>
+            </AbsoluteFill>
+          );
+        })}
+
+        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center" }}>
+          <div
+            style={{
+              fontSize,
+              fontWeight: 800,
+              fontFamily: FONT,
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              color: textColor(bg),
+              whiteSpace: "nowrap",
+              opacity: interpolate(textEnter, [0, 1], [0, 1]),
+              transform: `scale(${interpolate(textEnter, [0, 1], [0.9, 1])})`,
+            }}
+          >
+            {scene.text}
+          </div>
+        </AbsoluteFill>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── 3. PARTICLES ─────────────────────────────────────
+export const ParticlesScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+  const accent = safeAccent(scene.accentColor, bg);
+
+  const { opacity } = useAppleTiming();
+  const textEnter = spring({
+    frame,
+    fps,
+    config: { damping: 280, stiffness: 80 },
+    from: 0,
+    to: 1,
+  });
+  const fontSize = autoFontSize(scene.text || "", 120, 56);
+
+  const particles = Array.from({ length: 20 }, (_, i) => {
+    const seed = i * 137.508;
+    const x = (seed * 73) % 100;
+    const baseY = (seed * 47) % 100;
+    const size = 2 + (i % 4);
+    const speed = 0.3 + (i % 5) * 0.15;
+    const delay = (i * 13) % 60;
+
+    const y = ((baseY + frame * speed + delay) % 110) - 10;
+    const opacity2 = Math.sin((frame * speed + i * 37) * 0.05) * 0.4 + 0.4;
+
+    return { x, y, size, opacity: opacity2 };
+  });
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+
+      {particles.map((p, i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            borderRadius: "50%",
+            background: accent,
+            opacity: p.opacity * 0.5,
+            boxShadow: `0 0 ${p.size * 2}px ${accent}88`,
+          }}
+        />
+      ))}
+
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          opacity,
+        }}
+      >
+        <div
+          style={{
+            fontSize,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+            color: textColor(bg),
+            whiteSpace: "nowrap",
+            opacity: interpolate(textEnter, [0, 1], [0, 1]),
+            transform: `translateY(${interpolate(textEnter, [0, 1], [24, 0])}px) scale(${interpolate(textEnter, [0, 1], [0.92, 1])})`,
+            filter: `blur(${interpolate(textEnter, [0, 0.5, 1], [8, 1, 0])}px)`,
+            textShadow: isLight(bg)
+              ? "0 2px 12px rgba(0,0,0,0.08)"
+              : "0 2px 20px rgba(0,0,0,0.4)",
+          }}
+        >
+          {scene.text}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
