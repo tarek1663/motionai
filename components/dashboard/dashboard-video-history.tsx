@@ -12,7 +12,11 @@ export type DashboardVideoHistoryProps = {
   onRename: (videoId: string, title: string) => void;
 };
 
-export function DashboardVideoHistory({ videos }: DashboardVideoHistoryProps) {
+export function DashboardVideoHistory({
+  videos,
+  selectedVideoId,
+  onSelect,
+}: DashboardVideoHistoryProps) {
   useEffect(() => {
     console.log("📹 VideoHistory received:", videos?.length);
   }, [videos]);
@@ -36,17 +40,30 @@ export function DashboardVideoHistory({ videos }: DashboardVideoHistoryProps) {
         maxHeight: "100%",
       }}
     >
-      {videos.map((video) => (
+      {videos.map((video) => {
+        const isActive = selectedVideoId === video.id;
+        return (
         <div
           key={video.id}
+          role="button"
+          tabIndex={0}
+          onClick={() => onSelect(video)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelect(video);
+            }
+          }}
           style={{
-            background: "rgba(0,0,0,0.06)",
+            background: isActive ? "rgba(16,185,129,0.12)" : "rgba(0,0,0,0.06)",
             borderRadius: "8px",
             padding: "10px",
             cursor: "pointer",
             color: "#000000",
             fontSize: "12px",
-            border: "1px solid rgba(0,0,0,0.08)",
+            border: isActive
+              ? "1px solid rgba(16,185,129,0.35)"
+              : "1px solid rgba(0,0,0,0.08)",
           }}
         >
           <div style={{ fontWeight: 600, marginBottom: 4, color: "#000000" }}>
@@ -56,7 +73,8 @@ export function DashboardVideoHistory({ videos }: DashboardVideoHistoryProps) {
             {new Date(video.created_at).toLocaleDateString("fr-FR")}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
