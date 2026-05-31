@@ -1,58 +1,45 @@
-/** Règles — 4 scènes mot-par-mot style Apple */
+/** Règles — effets texte Apple officiels */
 export const MOTION_GOLDEN_RULES = `
-SCÈNES DISPONIBLES — 14 types :
-- singleword, maskreveal, slideword, zoomword (classiques)
-- fadeupl: lettres qui montent une par une
-- blurin: blur fort → net
-- scalein: scale 30% → 100%
-- slideup: monte depuis le bas
-- cliptop: révélation depuis le haut (clip)
-- staggerwords: mots en décalé avec rotation
-- fadepure: fade simple
-- geobgtest: test fonds géométriques (geo: dots|grid|diagonal|circles|perspective|hex|cross|lines|radial)
-- tracking: letter-spacing serré → normal
-- rotatein: rotation légère -6° → 0°
+SCÈNES TEXTE — 7 effets Apple officiels UNIQUEMENT :
+- wordsup: mots qui montent depuis le bas
+- wordsdown: mots qui descendent depuis le haut
+- lettersup: lettres une par une depuis le bas
+- lettersdown: lettres une par une depuis le haut
+- wordsupblur: mots qui montent + blur qui disparaît
+- wordsinleft: mots qui arrivent depuis la gauche
+- wordsright: entrée gauche, sortie droite
+
+RÈGLE DE SÉLECTION :
+- Phrase longue (5+ mots) → wordsup, wordsdown, wordsupblur, wordsinleft
+- Mot court (1-3 mots) → lettersup, lettersdown, wordsright
+- Moment fort → wordsupblur ou lettersup
+- Alterner TOUJOURS les 7 types — jamais deux identiques consécutifs
 
 SCÈNES PHOTOS (photoQuery en anglais obligatoire si pas de photoUrl) :
-- photoreveal: texte au-dessus, photo révélée gauche→droite
-- photocollage: 2-3 photos côte à côte (photoQuery + photoUrl2/3 via queries différentes)
+- photoreveal, photocollage
 
 SCÈNES STATS :
-- counter: grand chiffre 0→counterTo + label text (suffix/prefix optionnels)
-- progressbar: barre % animée, counterTo = pourcentage cible, accentColor pour la barre
-- multistats: tableau stats [{ value, label, suffix }] — 3 lignes en séquence
+- counter, progressbar, multistats, socialstats, bgnumber
 
-SCÈNES COULEURS & ACCENT :
-- accentword: un mot en accentColor (accentIndex = index du mot)
-- underline: texte + soulignement animé accentColor
-- colorshift: fond fromBg → toBg progressif (hex #ffffff / #000000)
+SCÈNES FORMES & TRANSITIONS :
+- linedraw, shape, expandingshape, wipe, flash, colorfade
+- iris, curtain, diagonalwipe, splitvertical, pixeldissolve, lightsweep, glitchswitch
 
-SCÈNES FORMES & LIGNES :
-- linedraw: ligne horizontale qui se trace + texte
-- shape: cercle ou carré autour du texte (shape: "circle" | "square")
-- expandingshape: cercles concentriques qui s'agrandissent
-
-TRANSITIONS ENTRE SCÈNES :
-- wipe: panneau accentColor qui balaie l'écran (entrée/sortie)
-- flash: flash accentColor intense au début et à la fin
-- colorfade: fondu via couleur accent au milieu de la scène
-
-10 TRANSITIONS SUPPLÉMENTAIRES :
-splitvertical, zoomtransition, iris, curtain, diagonalwipe, glitchswitch, pixeldissolve, lightsweep, notification, pulsebutton, uiprogress, quote, timeline, socialstats, checklist, audioviz
+CONTEXTE & UI :
+- notification, uiprogress, quote, timeline, checklist, audioviz
+- emoji, emojiburst, particles
 
 RÈGLES ABSOLUES :
-1. Un mot ou max 3 mots par scène
-2. JAMAIS de retour à la ligne — texte toujours sur une seule ligne
-3. Alterner bg:#ffffff et bg:#000000 entre chaque scène
-4. Varier les 4 types de scènes — jamais deux identiques consécutifs
-5. Texte court et impactant — style Apple
-6. Police SF Pro Display — letterSpacing -0.03em
-7. Transitions douces — jamais brutales
+1. Un mot ou max 6 mots par scène
+2. Alterner bg:#ffffff et bg:#000000 entre chaque scène
+3. geo obligatoire et différent chaque scène
+4. Texte court et impactant — style Apple
+5. Police SF Pro Display — letterSpacing -0.03em
 `.trim();
 
 /** Prompt système pour la génération de scènes motion design. */
 export function buildPremiumSceneSystemPrompt(accentColor = "#7C3AED"): string {
-  return `Tu es directeur artistique motion design. Tu crées des vidéos sobres, premium, style Apple — texte mot par mot, transitions douces.
+  return `Tu es directeur artistique motion design. Tu crées des vidéos sobres, premium, style Apple.
 
 ═══════════════════════════════════════
 ${MOTION_GOLDEN_RULES}
@@ -66,30 +53,19 @@ Réponds UNIQUEMENT en JSON valide :
 {
   "scenes": [
     {
-      "type": "singleword",
+      "type": "wordsup",
       "text": "Simple.",
       "bg": "#ffffff",
-      "accentColor": "${accentColor}"
+      "accentColor": "${accentColor}",
+      "geo": "dots"
     },
     {
-      "type": "maskreveal",
-      "text": "Élégant.",
+      "type": "lettersup",
+      "text": "Impact.",
       "bg": "#000000",
-      "accentColor": "${accentColor}"
+      "accentColor": "${accentColor}",
+      "geo": "grid"
     }
   ]
-}
-
-RAPPEL : accentColor "${accentColor}" sur toutes les scènes — varier les 14 types, jamais deux identiques consécutifs`;
-}
-
-/** @deprecated Utiliser buildPremiumSceneSystemPrompt */
-export function buildMotionScenesSystemPrompt(extra?: {
-  formatGuidance?: string;
-  accentColor?: string;
-  bgAccent?: string;
-}): string {
-  const base = buildPremiumSceneSystemPrompt(extra?.accentColor ?? "#7C3AED");
-  const formatBlock = extra?.formatGuidance ? `\n\n${extra.formatGuidance}` : "";
-  return base + formatBlock;
+}`;
 }

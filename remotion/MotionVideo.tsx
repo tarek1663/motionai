@@ -10,27 +10,19 @@ import {
 import React from "react";
 import {
   SceneData,
-  SingleWordScene,
-  MaskRevealScene,
-  SlideWordScene,
-  ZoomWordScene,
-  FadeUpLettersScene,
-  BlurInScene,
-  ScaleInScene,
-  SlideUpScene,
-  ClipTopScene,
-  StaggerWordsScene,
-  FadePureScene,
-  TrackingScene,
-  RotateInScene,
+  WordsUpScene,
+  WordsDownScene,
+  LettersUpScene,
+  LettersDownScene,
+  WordsUpBlurScene,
+  WordsInLeftScene,
+  WordsRightScene,
   GeoBgTestScene,
   PhotoRevealScene,
   PhotoCollageScene,
   CounterScene,
   ProgressBarScene,
   MultiStatsScene,
-  AccentWordScene,
-  UnderlineScene,
   ColorShiftScene,
   LineDrawScene,
   ShapeScene,
@@ -53,16 +45,9 @@ import {
   SocialStatsScene,
   ChecklistScene,
   AudioVizScene,
-  ColorLettersScene,
   GradientScene,
-  HierarchyTextScene,
-  SpotlightScene,
   NoiseScene,
-  GradientTextScene,
-  EraseLettersScene,
-  SplitLinesScene,
   BgNumberScene,
-  TwoLinesScene,
   IPhoneScene,
   MacBookScene,
   DoubleDeviceScene,
@@ -73,13 +58,6 @@ import {
   DataFlowScene,
   WorldMapScene,
   HorizontalTimelineScene,
-  WeightRevealScene,
-  StrobeScene,
-  ExplodeScene,
-  ParallaxScene,
-  RepeatCutScene,
-  KaraokeScene,
-  WordGroupsScene,
   EmojiScene,
   EmojiBurstScene,
   ParticlesScene,
@@ -151,10 +129,6 @@ const EMPTY_SCENE_EXCEPTIONS = new Set([
   "progressbar",
   "socialstats",
   "bgnumber",
-  "strobe",
-  "explode",
-  "parallax",
-  "repeatcut",
 ]);
 
 const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
@@ -179,32 +153,20 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
   }
 
   switch (scene.type) {
-    case "singleword":
-      return <SingleWordScene scene={sceneWithIndex} />;
-    case "maskreveal":
-      return <MaskRevealScene scene={sceneWithIndex} />;
-    case "slideword":
-      return <SlideWordScene scene={sceneWithIndex} />;
-    case "zoomword":
-      return <ZoomWordScene scene={sceneWithIndex} />;
-    case "fadeupl":
-      return <FadeUpLettersScene scene={sceneWithIndex} />;
-    case "blurin":
-      return <BlurInScene scene={sceneWithIndex} />;
-    case "scalein":
-      return <ScaleInScene scene={sceneWithIndex} />;
-    case "slideup":
-      return <SlideUpScene scene={sceneWithIndex} />;
-    case "cliptop":
-      return <ClipTopScene scene={sceneWithIndex} />;
-    case "staggerwords":
-      return <StaggerWordsScene scene={sceneWithIndex} />;
-    case "fadepure":
-      return <FadePureScene scene={sceneWithIndex} />;
-    case "tracking":
-      return <TrackingScene scene={sceneWithIndex} />;
-    case "rotatein":
-      return <RotateInScene scene={sceneWithIndex} />;
+    case "wordsup":
+      return <WordsUpScene scene={sceneWithIndex} />;
+    case "wordsdown":
+      return <WordsDownScene scene={sceneWithIndex} />;
+    case "lettersup":
+      return <LettersUpScene scene={sceneWithIndex} />;
+    case "lettersdown":
+      return <LettersDownScene scene={sceneWithIndex} />;
+    case "wordsupblur":
+      return <WordsUpBlurScene scene={sceneWithIndex} />;
+    case "wordsinleft":
+      return <WordsInLeftScene scene={sceneWithIndex} />;
+    case "wordsright":
+      return <WordsRightScene scene={sceneWithIndex} />;
     case "geobgtest":
       return <GeoBgTestScene scene={sceneWithIndex} />;
     case "photoreveal":
@@ -217,10 +179,6 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <ProgressBarScene scene={sceneWithIndex} />;
     case "multistats":
       return <MultiStatsScene scene={sceneWithIndex} />;
-    case "accentword":
-      return <AccentWordScene scene={sceneWithIndex} />;
-    case "underline":
-      return <UnderlineScene scene={sceneWithIndex} />;
     case "colorshift":
       return <ColorShiftScene scene={sceneWithIndex} />;
     case "linedraw":
@@ -265,26 +223,12 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <ChecklistScene scene={sceneWithIndex} />;
     case "audioviz":
       return <AudioVizScene scene={sceneWithIndex} />;
-    case "colorletters":
-      return <ColorLettersScene scene={sceneWithIndex} />;
     case "gradient":
       return <GradientScene scene={sceneWithIndex} />;
-    case "hierarchytext":
-      return <HierarchyTextScene scene={sceneWithIndex} />;
-    case "spotlight":
-      return <SpotlightScene scene={sceneWithIndex} />;
     case "noise":
       return <NoiseScene scene={sceneWithIndex} />;
-    case "gradienttext":
-      return <GradientTextScene scene={sceneWithIndex} />;
-    case "eraseletters":
-      return <EraseLettersScene scene={sceneWithIndex} />;
-    case "splitlines":
-      return <SplitLinesScene scene={sceneWithIndex} />;
     case "bgnumber":
       return <BgNumberScene scene={sceneWithIndex} />;
-    case "twolines":
-      return <TwoLinesScene scene={sceneWithIndex} />;
     case "iphone":
       return <IPhoneScene scene={sceneWithIndex} />;
     case "macbook":
@@ -305,20 +249,6 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <WorldMapScene scene={sceneWithIndex} />;
     case "horizontaltimeline":
       return <HorizontalTimelineScene scene={sceneWithIndex} />;
-    case "weightreveal":
-      return <WeightRevealScene scene={sceneWithIndex} />;
-    case "strobe":
-      return <StrobeScene scene={sceneWithIndex} />;
-    case "explode":
-      return <ExplodeScene scene={sceneWithIndex} />;
-    case "parallax":
-      return <ParallaxScene scene={sceneWithIndex} />;
-    case "repeatcut":
-      return <RepeatCutScene scene={sceneWithIndex} />;
-    case "karaoke":
-      return <KaraokeScene scene={sceneWithIndex} />;
-    case "wordgroups":
-      return <WordGroupsScene scene={sceneWithIndex} />;
     case "emoji":
       return <EmojiScene scene={sceneWithIndex} />;
     case "emojiburst":
@@ -326,7 +256,7 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
     case "particles":
       return <ParticlesScene scene={sceneWithIndex} />;
     default:
-      return <SingleWordScene scene={sceneWithIndex} />;
+      return <WordsUpScene scene={sceneWithIndex} />;
   }
 };
 

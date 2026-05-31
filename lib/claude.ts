@@ -1063,8 +1063,7 @@ RÈGLES VISUELLES :
 - Alterner bg:#ffffff → bg:#000000 → bg:${accentColor}
 - geo différent sur chaque scène
 - JAMAIS deux types identiques consécutifs
-- Utiliser TOUT le catalogue d'animations
-- Inclure : strobe, explode, parallax, repeatcut sur les moments forts
+- Utiliser les 7 effets texte Apple + stats, photos, transitions
 - Inclure : counter, checklist, photoreveal sur les moments informatifs
 - Inclure : iris, curtain, diagonalwipe entre les grandes sections
 
@@ -1074,30 +1073,24 @@ RÈGLES DE DYNAMISME MAXIMUM :
 - Scènes moyennes sur phrases : 90-120 frames (1.5-2s)
 - Scènes complexes : 150-180 frames (2.5-3s)
 - Arc narratif : début rapide → milieu informatif → fin explosive
-- Beat drop obligatoire au milieu avec repeatcut ou strobe
-- Dernière scène : pulsebutton ou singleword fort avec accentColor
+- Moment fort au milieu : wordsupblur ou lettersup
+- Dernière scène : lettersup ou wordsup fort avec accentColor
 - photoreveal avec photoQuery sur 2-3 moments visuels forts
 - Transitions courtes : 40-50 frames max
 
 CATALOGUE COMPLET :
-Texte : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, twolines, gradienttext, accentword, underline, spotlight, hierarchytext, karaoke, wordgroups
+Texte (7 effets Apple UNIQUEMENT) : wordsup, wordsdown, lettersup, lettersdown, wordsupblur, wordsinleft, wordsright
 Stats : counter, multistats, progressbar, socialstats, bgnumber
-Dynamique : strobe, explode, parallax, repeatcut
 Formes : linedraw, shape, expandingshape
 Transitions : iris, curtain, diagonalwipe, splitvertical, pixeldissolve, lightsweep, glitchswitch
-UI : pulsebutton, uiprogress, notification
-Contexte : quote, timeline, checklist, audioviz, photoreveal
+UI : uiprogress, notification
+Contexte : quote, timeline, checklist, audioviz, photoreveal, photocollage, emoji, emojiburst, particles
 
-NOUVELLES SCÈNES TEXTE LONG :
-- karaoke: phrase complète affichée, mots qui s'illuminent en accent un par un — IDÉAL pour phrases de 5-10 mots
-- wordgroups: groupes de 2 mots qui apparaissent en séquence avec indicateur — IDÉAL pour phrases de 4-8 mots
-
-RÈGLE TEXTE LONG OBLIGATOIRE :
-- Phrase de 5 mots ou plus → utiliser OBLIGATOIREMENT karaoke ou wordgroups
-- JAMAIS afficher une phrase longue avec singleword, maskreveal ou slideword
-- Alterner karaoke et wordgroups dans la même vidéo
-- Sur karaoke : durationFrames = nombre de mots × 25 minimum
-- Sur wordgroups : durationFrames = nombre de groupes × 60 minimum
+RÈGLE DE SÉLECTION TEXTE :
+- Phrase longue (5+ mots) → wordsup, wordsdown, wordsupblur, wordsinleft
+- Mot court (1-3 mots) → lettersup, lettersdown, wordsright
+- Moment fort → wordsupblur ou lettersup
+- Alterner TOUJOURS les 7 types — jamais deux identiques consécutifs
 
 RÈGLE IMAGES OBLIGATOIRE :
 - Inclure photoreveal ou photocollage sur au moins 30% des scènes
@@ -1108,7 +1101,7 @@ FORMAT JSON STRICT :
 {
   "scenes": [
     {
-      "type": "singleword",
+      "type": "wordsup",
       "text": "mot ou groupe de mots",
       "bg": "#000000",
       "accentColor": "${accentColor}",

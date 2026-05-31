@@ -6,46 +6,67 @@ const fps = 60;
 const defaultProps = {
   scenes: [
     {
-      type: "emoji",
-      text: "Performance.",
+      type: "wordsup",
+      text: "Just Do It.",
       bg: "#000000",
       accentColor: "#ffffff",
       geo: "dots",
-      emoji: "👟",
-      durationFrames: 120,
+      durationFrames: 90,
     },
     {
-      type: "emojiburst",
-      text: "Just Do It.",
+      type: "wordsdown",
+      text: "La musique change tout.",
       bg: "#ffffff",
       accentColor: "#000000",
       geo: "grid",
-      emojis: ["👟", "🏃", "💪", "🏆", "⚡"],
-      durationFrames: 150,
+      durationFrames: 100,
     },
     {
-      type: "particles",
-      text: "Premium.",
+      type: "lettersup",
+      text: "Nike.",
       bg: "#000000",
-      accentColor: "#10B981",
+      accentColor: "#ffffff",
       geo: "circles",
-      durationFrames: 120,
+      durationFrames: 90,
     },
     {
-      type: "emoji",
-      text: "Mondial.",
+      type: "lettersdown",
+      text: "Spotify.",
       bg: "#ffffff",
-      accentColor: "#000000",
+      accentColor: "#1DB954",
       geo: "diagonal",
-      emoji: "🌍",
-      durationFrames: 120,
+      durationFrames: 90,
+    },
+    {
+      type: "wordsupblur",
+      text: "Partout dans le monde.",
+      bg: "#000000",
+      accentColor: "#ffffff",
+      geo: "cross",
+      durationFrames: 110,
+    },
+    {
+      type: "wordsinleft",
+      text: "750 millions.",
+      bg: "#1DB954",
+      accentColor: "#ffffff",
+      geo: "lines",
+      durationFrames: 90,
+    },
+    {
+      type: "wordsright",
+      text: "Commence.",
+      bg: "#000000",
+      accentColor: "#ffffff",
+      geo: "radial",
+      durationFrames: 90,
     },
   ],
-  sceneDurations: Array.from({ length: 4 }, (_, i) => ({
-    startFrame: i * 130,
-    durationFrames: 130,
+  sceneDurations: Array.from({ length: 7 }, (_, i) => ({
+    startFrame: i * 95,
+    durationFrames: 95,
   })),
-  totalFrames: 520,
+  totalFrames: 665,
   audioSrc: null,
   musicSrc: null,
   musicVolume: 0.12,
@@ -73,7 +94,7 @@ const RemotionRoot = () => (
       const total =
         Number.isFinite(p.totalFrames) && p.totalFrames > 0
           ? p.totalFrames
-          : 520;
+          : 665;
 
       const fmt = (p as { format?: string }).format || "9:16";
       const w = fmt === "16:9" ? 1920 : 1080;
@@ -81,14 +102,13 @@ const RemotionRoot = () => (
 
       return {
         durationInFrames: total,
-        fps: 60,
+        fps,
         width: w,
         height: h,
         props: {
           ...p,
-          sceneDurations: sceneDurationsAdjusted.length
-            ? sceneDurationsAdjusted
-            : p.sceneDurations,
+          sceneDurations: sceneDurationsAdjusted,
+          totalFrames: total,
         },
       };
     }}

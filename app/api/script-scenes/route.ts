@@ -69,18 +69,20 @@ SCÈNES MINIMUM : ${minScenes}
 
 CATALOGUE COMPLET DES SCÈNES DISPONIBLES :
 
-TEXTE : singleword, maskreveal, slideword, zoomword, fadeupl, blurin, scalein, slideup, cliptop, staggerwords, fadepure, tracking, rotatein, eraseletters, splitlines, twolines, weightreveal, gradienttext, accentword, underline, colorshift, spotlight, hierarchytext, karaoke, wordgroups
+SCÈNES TEXTE — 7 effets Apple officiels UNIQUEMENT :
+- wordsup: mots qui montent depuis le bas — effet Apple classique
+- wordsdown: mots qui descendent depuis le haut
+- lettersup: lettres une par une depuis le bas — pour les mots courts
+- lettersdown: lettres une par une depuis le haut
+- wordsupblur: mots qui montent + blur qui disparaît — premium
+- wordsinleft: mots qui arrivent depuis la gauche
+- wordsright: mots qui entrent depuis la gauche et sortent vers la droite
 
-NOUVELLES SCÈNES TEXTE LONG :
-- karaoke: phrase complète affichée, mots qui s'illuminent en accent un par un — IDÉAL pour phrases de 5-10 mots
-- wordgroups: groupes de 2 mots qui apparaissent en séquence avec indicateur — IDÉAL pour phrases de 4-8 mots
-
-RÈGLE TEXTE LONG OBLIGATOIRE :
-- Phrase de 5 mots ou plus → utiliser OBLIGATOIREMENT karaoke ou wordgroups
-- JAMAIS afficher une phrase longue avec singleword, maskreveal ou slideword
-- Alterner karaoke et wordgroups dans la même vidéo
-- Sur karaoke : durationFrames = nombre de mots × 25 minimum
-- Sur wordgroups : durationFrames = nombre de groupes × 60 minimum
+RÈGLE DE SÉLECTION TEXTE :
+- Phrase longue (5+ mots) → wordsup, wordsdown, wordsupblur, wordsinleft
+- Mot court (1-3 mots) → lettersup, lettersdown, wordsright
+- Moment fort → wordsupblur ou lettersup
+- Alterner TOUJOURS les 7 types — jamais deux identiques consécutifs
 
 RÈGLE PHOTOS OBLIGATOIRE :
 - TOUJOURS inclure un champ "text" sur les scènes photo
@@ -217,7 +219,7 @@ RÈGLE ALTERNANCE VISUELLE :
 
 RÈGLE DIVERSITÉ VISUELLE OBLIGATOIRE :
 Par vidéo tu DOIS inclure au minimum :
-- 3 scènes de texte différentes (parmi : singleword, maskreveal, slideword, zoomword, blurin, scalein, staggerwords, fadeup, rotatein, tracking)
+- Au minimum 5 des 7 effets texte Apple (wordsup, wordsdown, lettersup, lettersdown, wordsupblur, wordsinleft, wordsright)
 - 1 scène de stats ou chiffres (counter, multistats, progressbar, socialstats, bgnumber)
 - 1 scène de liste (checklist, timeline, splitlines)
 - 1 scène de forme ou ambiance (linedraw, shape, expandingshape, spotlight, audioviz)
@@ -225,7 +227,7 @@ Par vidéo tu DOIS inclure au minimum :
 - 1 scène photo si photoQuery pertinent (photoreveal, photocollage)
 - 1 scène mockup SI sujet web/app (iphone, browser, macbook, dashboard)
 - 1 scène accent (accentword, underline, gradienttext, twolines)
-- 1 scène CTA finale (singleword fort)
+- 1 scène CTA finale (lettersup ou wordsup fort)
 
 FONDS — rotation stricte sur chaque scène :
 bg:#ffffff → bg:#000000 → bg:${accent} → bg:#ffffff → bg:#000000 → bg:${accent}...
@@ -237,7 +239,7 @@ FORMAT JSON STRICT :
 {
   "scenes": [
     {
-      "type": "maskreveal",
+      "type": "wordsup",
       "text": "La musique change tout",
       "bg": "#000000",
       "accentColor": "${accent}",
