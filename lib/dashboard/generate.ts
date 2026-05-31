@@ -351,32 +351,12 @@ export async function generateFromScript(params: ScriptParams) {
     const requestedDurationSeconds = durationToSeconds(duration);
     const accentColor = userAccentColor || colors.accent;
 
-    const voiceTextRes = await fetch("/api/voice-text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: finalScript,
-        mode: "script",
-        customScript: finalScript,
-        duration: requestedDurationSeconds,
-      }),
-    });
-    const voiceTextData = await voiceTextRes.json();
-    if (!voiceTextRes.ok) {
-      cb.setError(voiceTextData.error || "Erreur de preparation du script");
-      cb.setScreen("input");
-      return;
-    }
-
-    const scriptForVoice = String(
-      voiceTextData.script || voiceTextData.voiceoverText || finalScript,
-    ).replace(/\r\n/g, "\n");
-
+    // 1. Scènes + script optimisé (une seule source de vérité)
     const scenesRes = await fetch("/api/script-scenes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        script: scriptForVoice,
+        script: finalScript,
         format,
         duration,
         quality,
@@ -391,20 +371,25 @@ export async function generateFromScript(params: ScriptParams) {
       return;
     }
 
+    const scriptForVoice = String(
+      scenesData.optimizedScript || finalScript,
+    ).replace(/\r\n/g, "\n");
+    const renderAccent = scenesData.accent || accentColor;
+
     console.log("🎬 Scenes count:", scenesData.scenes?.length);
-    console.log("🎬 First scene:", scenesData.scenes?.[0]);
-    console.log("🎬 Scenes:", scenesData.scenes?.length);
-    console.log("📝 Script for voice:", scriptForVoice);
-    console.log("📝 Script for voice lines:", scriptForVoice.split("\n").length);
+    console.log("📝 Script voix (optimisé script-scenes):", scriptForVoice);
+    console.log("📝 Lignes:", scriptForVoice.split("\n").filter(Boolean).length);
 
     cb.setProgress(25);
     cb.setStatus("voice");
 
+    // 2. Voix sur le même script que les scènes
     const voiceRes = await fetch("/api/voice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: scriptForVoice,
+        script: scriptForVoice,
         voiceId: selectedVoiceId,
       }),
     });
@@ -440,7 +425,7 @@ export async function generateFromScript(params: ScriptParams) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
+              prompt: finalScript.split("\n")[0] || finalScript,
               formatId: "pub",
             }),
           });
@@ -454,21 +439,23 @@ export async function generateFromScript(params: ScriptParams) {
     cb.setProgress(55);
     cb.setStatus("rendering");
 
+    // 3. Rendu — scènes + voix alignés
     const renderRes = await fetch("/api/render", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         scenes: scenesData.scenes,
         phraseTimestamps: voiceData.phraseTimestamps || [],
+        wordTimestamps: voiceData.wordTimestamps || [],
         totalFrames,
         format,
         quality,
         audioUrl: voiceData.audioUrl,
         musicUrl: musicSrc,
         musicVolume: 0.07,
-        prompt: scriptForVoice.split("\n")[0] || scriptForVoice,
-        duration: parseInt(requestedDurationSeconds),
-        accentColor,
+        prompt: finalScript,
+        duration: parseInt(requestedDurationSeconds, 10),
+        accentColor: renderAccent,
         formatName: "Script personnalisé",
       }),
     });
