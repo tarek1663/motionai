@@ -20,6 +20,13 @@ const { fontFamily: interFontFamily } = loadFont("normal", {
 
 const FONT = `'${interFontFamily}', 'SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Arial', sans-serif`;
 
+/** Scènes courtes — mots forts (lettersup, lettersdown, morph, repeatcut, strobe) */
+const FONT_WEIGHT_STRONG = 800;
+/** Scènes moyennes — phrases (wordsup, wordsdown, wordsupblur, wordsinleft, wordsright) */
+const FONT_WEIGHT_PHRASE = 700;
+/** Scènes longues — texte étendu */
+const FONT_WEIGHT_BODY = 600;
+
 const GEO_TYPES = [
   "dots",
   "grid",
@@ -760,7 +767,7 @@ export const WordsUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_PHRASE, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -794,7 +801,7 @@ export const WordsDownScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_PHRASE, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -829,7 +836,7 @@ export const LettersUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 22], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_STRONG, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -863,7 +870,7 @@ export const LettersDownScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 22], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_STRONG, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -897,7 +904,7 @@ export const WordsUpBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 32], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_PHRASE, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -932,7 +939,7 @@ export const WordsInLeftScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_PHRASE, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -968,7 +975,7 @@ export const WordsRightScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
             return (
               <span key={i} style={{
-                fontSize, fontWeight: 600, fontFamily: FONT,
+                fontSize, fontWeight: FONT_WEIGHT_PHRASE, fontFamily: FONT,
                 letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
@@ -1047,7 +1054,7 @@ export const MorphBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           style={{
             position: "absolute",
             fontSize: fontSizeA,
-            fontWeight: 700,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -1065,7 +1072,7 @@ export const MorphBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           style={{
             position: "absolute",
             fontSize: fontSizeB,
-            fontWeight: 700,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -1151,7 +1158,7 @@ export const MorphScaleScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           style={{
             position: "absolute",
             fontSize: fontSizeA,
-            fontWeight: 700,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -1169,7 +1176,7 @@ export const MorphScaleScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
           style={{
             position: "absolute",
             fontSize: fontSizeB,
-            fontWeight: 700,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.03em",
             lineHeight: 1,
@@ -2697,7 +2704,7 @@ export const StrobeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
         <div
           style={{
             fontSize,
-            fontWeight: 800,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.04em",
             lineHeight: 1,
@@ -2749,7 +2756,7 @@ export const RepeatCutScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
         <div
           style={{
             fontSize,
-            fontWeight: 900,
+            fontWeight: FONT_WEIGHT_STRONG,
             fontFamily: FONT,
             letterSpacing: "-0.05em",
             lineHeight: 1,
