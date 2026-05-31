@@ -112,12 +112,17 @@ export function useDashboard() {
   }, []);
 
   const loadVideos = useCallback(async () => {
+    setLoadingVideos(true);
     try {
+      console.log("📹 Loading videos...");
       const res = await fetch("/api/videos");
+      console.log("📹 Response status:", res.status);
       const data = await res.json();
+      console.log("📹 Videos data:", data);
       setVideos(data.videos || []);
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error("📹 Load videos error:", err);
+      setVideos([]);
     } finally {
       setLoadingVideos(false);
     }
@@ -193,9 +198,18 @@ export function useDashboard() {
       .then((d) => {
         if (!d.onboarding?.completed) router.push("/onboarding");
       });
-    loadVideos();
     loadCredits();
-  }, [user, router, loadVideos, loadCredits]);
+  }, [user, router, loadCredits]);
+
+  useEffect(() => {
+    if (user?.id) {
+      console.log("📹 User loaded, fetching videos...");
+      loadVideos();
+    } else {
+      setLoadingVideos(false);
+      setVideos([]);
+    }
+  }, [user?.id, loadVideos]);
 
   useEffect(() => {
     if (!user) return;

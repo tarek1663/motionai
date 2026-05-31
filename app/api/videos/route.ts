@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabase";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  void req;
   try {
     const { userId } = await auth();
-    console.log("📹 GET videos — userId:", userId);
+    console.log("📹 Videos API called — userId:", userId);
 
-    if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    if (!userId) return NextResponse.json({ videos: [] });
 
     const { data, error } = await supabase
       .from("videos")
@@ -15,17 +16,18 @@ export async function GET() {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    console.log("📹 Supabase result:", data?.length, "videos, error:", error);
+    console.log("📹 Videos found:", data?.length, "— Error:", error?.message);
 
     if (error) {
-      console.error("❌ Supabase error:", error);
-      throw error;
+      console.error("📹 Supabase error:", error);
+      return NextResponse.json({ videos: [] });
     }
 
     return NextResponse.json({ videos: data || [] });
-  } catch (err: any) {
-    console.error("❌ Videos route error:", err.message, err.stack);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("📹 Videos route error:", message);
+    return NextResponse.json({ videos: [] });
   }
 }
 
