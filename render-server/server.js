@@ -13,11 +13,19 @@ const twemoji = require("@twemoji/api");
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const WebSocket = require("ws");
 const { createClient } = require("@supabase/supabase-js");
 
 const supabase =
   process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY
-    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY, {
+        realtime: {
+          transport: WebSocket,
+        },
+        auth: {
+          persistSession: false,
+        },
+      })
     : null;
 
 const uploadVideoToSupabase = async (localPath, jobId) => {
