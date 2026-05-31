@@ -256,6 +256,19 @@ UTILISATION MORPHING :
 - durationFrames: 150 minimum pour laisser le temps au morphing
 - Champs obligatoires : wordA, wordB (text optionnel = alias de wordA)
 
+RÈGLES DONNÉES OBLIGATOIRES :
+- counter → OBLIGATOIRE : counterTo (nombre entier > 0)
+- progressbar → OBLIGATOIRE : counterTo (nombre entre 1 et 100)
+- multistats → OBLIGATOIRE : stats (tableau de 3 objets avec value, label)
+- socialstats → OBLIGATOIRE : counterTo (nombre > 0) + platform + statLabel
+- checklist → OBLIGATOIRE : items (tableau de strings non vides)
+- timeline → OBLIGATOIRE : steps (tableau avec number et label)
+- morphblur/morphscale → OBLIGATOIRE : wordA et wordB (strings non vides)
+- photoreveal/photocollage → OBLIGATOIRE : photoQuery (string en anglais)
+
+SI TU N'AS PAS LES DONNÉES → utilise wordsup/wordsdown/lettersup à la place
+JAMAIS de scène data sans ses données — c'est pire que de ne pas l'utiliser
+
 RÈGLE PHOTOS OBLIGATOIRE :
 - TOUJOURS inclure un champ "text" sur les scènes photo
 - Le texte doit décrire ou commenter la photo

@@ -108,6 +108,76 @@ const SceneCrossfade: React.FC<{ children: React.ReactNode }> = ({ children }) =
   );
 };
 
+const TEXT_SCENE_TYPES = new Set([
+  "wordsup",
+  "wordsdown",
+  "lettersup",
+  "lettersdown",
+  "wordsupblur",
+  "wordsinleft",
+  "wordsright",
+]);
+
+const COUNTER_SCENE_TYPES = new Set(["counter", "progressbar", "socialstats"]);
+
+const isSceneValid = (scene: SceneData): boolean => {
+  const type = String(scene.type);
+
+  if (TEXT_SCENE_TYPES.has(type) && !scene.text?.trim()) return false;
+
+  if (COUNTER_SCENE_TYPES.has(type)) {
+    const val = scene.counterTo;
+    const num = Number(val);
+    if (val === undefined || val === null || isNaN(num) || num <= 0) return false;
+    if (type === "progressbar" && (num < 1 || num > 100)) return false;
+  }
+
+  if (type === "multistats") {
+    const stats = scene.stats;
+    if (!stats || !Array.isArray(stats) || stats.length === 0) return false;
+    const hasValidStats = stats.every(
+      (s) =>
+        s &&
+        typeof s.label === "string" &&
+        s.label.trim() !== "" &&
+        typeof s.value === "number" &&
+        !isNaN(s.value) &&
+        isFinite(s.value),
+    );
+    if (!hasValidStats) return false;
+  }
+
+  if (type === "morphblur" || type === "morphscale") {
+    const a = scene.wordA?.trim() || scene.text?.trim();
+    const b = scene.wordB?.trim();
+    if (!a || !b) return false;
+  }
+
+  if (type === "photoreveal" || type === "photocollage") {
+    const hasPhoto =
+      Boolean(scene.photoUrl?.trim()) ||
+      Boolean(scene.photoUrl2?.trim()) ||
+      Boolean(scene.photoQuery?.trim());
+    if (!hasPhoto) return false;
+  }
+
+  if (type === "checklist") {
+    const items = scene.items;
+    if (!items || !Array.isArray(items) || items.length === 0) return false;
+    const hasValidItems = items.some((item) =>
+      typeof item === "string" ? item.trim() !== "" : Boolean(item),
+    );
+    if (!hasValidItems) return false;
+  }
+
+  if (type === "timeline") {
+    const steps = scene.steps;
+    if (!steps || !Array.isArray(steps) || steps.length === 0) return false;
+  }
+
+  return true;
+};
+
 const EMPTY_SCENE_EXCEPTIONS = new Set([
   "particles",
   "audioviz",
@@ -133,31 +203,10 @@ const EMPTY_SCENE_EXCEPTIONS = new Set([
   "bgnumber",
 ]);
 
-const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
-  scene,
-  index,
-}) => {
-  const sceneWithIndex = { ...scene, _index: index };
-
-  const hasMorphWords =
-    Boolean(scene.wordA?.trim()) || Boolean(scene.wordB?.trim());
-
-  if (
-    !scene.text?.trim() &&
-    !hasMorphWords &&
-    !scene.photoUrl &&
-    !scene.photoUrl2 &&
-    !scene.photoUrl3 &&
-    !EMPTY_SCENE_EXCEPTIONS.has(String(scene.type))
-  ) {
-    const bg = scene.bg || "#000000";
-    return (
-      <AbsoluteFill style={{ background: bg }}>
-        <GeoBackground bg={bg} geo={scene.geo || "dots"} />
-      </AbsoluteFill>
-    );
-  }
-
+const renderSceneContent = (
+  scene: SceneData,
+  sceneWithIndex: SceneData & { _index: number },
+) => {
   switch (scene.type) {
     case "wordsup":
       return <WordsUpScene scene={sceneWithIndex} />;
@@ -268,6 +317,52 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
     default:
       return <WordsUpScene scene={sceneWithIndex} />;
   }
+};
+
+const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
+  scene,
+  index,
+}) => {
+  if (!isSceneValid(scene)) {
+    console.warn(
+      "⚠️ Invalid scene, using fallback:",
+      scene.type,
+      JSON.stringify(scene),
+    );
+    const fallback: SceneData = {
+      ...scene,
+      type: "wordsup",
+      text: scene.text?.trim() || scene.wordA?.trim() || "...",
+    };
+    return (
+      <WordsUpScene scene={{ ...fallback, _index: index } as SceneData & { _index: number }} />
+    );
+  }
+
+  const sceneWithIndex = { ...scene, _index: index } as SceneData & {
+    _index: number;
+  };
+
+  const hasMorphWords =
+    Boolean(scene.wordA?.trim()) || Boolean(scene.wordB?.trim());
+
+  if (
+    !scene.text?.trim() &&
+    !hasMorphWords &&
+    !scene.photoUrl &&
+    !scene.photoUrl2 &&
+    !scene.photoUrl3 &&
+    !EMPTY_SCENE_EXCEPTIONS.has(String(scene.type))
+  ) {
+    const bg = scene.bg || "#000000";
+    return (
+      <AbsoluteFill style={{ background: bg }}>
+        <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+      </AbsoluteFill>
+    );
+  }
+
+  return renderSceneContent(scene, sceneWithIndex);
 };
 
 const MusicAudio: React.FC<{
