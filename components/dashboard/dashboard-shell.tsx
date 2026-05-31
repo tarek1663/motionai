@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardInputScreen } from "@/components/dashboard/dashboard-input-screen";
 import { DashboardQuestionsScreen } from "@/components/dashboard/dashboard-questions-screen";
@@ -8,6 +8,7 @@ import { DashboardGeneratingScreen } from "@/components/dashboard/dashboard-gene
 import { DashboardDoneScreen } from "@/components/dashboard/dashboard-done-screen";
 import { DashboardViewingScreen } from "@/components/dashboard/dashboard-viewing-screen";
 import Toast from "@/components/Toast";
+import type { DashboardVideo } from "@/lib/dashboard/types";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn & {
@@ -21,6 +22,7 @@ export function DashboardShell(props: Props) {
     loadingVideos,
     selectedVideo,
     setSelectedVideo,
+    viewVideo,
     setScreen,
     setMode,
     setPrompt,
@@ -37,9 +39,18 @@ export function DashboardShell(props: Props) {
     setToast,
   } = props;
 
+  const handleViewVideo = useCallback(
+    (video: DashboardVideo) => {
+      viewVideo(video);
+    },
+    [viewVideo]
+  );
+
   useEffect(() => {
-    console.log("📹 Shell passing videos:", videos?.length);
-  }, [videos]);
+    console.log("📹 Shell screen:", screen, "selectedVideo:", selectedVideo?.id ?? null);
+  }, [screen, selectedVideo]);
+
+  const showViewing = screen === "viewing" && selectedVideo != null;
 
   return (
     <div className="dash-root">
@@ -48,8 +59,7 @@ export function DashboardShell(props: Props) {
         videos={videos}
         loadingVideos={loadingVideos}
         selectedVideo={selectedVideo}
-        setSelectedVideo={setSelectedVideo}
-        setScreen={setScreen}
+        onViewVideo={handleViewVideo}
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
         resetCreation={resetCreation}
@@ -60,25 +70,25 @@ export function DashboardShell(props: Props) {
       />
 
       <main className="dash-main">
-        {screen === "viewing" && selectedVideo && (
+        {showViewing && (
           <DashboardViewingScreen
             video={selectedVideo}
             onBack={() => {
-              setScreen("input");
               setSelectedVideo(null);
+              setScreen("input");
             }}
             onRegenerate={(p) => {
               setMode("ai");
               setPrompt(p);
-              setScreen("input");
               setSelectedVideo(null);
+              setScreen("input");
             }}
           />
         )}
 
-        {screen === "input" && <DashboardInputScreen {...props} />}
+        {!showViewing && screen === "input" && <DashboardInputScreen {...props} />}
 
-        {screen === "questions" && questions.length > 0 && (
+        {!showViewing && screen === "questions" && questions.length > 0 && (
           <DashboardQuestionsScreen
             prompt={props.prompt}
             questions={props.questions}
@@ -94,7 +104,7 @@ export function DashboardShell(props: Props) {
           />
         )}
 
-        {screen === "generating" && (
+        {!showViewing && screen === "generating" && (
           <DashboardGeneratingScreen
             progress={props.progress}
             status={props.status}
@@ -104,7 +114,7 @@ export function DashboardShell(props: Props) {
           />
         )}
 
-        {screen === "done" && (
+        {!showViewing && screen === "done" && (
           <DashboardDoneScreen
             videoUrl={props.videoUrl}
             format={props.format}

@@ -21,8 +21,6 @@ export type DashboardSidebarProps = Pick<
   | "videos"
   | "loadingVideos"
   | "selectedVideo"
-  | "setSelectedVideo"
-  | "setScreen"
   | "sidebarCollapsed"
   | "setSidebarCollapsed"
   | "resetCreation"
@@ -30,6 +28,7 @@ export type DashboardSidebarProps = Pick<
   | "deleteVideo"
   | "renameVideo"
 > & {
+  onViewVideo: (video: DashboardVideo) => void;
   onStartTour?: () => void;
 };
 
@@ -38,12 +37,11 @@ export function DashboardSidebar({
   videos,
   loadingVideos,
   selectedVideo,
-  setSelectedVideo,
+  onViewVideo,
   credits,
   sidebarCollapsed,
   setSidebarCollapsed,
   resetCreation,
-  setScreen,
   deleteVideo,
   renameVideo,
   onStartTour,
@@ -81,11 +79,6 @@ export function DashboardSidebar({
     return () => window.clearInterval(interval);
   }, []);
 
-  const handleSelect = (video: DashboardVideo) => {
-    setSelectedVideo(video);
-    setScreen("viewing");
-  };
-
   return (
     <>
       <aside
@@ -119,7 +112,7 @@ export function DashboardSidebar({
             videos={videos}
             loadingVideos={loadingVideos}
             selectedVideoId={selectedVideo?.id}
-            onSelect={handleSelect}
+            onSelectVideo={onViewVideo}
             onDelete={(id) => void deleteVideo(id)}
             onRename={(id, title) => void renameVideo(id, title)}
           />

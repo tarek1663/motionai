@@ -7,7 +7,7 @@ export type DashboardVideoHistoryProps = {
   videos: DashboardVideo[];
   loadingVideos: boolean;
   selectedVideoId?: string;
-  onSelect: (video: DashboardVideo) => void;
+  onSelectVideo: (video: DashboardVideo) => void;
   onDelete: (videoId: string) => void;
   onRename: (videoId: string, title: string) => void;
 };
@@ -15,7 +15,7 @@ export type DashboardVideoHistoryProps = {
 export function DashboardVideoHistory({
   videos,
   selectedVideoId,
-  onSelect,
+  onSelectVideo,
 }: DashboardVideoHistoryProps) {
   useEffect(() => {
     console.log("📹 VideoHistory received:", videos?.length);
@@ -47,11 +47,11 @@ export function DashboardVideoHistory({
           key={video.id}
           role="button"
           tabIndex={0}
-          onClick={() => onSelect(video)}
+          onClick={() => onSelectVideo(video)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              onSelect(video);
+              onSelectVideo(video);
             }
           }}
           style={{

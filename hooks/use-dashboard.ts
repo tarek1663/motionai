@@ -287,6 +287,11 @@ export function useDashboard() {
     }
   }, [prompt, customScript, mode, user]);
 
+  const viewVideo = useCallback((video: DashboardVideo) => {
+    setSelectedVideo(video);
+    setScreen("viewing");
+  }, []);
+
   useEffect(() => {
     const videoUrlParam = searchParams.get("videoUrl");
     if (!videoUrlParam || videos.length === 0) return;
@@ -294,10 +299,9 @@ export function useDashboard() {
     const matchedVideo = videos.find((video) => video.video_url === videoUrlParam);
     if (!matchedVideo) return;
 
-    setSelectedVideo(matchedVideo);
-    setScreen("viewing");
+    viewVideo(matchedVideo);
     router.replace("/dashboard");
-  }, [searchParams, videos, router]);
+  }, [searchParams, videos, router, viewVideo]);
 
   useEffect(() => {
     return () => {
@@ -917,6 +921,7 @@ export function useDashboard() {
     loadingVideos,
     selectedVideo,
     setSelectedVideo,
+    viewVideo,
     sidebarCollapsed,
     setSidebarCollapsed,
     resetCreation,
