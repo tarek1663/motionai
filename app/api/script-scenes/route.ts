@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@clerk/nextjs/server";
+import { generateScenesLineByLine } from "@/lib/prompts/line-by-line-scenes";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -224,105 +225,19 @@ Plan créatif en JSON :
       },
     );
 
-    // ─── ÉTAPE 5 — GÉNÉRATION SCÈNES ────────────────────
-    const minScenes = Math.round(durationSeconds * 0.7);
-
-    const scenesResponse = await client.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 6000,
-      messages: [
-        {
-          role: "user",
-          content: `Tu es le meilleur directeur artistique motion design au monde.
-
-SCRIPT OPTIMISÉ : "${optimizedScript}"
-CONCEPT : ${plan.concept}
-ARC : ${plan.arc}
-SCÈNE HÉRO : ${plan.heroScene}
-COULEUR ACCENT : ${accent}
-DURÉE : ${durationSeconds}s
-SCÈNES MIN : ${minScenes}
-DONNÉES RÉELLES : ${JSON.stringify(researchData.keyStats)}
-FAITS : ${researchData.keyFacts.join(" | ")}
-TAGLINE : ${researchData.tagline}
-EMOJIS SUGGÉRÉS : ${plan.emojis?.join(", ")}
-
-═══════════════════════════════════════════════════════
-SCÈNES OBLIGATOIRES — TU DOIS TOUTES LES UTILISER
-═══════════════════════════════════════════════════════
-
-ACTE 1 — ACCROCHE (15%) :
-✅ lettersup OU lettersdown — premier mot fort
-✅ emojiburst — avec emojis cohérents au sujet
-
-ACTE 2 — CONTEXTE (35%) :
-✅ photoreveal — photoQuery précis en anglais
-✅ counter — valeur numérique exacte si disponible
-✅ morphscale OU morphblur — wordA/wordB contrastés
-✅ wordsupblur OU wordsinleft — phrase courte
-
-ACTE 3 — IMPACT (35%) :
-✅ photoreveal OU photocollage — 2ème visuel
-✅ multistats OU progressbar — données chiffrées
-✅ particles — moment premium
-✅ iris OU curtain OU diagonalwipe — transition
-
-ACTE 4 — CONCLUSION (15%) :
-✅ morphblur OU morphscale — transformation finale
-✅ lettersdown OU wordsright — mot final
-
-RÈGLES ABSOLUES :
-1. accentColor = ${accent} partout
-2. Alterner bg:#000000 → bg:#ffffff → bg:${accent}
-3. geo différent sur chaque scène
-4. JAMAIS deux types identiques consécutifs
-5. Texte MAX 4 mots par scène texte
-6. JAMAIS sous-titrer la voix — illustrer
-7. counterTo = nombre entier exact
-8. durationFrames : lettersup/down=70-90, wordsup/blur=80-110, counter/stats=150-180, photo=180-200, emoji=110-140, morph=150-170, particles=110-130, transitions=40-50
-
-FORMAT JSON :
-{
-  "scenes": [...]
-}
-
-Réponds UNIQUEMENT en JSON valide.`,
-        },
-      ],
+    // ─── ÉTAPE 5 — GÉNÉRATION SCÈNES (1 scène = 1 ligne du script voix) ───
+    const scenes = await generateScenesLineByLine(client, {
+      script: optimizedScript,
+      accent,
+      researchData: {
+        keyStats: researchData.keyStats,
+        keyFacts: researchData.keyFacts,
+      },
+      emojis: plan.emojis,
     });
 
-    const scenesText = extractTextContent(scenesResponse.content);
-    let data: { scenes?: Array<Record<string, unknown>> };
-
-    try {
-      const clean = scenesText.replace(/```json|```/g, "").trim();
-      data = JSON.parse(clean) as { scenes?: Array<Record<string, unknown>> };
-    } catch {
-      const fixResponse = await client.messages.create({
-        model: "claude-sonnet-4-5",
-        max_tokens: 6000,
-        messages: [
-          {
-            role: "user",
-            content: `Corrige ce JSON invalide :\n${scenesText.slice(0, 4000)}\nRetourne UNIQUEMENT le JSON valide.`,
-          },
-        ],
-      });
-      data = parseJsonFromText<{ scenes?: Array<Record<string, unknown>> }>(
-        extractTextContent(fixResponse.content),
-        {},
-      );
-    }
-
-    if (data.scenes) {
-      data.scenes = data.scenes.map((scene) => ({
-        ...scene,
-        accentColor: accent,
-      }));
-    }
-
     return NextResponse.json({
-      ...data,
+      scenes,
       optimizedScript,
       researchData,
       plan,

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { generateScenesFromVoice, generateScenesFromWordTimestamps } from "@/lib/claude";
-import { buildContextualScenePrompt } from "@/lib/prompts/cinema-scenes-system";
+import { generateScenesLineByLine } from "@/lib/prompts/line-by-line-scenes";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -29,6 +28,7 @@ type CreativePlan = {
   concept: string;
   arc: string;
   heroScene: string;
+  emojis?: string[];
 };
 
 const DEFAULT_RESEARCH: ResearchData = {
@@ -215,60 +215,17 @@ export async function POST(req: NextRequest) {
       console.error("Plan error:", err);
     }
 
-    const researchContext = [
-      plan.concept && `CONCEPT: ${plan.concept}`,
-      plan.arc && `ARC: ${plan.arc}`,
-      plan.heroScene && `SCÈNE HÉRO: ${plan.heroScene}`,
-      researchData.tagline && `TAGLINE: ${researchData.tagline}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-    const systemPrompt = buildContextualScenePrompt(
-      subject,
-      voiceoverText,
-      durationSec,
-      accent,
-      {
+    // ─── ÉTAPE 3 — GÉNÉRATION SCÈNES (1 scène = 1 ligne du script voix) ───
+    const brandAccent = researchData.brandColor || accent;
+    const scenesWithBrandColor = await generateScenesLineByLine(client, {
+      script: voiceoverText,
+      accent: brandAccent,
+      researchData: {
         keyStats: researchData.keyStats,
         keyFacts: researchData.keyFacts,
-        tagline: researchData.tagline,
       },
-    );
-    const useWordSync =
-      Array.isArray(wordTimestamps) && wordTimestamps.length >= 3;
-
-    // ─── ÉTAPE 3 — GÉNÉRATION SCÈNES ────────────────────
-    const result = useWordSync
-      ? await generateScenesFromWordTimestamps({
-          prompt: `${subject}\n${researchContext}`,
-          script: voiceoverText,
-          totalFrames:
-            totalFrames ||
-            wordTimestamps[wordTimestamps.length - 1]?.endFrame ||
-            durationSec * 60,
-          accentColor: accent,
-          wordTimestamps,
-          systemPrompt,
-        })
-      : await generateScenesFromVoice({
-          prompt,
-          voiceoverText,
-          audioDuration,
-          format,
-          accentColor: accent,
-          bgDark,
-          bgLight,
-          bgAccent,
-          phraseTimestamps,
-          formatId,
-          systemPrompt,
-        });
-
-    const brandAccent = researchData.brandColor || accent;
-    const scenesWithBrandColor = result.scenes.map((scene) => ({
-      ...scene,
-      accentColor: brandAccent,
-    }));
+      emojis: plan.emojis || ["✨", "🚀", "💡", "⚡", "🔥"],
+    });
 
     const RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
     const PHOTO_TYPES = new Set(["photoreveal", "photocollage"]);
@@ -323,21 +280,12 @@ export async function POST(req: NextRequest) {
         durationFrames?: number;
       };
 
-      if (useWordSync && fromScene.startFrame !== undefined) {
+      if (fromScene.durationFrames && fromScene.durationFrames >= 40) {
         return {
-          startFrame: Math.round(fromScene.startFrame),
-          durationFrames: Math.max(
-            30,
-            Math.round(fromScene.durationFrames || 72),
-          ),
+          durationFrames: Math.max(40, Math.round(fromScene.durationFrames)),
         };
       }
 
-      if (fromScene.durationFrames && fromScene.durationFrames >= 40) {
-        return {
-          durationFrames: Math.min(150, Math.round(fromScene.durationFrames)),
-        };
-      }
       if (
         Array.isArray(phraseTimestamps) &&
         phraseTimestamps.length === scenesWithPhotos.length &&
@@ -351,25 +299,19 @@ export async function POST(req: NextRequest) {
         return {
           startFrame: Math.round(phrase.startFrame),
           endFrame: Math.round(phrase.endFrame),
-          durationFrames: Math.min(
-            150,
-            Math.max(40, Math.round(phrase.durationFrames)),
-          ),
+          durationFrames: Math.max(40, Math.round(phrase.durationFrames)),
         };
       }
-      const fallback = result.sceneDurations[i];
-      return typeof fallback === "number"
-        ? { durationFrames: Math.min(150, Math.max(40, fallback)) }
-        : { durationFrames: 90 };
+
+      return { durationFrames: 90 };
     });
 
     return NextResponse.json({
-      ...result,
       scenes: scenesWithPhotos,
       sceneDurations,
       researchData,
       plan,
-      accent,
+      accent: brandAccent,
     });
   } catch (err: unknown) {
     console.error("Scenes error:", err);
