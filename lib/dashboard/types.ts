@@ -11,7 +11,13 @@ export type DashboardVideo = {
   status?: string;
 };
 
-export type DashboardScreen = "input" | "questions" | "generating" | "done" | "viewing";
+export type DashboardScreen =
+  | "input"
+  | "questions"
+  | "generating"
+  | "done"
+  | "viewing"
+  | "pricing";
 
 export type InputTab = "prompt" | "screenshot";
 

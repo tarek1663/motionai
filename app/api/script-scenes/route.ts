@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     void answers;
 
     const colorMap: Record<string, string> = {
-      "🟢 Vert": "#10B981",
+      "🟢 Vert": "#22c55e",
       "🟣 Violet": "#7C3AED",
       "🔵 Bleu": "#3B82F6",
       "🟡 Or": "#F59E0B",
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       colorMap[accentColor] ||
       (typeof accentColor === "string" && accentColor.startsWith("#")
         ? accentColor
-        : "#10B981");
+        : "#ef4444");
     const durationSeconds = resolveDurationSeconds(duration);
 
     // ─── ÉTAPE 1 — DÉTECTE LE SUJET DU SCRIPT ──────────

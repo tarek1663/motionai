@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const accent = "#10B981";
+const accent = "#ef4444";
 
 const steps = [
   {
@@ -180,9 +180,9 @@ export default function OnboardingPage() {
                   style={{
                     padding: "14px 16px",
                     background:
-                      selected === opt.id ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.04)",
+                      selected === opt.id ? "rgba(239,68,68,0.12)" : "rgba(255,255,255,0.04)",
                     border: `1px solid ${
-                      selected === opt.id ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"
+                      selected === opt.id ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.08)"
                     }`,
                     borderRadius: 12,
                     cursor: "pointer",
@@ -243,7 +243,7 @@ export default function OnboardingPage() {
             fontFamily: "inherit",
             boxShadow:
               step.question === null || selected
-                ? "0 4px 16px rgba(16,185,129,0.3)"
+                ? "0 4px 16px rgba(239,68,68,0.3)"
                 : "none",
             transition: "all 0.15s",
           }}

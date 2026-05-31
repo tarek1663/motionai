@@ -38,6 +38,8 @@ import {
   CurtainScene,
   DiagonalWipeScene,
   GlitchSwitchScene,
+  StrobeScene,
+  RepeatCutScene,
   PixelDissolveScene,
   LightSweepScene,
   NotificationScene,
@@ -239,6 +241,10 @@ const renderSceneContent = (
       return <DiagonalWipeScene scene={sceneWithIndex} />;
     case "glitchswitch":
       return <GlitchSwitchScene scene={sceneWithIndex} />;
+    case "strobe":
+      return <StrobeScene scene={sceneWithIndex} />;
+    case "repeatcut":
+      return <RepeatCutScene scene={sceneWithIndex} />;
     case "pixeldissolve":
       return <PixelDissolveScene scene={sceneWithIndex} />;
     case "lightsweep":
@@ -530,7 +536,7 @@ export const MotionVideo: React.FC<MotionVideoProps> = ({
                 width: 16,
                 height: 16,
                 borderRadius: 4,
-                background: "#10B981",
+                background: "#ef4444",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

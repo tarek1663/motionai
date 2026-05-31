@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { useClerk, UserButton } from "@clerk/nextjs";
 import {
   ChevronLeft,
   ChevronRight,
@@ -49,6 +48,7 @@ export function DashboardSidebar({
   setScreen,
   onStartTour,
 }: DashboardSidebarProps) {
+  const { openUserProfile } = useClerk();
   const accent = colors.accent;
   const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
 
@@ -210,10 +210,14 @@ export function DashboardSidebar({
               </button>
             )}
           </div>
-          <Link href="/settings" className="dash-sidebar-footer-link">
+          <button
+            type="button"
+            className="dash-sidebar-footer-link"
+            onClick={() => openUserProfile()}
+          >
             <Settings size={20} strokeWidth={1.75} />
             {copy.settings}
-          </Link>
+          </button>
           <div className="dash-sidebar-profile">
             <UserButton afterSignOutUrl="/" />
             <div className="dash-sidebar-profile-text">

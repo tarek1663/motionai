@@ -16,7 +16,7 @@ export default function Toast({ message, type, onClose, duration = 4000 }: Toast
   }, [onClose, duration]);
 
   const colors = {
-    success: { border: "rgba(16,185,129,0.35)", accent: "#10B981" },
+    success: { border: "rgba(239,68,68,0.35)", accent: "#ef4444" },
     error: { border: "rgba(239,68,68,0.3)", accent: "#ef4444" },
     info: { border: "rgba(23,19,17,0.12)", accent: "#171311" },
   };

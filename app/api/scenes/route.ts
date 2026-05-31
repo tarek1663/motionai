@@ -7,7 +7,7 @@ import { getErrorMessage } from "@/lib/utils";
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const COLOR_MAP: Record<string, string> = {
-  "🟢 Vert": "#10B981",
+  "🟢 Vert": "#22c55e",
   "🟣 Violet": "#7C3AED",
   "🔵 Bleu": "#3B82F6",
   "🟡 Or": "#F59E0B",
@@ -64,10 +64,10 @@ const parseJsonFromText = <T>(text: string, fallback: T): T => {
 };
 
 const resolveUserAccent = (accentColor?: string): string => {
-  if (!accentColor) return "#10B981";
+  if (!accentColor) return "#ef4444";
   if (COLOR_MAP[accentColor]) return COLOR_MAP[accentColor];
   if (accentColor.startsWith("#")) return accentColor;
-  return "#10B981";
+  return "#ef4444";
 };
 
 async function runWebResearch(subject: string): Promise<ResearchData> {

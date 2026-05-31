@@ -961,7 +961,7 @@ RÈGLES COULEUR — pense visuellement:
 - Sujet feu/passion/énergie → rouge (#ef4444 ou similaire)
 - Sujet luxe/or/premium → doré (#d97706 ou similaire)
 - Sujet tech/IA/futur → violet (#7c3aed ou similaire)
-- Sujet finance/crypto → vert (#10b981 ou similaire)
+- Sujet finance/crypto → vert (#ef4444 ou similaire)
 - Sujet sport/fitness → orange vif (#f97316 ou similaire)
 - Sujet food/cuisine → orange chaud (#ea580c ou similaire)
 - Sujet musique → rose/rouge (#ec4899 ou similaire)

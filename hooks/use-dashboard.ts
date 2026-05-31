@@ -85,10 +85,9 @@ export function useDashboard() {
   } | null>(null);
   const [lastGenerationTime, setLastGenerationTime] = useState(0);
   const [cooldown, setCooldown] = useState(0);
-  const [accentColor, setAccentColor] = useState("#10B981");
+  const [accentColor, setAccentColor] = useState("#ef4444");
   const [promptHistory, setPromptHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [draftRestored, setDraftRestored] = useState(false);
   const [isGeneratingElsewhere, setIsGeneratingElsewhere] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const trackedVideoUrlRef = useRef<string | null>(null);
@@ -145,7 +144,6 @@ export function useDashboard() {
     onRenderStarted: ({ jobId, prompt: notifPrompt }: { jobId: string; prompt: string }) => {
       saveRenderToStorage(jobId, notifPrompt);
       clearDraft();
-      setDraftRestored(false);
     },
   };
 
@@ -226,24 +224,6 @@ export function useDashboard() {
       }
     }
 
-    const savedDraft = localStorage.getItem(`motionr_draft_${user.id}`);
-    if (savedDraft) {
-      try {
-        const data = JSON.parse(savedDraft) as {
-          mode?: ScriptMode;
-          prompt?: string;
-          customScript?: string;
-        };
-        setMode(data.mode || "ai");
-        setPrompt(data.prompt || "");
-        setCustomScript(data.customScript || "");
-        if ((data.prompt || data.customScript || "").trim()) {
-          setDraftRestored(true);
-        }
-      } catch {
-        // ignore invalid draft
-      }
-    }
   }, [user]);
 
   useEffect(() => {
@@ -276,16 +256,6 @@ export function useDashboard() {
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, [user?.id]);
-
-  useEffect(() => {
-    if (!user) return;
-    if (prompt.trim() || customScript.trim()) {
-      localStorage.setItem(
-        `motionr_draft_${user.id}`,
-        JSON.stringify({ mode, prompt, customScript })
-      );
-    }
-  }, [prompt, customScript, mode, user]);
 
   const viewVideo = useCallback((video: DashboardVideo) => {
     setSelectedVideo(video);
@@ -508,7 +478,6 @@ export function useDashboard() {
           ...generationCallbacks,
         });
         clearDraft();
-        setDraftRestored(false);
       } finally {
         setScreenshotLoading(false);
       }
@@ -681,13 +650,6 @@ export function useDashboard() {
     setScreenshotPreview("");
   }, []);
 
-  const clearDraftContent = useCallback(() => {
-    setPrompt("");
-    setCustomScript("");
-    clearDraft();
-    setDraftRestored(false);
-  }, [clearDraft]);
-
   const handlePromptKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -734,7 +696,7 @@ export function useDashboard() {
     setQuality(nextQuality);
 
     const colorMap: Record<string, string> = {
-      "🟢 Vert": "#10B981",
+      "🟢 Vert": "#22c55e",
       "🟣 Violet": "#7C3AED",
       "🔵 Bleu": "#3B82F6",
       "🟡 Or": "#F59E0B",
@@ -743,8 +705,8 @@ export function useDashboard() {
       "🩷 Rose": "#EC4899",
       "🩵 Cyan": "#06B6D4",
     };
-    const colorAnswer = answers.color || "🟢 Vert";
-    const color = colorMap[colorAnswer] || "#10B981";
+    const colorAnswer = answers.color || "🔴 Rouge";
+    const color = colorMap[colorAnswer] || "#ef4444";
     setAccentColor(color);
 
     setScreen("input");
@@ -770,7 +732,6 @@ export function useDashboard() {
           ...generationCallbacks,
         });
         clearDraft();
-        setDraftRestored(false);
       }, 100);
       return;
     }
@@ -897,9 +858,7 @@ export function useDashboard() {
     error,
     accentColor,
     promptHistory,
-    draftRestored,
     handlePromptKeyDown,
-    clearDraftContent,
     formatDetected,
     showDurationMenu,
     setShowDurationMenu,

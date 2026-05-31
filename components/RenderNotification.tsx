@@ -204,7 +204,7 @@ export default function RenderNotification() {
         background: "#161616",
         border:
           notif.status === "done"
-            ? "1px solid rgba(16,185,129,0.3)"
+            ? "1px solid rgba(239,68,68,0.3)"
             : notif.status === "error"
               ? "1px solid rgba(239,68,68,0.3)"
               : "1px solid rgba(255,255,255,0.08)",
@@ -226,10 +226,10 @@ export default function RenderNotification() {
           style={{
             height: "100%",
             width: `${notif.progress}%`,
-            background: notif.status === "error" ? "#ef4444" : "#10B981",
+            background: notif.status === "error" ? "#ef4444" : "#ef4444",
             transition: "width 0.5s ease",
             boxShadow:
-              notif.status !== "error" ? "0 0 8px rgba(16,185,129,0.5)" : "none",
+              notif.status !== "error" ? "0 0 8px rgba(239,68,68,0.5)" : "none",
           }}
         />
       </div>
@@ -244,7 +244,7 @@ export default function RenderNotification() {
               flexShrink: 0,
               background:
                 notif.status === "done"
-                  ? "rgba(16,185,129,0.15)"
+                  ? "rgba(239,68,68,0.15)"
                   : notif.status === "error"
                     ? "rgba(239,68,68,0.15)"
                     : "rgba(255,255,255,0.06)",
@@ -253,7 +253,7 @@ export default function RenderNotification() {
               justifyContent: "center",
               color:
                 notif.status === "done"
-                  ? "#10B981"
+                  ? "#ef4444"
                   : notif.status === "error"
                     ? "#ef4444"
                     : "#ffffff",
@@ -276,7 +276,7 @@ export default function RenderNotification() {
                 marginBottom: 3,
                 color:
                   notif.status === "done"
-                    ? "#10B981"
+                    ? "#ef4444"
                     : notif.status === "error"
                       ? "#ef4444"
                       : "#ffffff",
@@ -336,7 +336,7 @@ export default function RenderNotification() {
               justifyContent: "center",
               gap: 6,
               marginTop: 10,
-              background: "#10B981",
+              background: "#ef4444",
               color: "#fff",
               borderRadius: 8,
               padding: "8px 0",

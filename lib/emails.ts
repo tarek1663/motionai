@@ -40,7 +40,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
 
     <div style="margin-bottom:40px;">
       <div style="display:inline-flex;align-items:center;gap:10px;">
-        <div style="width:36px;height:36px;background:#10B981;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
+        <div style="width:36px;height:36px;background:#ef4444;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
         <span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.04em;">Motionr</span>
       </div>
     </div>
@@ -76,7 +76,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
         .map(
           (s) => `
         <div style="display:flex;gap:16px;margin-bottom:16px;align-items:flex-start;">
-          <div style="min-width:32px;height:32px;background:rgba(16,185,129,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#10B981;">${s.num}</div>
+          <div style="min-width:32px;height:32px;background:rgba(239,68,68,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#ef4444;">${s.num}</div>
           <div>
             <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">${s.title}</div>
             <div style="font-size:13px;color:rgba(255,255,255,0.4);line-height:1.5;">${s.desc}</div>
@@ -87,7 +87,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
         .join("")}
     </div>
 
-    <a href="${BASE_URL}/dashboard" style="display:block;background:#10B981;color:#fff;text-align:center;padding:16px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;margin-bottom:32px;box-shadow:0 8px 24px rgba(16,185,129,0.3);">
+    <a href="${BASE_URL}/dashboard" style="display:block;background:#ef4444;color:#fff;text-align:center;padding:16px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;margin-bottom:32px;box-shadow:0 8px 24px rgba(239,68,68,0.3);">
       Create my first video →
     </a>
 
@@ -131,7 +131,7 @@ export async function sendCancellationEmail(
 
     <div style="margin-bottom:40px;">
       <div style="display:inline-flex;align-items:center;gap:10px;">
-        <div style="width:36px;height:36px;background:#10B981;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
+        <div style="width:36px;height:36px;background:#ef4444;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
         <span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.04em;">Motionr</span>
       </div>
     </div>
@@ -165,12 +165,12 @@ export async function sendCancellationEmail(
         .join("")}
     </div>
 
-    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:16px;padding:24px;margin-bottom:24px;">
-      <p style="font-size:14px;font-weight:700;color:#10B981;margin:0 0 8px;">Changed your mind?</p>
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:24px;margin-bottom:24px;">
+      <p style="font-size:14px;font-weight:700;color:#ef4444;margin:0 0 8px;">Changed your mind?</p>
       <p style="font-size:14px;color:rgba(255,255,255,0.55);margin:0 0 16px;line-height:1.5;">
         You can reactivate your subscription anytime. All your videos and settings are saved.
       </p>
-      <a href="${BASE_URL}/pricing" style="display:inline-block;background:#10B981;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;">
+      <a href="${BASE_URL}/pricing" style="display:inline-block;background:#ef4444;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;">
         Reactivate my subscription →
       </a>
     </div>
@@ -208,7 +208,7 @@ export async function sendInactivityEmail(email: string, firstName: string) {
 
     <div style="margin-bottom:40px;">
       <div style="display:inline-flex;align-items:center;gap:10px;">
-        <div style="width:36px;height:36px;background:#10B981;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
+        <div style="width:36px;height:36px;background:#ef4444;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;">M</div>
         <span style="font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.04em;">Motionr</span>
       </div>
     </div>
@@ -233,7 +233,7 @@ export async function sendInactivityEmail(email: string, firstName: string) {
         .map(
           (idea) => `
         <div style="display:flex;gap:14px;margin-bottom:16px;align-items:flex-start;">
-          <div style="min-width:36px;height:36px;background:rgba(16,185,129,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">${idea.emoji}</div>
+          <div style="min-width:36px;height:36px;background:rgba(239,68,68,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">${idea.emoji}</div>
           <div>
             <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">${idea.title}</div>
             <div style="font-size:13px;color:rgba(255,255,255,0.4);">${idea.desc}</div>
@@ -244,7 +244,7 @@ export async function sendInactivityEmail(email: string, firstName: string) {
         .join("")}
     </div>
 
-    <a href="${BASE_URL}/dashboard" style="display:block;background:#10B981;color:#fff;text-align:center;padding:16px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;margin-bottom:32px;box-shadow:0 8px 24px rgba(16,185,129,0.3);">
+    <a href="${BASE_URL}/dashboard" style="display:block;background:#ef4444;color:#fff;text-align:center;padding:16px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;letter-spacing:-0.02em;margin-bottom:32px;box-shadow:0 8px 24px rgba(239,68,68,0.3);">
       Create a video now →
     </a>
 

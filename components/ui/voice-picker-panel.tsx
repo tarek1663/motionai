@@ -136,8 +136,8 @@ export function VoicePickerPanel({
                 "voice-picker-card relative flex items-center gap-2.5 p-3 rounded-xl border transition-colors",
                 isDash
                   ? selected
-                    ? "border-[var(--dash-brand)] bg-[rgba(124,58,237,0.06)]"
-                    : "border-[var(--dash-border-solid)] bg-[var(--dash-surface-muted)] hover:border-[#d2d2d7] hover:bg-[var(--dash-surface)]"
+                    ? "border-[rgba(239,68,68,0.55)] bg-[rgba(239,68,68,0.08)]"
+                    : "border-[rgba(0,0,0,0.1)] bg-[rgba(0,0,0,0.02)] hover:border-[rgba(0,0,0,0.16)] hover:bg-[rgba(0,0,0,0.04)]"
                   : selected
                     ? "border-gray-300 bg-gray-50/80"
                     : "border-transparent bg-transparent hover:bg-gray-50/80 hover:border-gray-200/80"
@@ -151,8 +151,12 @@ export function VoicePickerPanel({
                 className={cn(
                   "voice-picker-play w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors",
                   isPlaying
-                    ? "bg-[#1d1d1f] text-white"
-                    : "bg-white/80 text-[#1d1d1f] hover:bg-white border border-black/[0.06]"
+                    ? isDash
+                      ? "bg-[#ef4444] text-white border border-transparent"
+                      : "bg-[#1d1d1f] text-white"
+                    : isDash
+                      ? "bg-[rgba(0,0,0,0.05)] text-[#1d1d1f] border border-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.08)]"
+                      : "bg-white/80 text-[#1d1d1f] hover:bg-white border border-black/[0.06]"
                 )}
               >
                 {isLoading ? (
@@ -177,8 +181,8 @@ export function VoicePickerPanel({
                     "text-[14px] font-medium truncate",
                     isDash
                       ? selected
-                        ? "text-[var(--dash-text)]"
-                        : "text-[var(--dash-text-secondary)]"
+                        ? "text-[#1d1d1f]"
+                        : "text-[#1d1d1f]/85"
                       : selected
                         ? "text-gray-900"
                         : "text-gray-700"
@@ -189,7 +193,7 @@ export function VoicePickerPanel({
                 <p
                   className={cn(
                     "text-[12px] truncate",
-                    isDash ? "text-[var(--dash-text-tertiary)]" : "text-gray-400"
+                    isDash ? "text-[#1d1d1f]/45" : "text-gray-400"
                   )}
                 >
                   {v.style}
@@ -200,7 +204,7 @@ export function VoicePickerPanel({
                   size={16}
                   className={cn(
                     "absolute top-2 right-2 pointer-events-none",
-                    isDash ? "text-[var(--dash-brand)]" : "text-gray-900"
+                    isDash ? "text-[#ef4444]" : "text-gray-900"
                   )}
                   strokeWidth={2.5}
                 />

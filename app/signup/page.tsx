@@ -39,10 +39,10 @@ export default function SignupPage() {
           >
             <div style={{
               width: 36, height: 36, borderRadius: 9,
-              background: "#10B981",
+              background: "#ef4444",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 16, fontWeight: 900, color: "#fff",
-              boxShadow: "0 4px 16px rgba(16,185,129,0.4)",
+              boxShadow: "0 4px 16px rgba(239,68,68,0.4)",
             }}>M</div>
             <span style={{
               fontSize: 20, fontWeight: 900, color: "#fff",
@@ -68,8 +68,8 @@ export default function SignupPage() {
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-                  background: "rgba(16,185,129,0.12)",
-                  border: "1px solid rgba(16,185,129,0.2)",
+                  background: "rgba(239,68,68,0.12)",
+                  border: "1px solid rgba(239,68,68,0.2)",
                   display: "flex", alignItems: "center",
                   justifyContent: "center", fontSize: 15,
                 }}>{b.icon}</div>
@@ -86,7 +86,7 @@ export default function SignupPage() {
             afterSignUpUrl="/onboarding"
             appearance={{
               variables: {
-                colorPrimary: "#10B981",
+                colorPrimary: "#ef4444",
                 colorBackground: "#161616",
                 colorText: "#ffffff",
                 colorTextSecondary: "rgba(255,255,255,0.5)",
@@ -106,12 +106,12 @@ export default function SignupPage() {
                   padding: "32px",
                 },
                 formButtonPrimary: {
-                  background: "#10B981",
+                  background: "#ef4444",
                   fontWeight: 700,
                   fontSize: "14px",
-                  boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+                  boxShadow: "0 4px 12px rgba(239,68,68,0.3)",
                 },
-                footerActionLink: { color: "#10B981" },
+                footerActionLink: { color: "#ef4444" },
                 formFieldInput: {
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.1)",

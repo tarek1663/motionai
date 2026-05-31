@@ -17,7 +17,7 @@ import {
 
 import { BackgroundComponents } from "@/components/ui/background-components";
 
-const accent = "#10B981";
+const accent = "#ef4444";
 const accentLight = "#ffffff";
 
 type SocialBrand =
@@ -323,9 +323,9 @@ export default function LandingPage() {
     flexDirection: "column",
     minHeight: "100%",
     background: "linear-gradient(180deg, #ffffff 0%, #fcfbfa 100%)",
-    border: "1px solid rgba(16,185,129,0.24)",
+    border: "1px solid rgba(239,68,68,0.24)",
     boxShadow:
-      "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.18), 0 0 34px rgba(16,185,129,0.14), 0 20px 46px rgba(24,19,15,0.07)",
+      "0 0 0 1px rgba(239,68,68,0.12), 0 0 18px rgba(239,68,68,0.18), 0 0 34px rgba(239,68,68,0.14), 0 20px 46px rgba(24,19,15,0.07)",
     overflow: "hidden",
   };
 
@@ -336,9 +336,9 @@ export default function LandingPage() {
     flexDirection: "column",
     minHeight: "100%",
     background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
-    border: "1px solid rgba(16,185,129,0.28)",
+    border: "1px solid rgba(239,68,68,0.28)",
     boxShadow:
-      "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 1px rgba(16,185,129,0.12), 0 0 20px rgba(16,185,129,0.22), 0 0 38px rgba(16,185,129,0.16), 0 20px 46px rgba(10,10,10,0.18)",
+      "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 1px rgba(239,68,68,0.12), 0 0 20px rgba(239,68,68,0.22), 0 0 38px rgba(239,68,68,0.16), 0 20px 46px rgba(10,10,10,0.18)",
     overflow: "hidden",
   };
 
@@ -411,14 +411,14 @@ export default function LandingPage() {
               width: 28,
               height: 28,
               borderRadius: 7,
-              background: "#10B981",
+              background: "#ef4444",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontSize: 13,
               fontWeight: 900,
               color: "#fff",
-              boxShadow: "0 2px 8px rgba(16,185,129,0.4)",
+              boxShadow: "0 2px 8px rgba(239,68,68,0.4)",
             }}
           >
             M
@@ -445,7 +445,7 @@ export default function LandingPage() {
             <button
               style={{
                 padding: "8px 14px",
-                background: showProductMenu ? "rgba(16,185,129,0.08)" : "rgba(23,19,17,0.03)",
+                background: showProductMenu ? "rgba(239,68,68,0.08)" : "rgba(23,19,17,0.03)",
                 border: "1px solid rgba(23,19,17,0.08)",
                 color: showProductMenu ? "#0a0a0a" : "rgba(23,19,17,0.72)",
                 fontSize: 14,
@@ -549,7 +549,7 @@ export default function LandingPage() {
                           width: 34,
                           height: 34,
                           borderRadius: 9,
-                          background: "rgba(16,185,129,0.1)",
+                          background: "rgba(239,68,68,0.1)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -627,7 +627,7 @@ export default function LandingPage() {
                           width: 34,
                           height: 34,
                           borderRadius: 9,
-                          background: "rgba(16,185,129,0.1)",
+                          background: "rgba(239,68,68,0.1)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -704,7 +704,7 @@ export default function LandingPage() {
                           width: 34,
                           height: 34,
                           borderRadius: 9,
-                          background: "rgba(16,185,129,0.1)",
+                          background: "rgba(239,68,68,0.1)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -756,7 +756,7 @@ export default function LandingPage() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = "#0a0a0a";
-                e.currentTarget.style.background = "rgba(16,185,129,0.08)";
+                e.currentTarget.style.background = "rgba(239,68,68,0.08)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.color = "rgba(23,19,17,0.72)";
@@ -781,7 +781,7 @@ export default function LandingPage() {
           <button
             onClick={() => router.push("/dashboard")}
             style={{
-              background: "#10B981",
+              background: "#ef4444",
               color: "#fff",
               border: "none",
               borderRadius: 10,
@@ -793,7 +793,7 @@ export default function LandingPage() {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+              boxShadow: "0 4px 12px rgba(239,68,68,0.3)",
             }}
           >
             Accéder au dashboard →
@@ -820,7 +820,7 @@ export default function LandingPage() {
               onClick={() => router.push("/signup")}
               style={{
                 padding: "8px 18px",
-                background: "#10B981",
+                background: "#ef4444",
                 border: "none",
                 borderRadius: 10,
                 fontSize: 14,
@@ -828,7 +828,7 @@ export default function LandingPage() {
                 color: "#ffffff",
                 cursor: "pointer",
                 fontFamily: "inherit",
-                boxShadow: "0 4px 12px rgba(16,185,129,0.3)",
+                boxShadow: "0 4px 12px rgba(239,68,68,0.3)",
               }}
             >
               Commencer gratuitement
@@ -944,9 +944,9 @@ export default function LandingPage() {
                     inset: -2,
                     zIndex: 1,
                     borderRadius: 20,
-                    border: "1.5px solid rgba(16,185,129,0.72)",
+                    border: "1.5px solid rgba(239,68,68,0.72)",
                     boxShadow:
-                      "0 0 0 1px rgba(16,185,129,0.16), 0 0 24px rgba(16,185,129,0.34), 0 0 60px rgba(16,185,129,0.18)",
+                      "0 0 0 1px rgba(239,68,68,0.16), 0 0 24px rgba(239,68,68,0.34), 0 0 60px rgba(239,68,68,0.18)",
                   }}
                 />
                 <div
@@ -956,9 +956,9 @@ export default function LandingPage() {
                     width: "100%",
                     background: "#ffffff",
                     borderRadius: 18,
-                    border: "1px solid rgba(16,185,129,0.14)",
+                    border: "1px solid rgba(239,68,68,0.14)",
                     boxShadow:
-                      "0 14px 34px rgba(24,19,15,0.08), 0 0 0 1px rgba(16,185,129,0.05) inset",
+                      "0 14px 34px rgba(24,19,15,0.08), 0 0 0 1px rgba(239,68,68,0.05) inset",
                     padding: "18px 20px 14px",
                   }}
                 >
@@ -1091,7 +1091,7 @@ export default function LandingPage() {
                     fontWeight: 700,
                     cursor: "pointer",
                     fontFamily: "inherit",
-                    boxShadow: "0 10px 24px rgba(16,185,129,0.28)",
+                    boxShadow: "0 10px 24px rgba(239,68,68,0.28)",
                   }}
                 >
                   Créer ma première vidéo →
@@ -1311,10 +1311,10 @@ export default function LandingPage() {
               width: "100%",
               aspectRatio: "16 / 9",
               borderRadius: 22,
-              border: "1.5px solid rgba(16,185,129,0.72)",
+              border: "1.5px solid rgba(239,68,68,0.72)",
               background: "#fafafa",
               boxShadow:
-                "0 0 0 1px rgba(16,185,129,0.16), 0 0 26px rgba(16,185,129,0.24), inset 0 0 0 1px rgba(16,185,129,0.08)",
+                "0 0 0 1px rgba(239,68,68,0.16), 0 0 26px rgba(239,68,68,0.24), inset 0 0 0 1px rgba(239,68,68,0.08)",
             }}
           />
         </div>
@@ -1390,7 +1390,7 @@ export default function LandingPage() {
                   width: 24,
                   height: 24,
                   borderRadius: "50%",
-                  background: "#10B981",
+                  background: "#ef4444",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1410,10 +1410,10 @@ export default function LandingPage() {
               position: "relative",
               borderRadius: 30,
               overflow: "hidden",
-              border: "1px solid rgba(16,185,129,0.34)",
+              border: "1px solid rgba(239,68,68,0.34)",
               background: "#ffffff",
               boxShadow:
-                "0 0 0 1px rgba(16,185,129,0.18), 0 0 18px rgba(16,185,129,0.22), 0 0 36px rgba(16,185,129,0.16), 0 24px 54px rgba(24,19,15,0.08)",
+                "0 0 0 1px rgba(239,68,68,0.18), 0 0 18px rgba(239,68,68,0.22), 0 0 36px rgba(239,68,68,0.16), 0 24px 54px rgba(24,19,15,0.08)",
             }}
           >
             <div
@@ -1482,7 +1482,7 @@ export default function LandingPage() {
                         width: 22,
                         height: 22,
                         borderRadius: "50%",
-                        background: "#10B981",
+                        background: "#ef4444",
                         flexShrink: 0,
                         display: "flex",
                         alignItems: "center",
@@ -1611,7 +1611,7 @@ export default function LandingPage() {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <div style={{ flex: 1, height: 1, background: "#e8e8e8" }} />
-                  <div style={{ fontSize: 11, color: "#10B981", fontWeight: 600 }}>
+                  <div style={{ fontSize: 11, color: "#ef4444", fontWeight: 600 }}>
                     IA en action
                   </div>
                   <div style={{ flex: 1, height: 1, background: "#e8e8e8" }} />
@@ -1622,13 +1622,13 @@ export default function LandingPage() {
                       key={s}
                       style={{
                         padding: "6px 10px",
-                        background: "rgba(16,185,129,0.08)",
-                        border: "1px solid rgba(16,185,129,0.2)",
+                        background: "rgba(239,68,68,0.08)",
+                        border: "1px solid rgba(239,68,68,0.2)",
                         borderRadius: 100,
                         fontSize: 11,
-                        color: "#10B981",
+                        color: "#ef4444",
                         fontWeight: 600,
-                        boxShadow: "inset 0 0 0 1px rgba(16,185,129,0.02)",
+                        boxShadow: "inset 0 0 0 1px rgba(239,68,68,0.02)",
                       }}
                     >
                       {s}
@@ -1694,12 +1694,12 @@ export default function LandingPage() {
                         width: 20,
                         height: 20,
                         borderRadius: "50%",
-                        background: "rgba(16,185,129,0.15)",
+                        background: "rgba(239,68,68,0.15)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 9,
-                        color: "#10B981",
+                        color: "#ef4444",
                         fontWeight: 700,
                         flexShrink: 0,
                       }}
@@ -1719,10 +1719,10 @@ export default function LandingPage() {
                     <div
                       style={{
                         fontSize: 10,
-                        color: "#10B981",
+                        color: "#ef4444",
                         padding: "4px 8px",
                         borderRadius: 999,
-                        background: "rgba(16,185,129,0.12)",
+                        background: "rgba(239,68,68,0.12)",
                         whiteSpace: "nowrap",
                         fontWeight: 600,
                       }}
@@ -1781,7 +1781,7 @@ export default function LandingPage() {
                         width: 3,
                         borderRadius: 3,
                         height: `${10 + Math.abs(Math.sin(i * 0.6)) * 28}px`,
-                        background: i % 4 === 0 ? "#10B981" : "rgba(255,255,255,0.12)",
+                        background: i % 4 === 0 ? "#ef4444" : "rgba(255,255,255,0.12)",
                       }}
                     />
                   ))}
@@ -1789,7 +1789,7 @@ export default function LandingPage() {
                 <div
                   style={{
                     fontSize: 11,
-                    color: "#10B981",
+                    color: "#ef4444",
                     fontWeight: 600,
                     whiteSpace: "nowrap",
                   }}
@@ -1856,14 +1856,14 @@ export default function LandingPage() {
                       style={{
                         width: fmt.w,
                         height: fmt.h,
-                        border: "1.5px solid rgba(16,185,129,0.4)",
+                        border: "1.5px solid rgba(239,68,68,0.4)",
                         borderRadius: 8,
-                        background: "rgba(16,185,129,0.06)",
+                        background: "rgba(239,68,68,0.06)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 10,
-                        color: "#10B981",
+                        color: "#ef4444",
                         fontWeight: 700,
                       }}
                     >
@@ -1934,15 +1934,15 @@ export default function LandingPage() {
                   padding: "28px",
                   minHeight: 470,
                   background: plan.popular
-                    ? "linear-gradient(165deg, #10b981 0%, #0ea371 100%)"
+                    ? "linear-gradient(165deg, #ef4444 0%, #dc2626 100%)"
                     : "linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%)",
                   border: plan.popular
                     ? "1px solid rgba(255,255,255,0.18)"
-                    : "1.5px solid rgba(16,185,129,0.35)",
+                    : "1.5px solid rgba(239,68,68,0.35)",
                   color: plan.popular ? "#fff" : "#0a0a0a",
                   boxShadow: plan.popular
-                    ? `0 0 0 1px rgba(255,255,255,0.14), 0 0 0 2px rgba(16,185,129,0.2), 0 0 20px rgba(16,185,129,0.42), 0 0 38px rgba(16,185,129,0.3), 0 0 64px rgba(16,185,129,0.2), 0 0 20px rgba(10,10,10,0.16)`
-                    : "0 0 0 1px rgba(16,185,129,0.24), 0 0 0 2px rgba(16,185,129,0.1), 0 0 16px rgba(16,185,129,0.2), 0 0 30px rgba(16,185,129,0.14), 0 0 50px rgba(16,185,129,0.1), 0 0 16px rgba(15,23,42,0.1)",
+                    ? `0 0 0 1px rgba(255,255,255,0.14), 0 0 0 2px rgba(239,68,68,0.2), 0 0 20px rgba(239,68,68,0.42), 0 0 38px rgba(239,68,68,0.3), 0 0 64px rgba(239,68,68,0.2), 0 0 20px rgba(10,10,10,0.16)`
+                    : "0 0 0 1px rgba(239,68,68,0.24), 0 0 0 2px rgba(239,68,68,0.1), 0 0 16px rgba(239,68,68,0.2), 0 0 30px rgba(239,68,68,0.14), 0 0 50px rgba(239,68,68,0.1), 0 0 16px rgba(15,23,42,0.1)",
                   position: "relative",
                 }}
               >
@@ -2200,10 +2200,10 @@ export default function LandingPage() {
                 style={{
                   background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
                   borderRadius: 16,
-                  border: "1px solid rgba(16,185,129,0.28)",
+                  border: "1px solid rgba(239,68,68,0.28)",
                   overflow: "hidden",
                   boxShadow:
-                    "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 20px rgba(16,185,129,0.16), 0 24px 48px rgba(15,23,42,0.12)",
+                    "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 20px rgba(239,68,68,0.16), 0 24px 48px rgba(15,23,42,0.12)",
                 }}
               >
                 {/* Barre navigateur */}
@@ -2214,7 +2214,7 @@ export default function LandingPage() {
                     display: "flex",
                     alignItems: "center",
                     gap: 6,
-                    borderBottom: "1px solid rgba(16,185,129,0.18)",
+                    borderBottom: "1px solid rgba(239,68,68,0.18)",
                   }}
                 >
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#ff5f56" }} />
@@ -2230,7 +2230,7 @@ export default function LandingPage() {
                       color: "rgba(255,255,255,0.35)",
                       marginLeft: 8,
                       textAlign: "center",
-                      border: "1px solid rgba(16,185,129,0.12)",
+                      border: "1px solid rgba(239,68,68,0.12)",
                     }}
                   >
                     app.motionr.app
@@ -2311,8 +2311,8 @@ export default function LandingPage() {
                         background: "rgba(255,255,255,0.04)",
                         borderRadius: 8,
                         padding: "10px 12px",
-                        border: "1px solid rgba(16,185,129,0.22)",
-                        boxShadow: "0 0 12px rgba(16,185,129,0.12)",
+                        border: "1px solid rgba(239,68,68,0.22)",
+                        boxShadow: "0 0 12px rgba(239,68,68,0.12)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
@@ -2358,7 +2358,7 @@ export default function LandingPage() {
                           height: v.h,
                           borderRadius: 6,
                           background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(16,185,129,0.16)",
+                          border: "1px solid rgba(239,68,68,0.16)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -2382,10 +2382,10 @@ export default function LandingPage() {
                 width: 124,
                 background: "linear-gradient(180deg, #171311 0%, #110e0c 100%)",
                 borderRadius: 26,
-                border: "1px solid rgba(16,185,129,0.28)",
+                border: "1px solid rgba(239,68,68,0.28)",
                 padding: "10px 4px",
                 boxShadow:
-                  "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 16px rgba(16,185,129,0.2), 0 20px 40px rgba(15,23,42,0.14)",
+                  "inset 0 1px 0 rgba(255,255,255,0.05), 0 0 16px rgba(239,68,68,0.2), 0 20px 40px rgba(15,23,42,0.14)",
                 zIndex: 2,
               }}
             >

@@ -46,7 +46,7 @@ export function Sidebar({ active, credits }: SidebarProps) {
           fontWeight: 900,
           color: "#fff",
           marginBottom: 18,
-          boxShadow: "0 4px 14px rgba(16,185,129,0.4)",
+          boxShadow: "0 4px 14px rgba(239,68,68,0.4)",
           textDecoration: "none",
         }}
       >
@@ -70,9 +70,9 @@ export function Sidebar({ active, credits }: SidebarProps) {
               textDecoration: "none",
               fontSize: 16,
               marginBottom: 6,
-              background: isActive ? "rgba(16,185,129,0.16)" : "transparent",
-              border: isActive ? "1px solid rgba(16,185,129,0.36)" : "1px solid transparent",
-              boxShadow: isActive ? "0 0 16px rgba(16,185,129,0.16)" : "none",
+              background: isActive ? "rgba(239,68,68,0.16)" : "transparent",
+              border: isActive ? "1px solid rgba(239,68,68,0.36)" : "1px solid transparent",
+              boxShadow: isActive ? "0 0 16px rgba(239,68,68,0.16)" : "none",
             }}
           >
             {item.icon}
@@ -97,7 +97,7 @@ export function Sidebar({ active, credits }: SidebarProps) {
           <br />
           credits
           <br />
-          <a href="/pricing" style={{ color: "#10B981", textDecoration: "none", fontWeight: 700 }}>
+          <a href="/pricing" style={{ color: "#ef4444", textDecoration: "none", fontWeight: 700 }}>
             Upgrader →
           </a>
         </div>

@@ -46,7 +46,7 @@ export default function SuccessPage() {
         style={{
           border: "none",
           padding: "14px 32px",
-          background: "#10B981",
+          background: "#ef4444",
           color: "#fff",
           borderRadius: 10,
           fontSize: 14,

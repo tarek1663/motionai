@@ -1,36 +1,42 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
   BookOpenText,
   BriefcaseBusiness,
-  ChevronDown,
   GraduationCap,
-  Mic,
   Newspaper,
   PenSquare,
+  RectangleHorizontal,
+  RectangleVertical,
   Rocket,
   Sparkles,
+  Square,
   Zap,
 } from "lucide-react";
-import { VoicePickerPanel } from "@/components/ui/voice-picker-panel";
-import { MIN_SCRIPT_WORDS, VOICES } from "@/lib/dashboard/constants";
-import { getAvailableDurations, isScriptModeAllowed } from "@/lib/dashboard/plan-limits";
+import { BackgroundComponents } from "@/components/ui/background-components";
+import { AiPromptBox } from "@/components/ui/ai-prompt-box";
+import { VOICES } from "@/lib/dashboard/constants";
+import { isScriptModeAllowed } from "@/lib/dashboard/plan-limits";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
 type Props = UseDashboardReturn;
 
+const FORMAT_ICONS: Record<string, LucideIcon> = {
+  "9:16": RectangleVertical,
+  "16:9": RectangleHorizontal,
+  "1:1": Square,
+};
+
 export function DashboardInputScreen(props: Props) {
   const router = useRouter();
-  const [showVoicePanel, setShowVoicePanel] = useState(false);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const {
     credits,
     showToast,
-    duration,
-    setDuration,
     mode,
     setMode,
     prompt,
@@ -46,22 +52,14 @@ export function DashboardInputScreen(props: Props) {
     screenshotLoading,
     cooldown,
     promptHistory,
-    draftRestored,
     handlePromptKeyDown,
-    clearDraftContent,
     error,
   } = props;
 
   const isBusy = loadingQ || screenshotLoading;
   const currentValue = mode === "ai" ? prompt : customScript;
-  const scriptWordCount = customScript.trim().split(/\s+/).filter(Boolean).length;
   const canSubmit = currentValue.trim().length > 0 && !isBusy && cooldown === 0;
-  const selectedVoice = VOICES.find((voice) => voice.id === selectedVoiceId);
   const isFreePlan = credits?.plan === "free";
-  const availableDurations = useMemo(
-    () => getAvailableDurations(credits?.plan),
-    [credits?.plan]
-  );
 
   const handleModeClick = (nextMode: "ai" | "script") => {
     if (nextMode === "script" && !isScriptModeAllowed(credits?.plan)) {
@@ -84,334 +82,83 @@ export function DashboardInputScreen(props: Props) {
   ] as const;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: "0 40px",
-        background: "#ffffff",
-      }}
-    >
-      <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <h1
-          style={{
-            fontSize: 36,
-            fontWeight: 700,
-            color: "#171311",
-            letterSpacing: "-0.04em",
-            marginBottom: 8,
-          }}
-        >
-          Cree ta video
-        </h1>
+    <div className="dash-input-screen">
+      <div className="dash-input-foreground" style={{ textAlign: "center", marginBottom: 40 }}>
+        <h1 className="dash-input-screen__title">Cree ta video</h1>
       </div>
 
-      <div
-        id="tour-mode"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 14,
-          gap: 10,
-        }}
-      >
-        {[
-          { id: "ai", label: "Mode IA", Icon: Sparkles },
-          { id: "script", label: "Mon script", Icon: PenSquare },
-        ].map((m, index) => {
-          const isScriptLocked = m.id === "script" && isFreePlan;
-          return (
-          <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <button
-              type="button"
-              onClick={() => handleModeClick(m.id as "ai" | "script")}
-              style={{
-                padding: 0,
-                border: "none",
-                background: "transparent",
-                color: mode === m.id ? "#171311" : "#8e8680",
-                fontSize: 14,
-                fontWeight: mode === m.id ? 600 : 500,
-                cursor: isScriptLocked ? "not-allowed" : "pointer",
-                opacity: isScriptLocked ? 0.5 : 1,
-                fontFamily: "inherit",
-                transition: "color 0.15s",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                position: "relative",
-              }}
-            >
-              <m.Icon size={14} strokeWidth={1.9} />
-              {m.label}
-              {isScriptLocked && (
-                <span
+      <div className={`dash-input-prompt-stack${isPickerOpen ? " is-picker-open" : ""}`}>
+        <div id="tour-mode" className="dash-input-mode-row">
+          {[
+            { id: "ai", label: "Mode IA", Icon: Sparkles },
+            { id: "script", label: "Mon script", Icon: PenSquare },
+          ].map((m, index) => {
+            const isScriptLocked = m.id === "script" && isFreePlan;
+            return (
+              <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => handleModeClick(m.id as "ai" | "script")}
+                  className={`dash-input-mode-btn${mode === m.id ? " is-active" : ""}`}
                   style={{
-                    position: "absolute",
-                    top: -8,
-                    right: -8,
-                    background: "#f59e0b",
-                    color: "#000",
-                    borderRadius: 100,
-                    fontSize: 8,
-                    fontWeight: 800,
-                    padding: "1px 5px",
-                    letterSpacing: "0.04em",
+                    cursor: isScriptLocked ? "not-allowed" : "pointer",
+                    opacity: isScriptLocked ? 0.5 : 1,
                   }}
                 >
-                  PRO
-                </span>
-              )}
-            </button>
-            {index < 1 && (
-              <span
-                aria-hidden="true"
-                style={{
-                  width: 1,
-                  height: 16,
-                  background: "#d6d3d1",
-                }}
-              />
-            )}
-          </div>
-        );
-        })}
-      </div>
-
-      <div style={{ width: "100%", maxWidth: 720, position: "relative" }}>
-        <div
-          style={{
-            width: "100%",
-            background: "#ffffff",
-            borderRadius: 20,
-            border: "1.5px solid rgba(16,185,129,0.26)",
-            boxShadow:
-              "0 0 0 1px rgba(16,185,129,0.12), 0 0 18px rgba(16,185,129,0.16), 0 18px 44px rgba(15,23,42,0.08)",
-            overflow: "hidden",
-          }}
-        >
-          <textarea
-          value={currentValue}
-          onChange={(e) =>
-            mode === "ai" ? setPrompt(e.target.value) : setCustomScript(e.target.value)
-          }
-          onKeyDown={handlePromptKeyDown}
-          placeholder={
-            mode === "ai"
-              ? "Decris ta video - ex. Presente Spotify en 30 secondes..."
-              : "Ecris ton texte librement. L'IA le mettra en scene..."
-          }
-          rows={mode === "script" ? 5 : 2}
-          style={{
-            width: "100%",
-            background: "none",
-            border: "none",
-            outline: "none",
-            padding: "10px 14px 6px",
-            fontSize: 15,
-            color: "#625b55",
-            fontFamily: "inherit",
-            resize: "none",
-            lineHeight: 1.65,
-            letterSpacing: "-0.01em",
-          }}
-        />
-
-        {mode === "script" && (
-          <div
-            style={{
-              padding: "0 14px 4px",
-              fontSize: 11,
-              color:
-                scriptWordCount >= MIN_SCRIPT_WORDS
-                  ? "#10B981"
-                  : "rgba(23,19,17,0.35)",
-              transition: "color 0.3s",
-            }}
-          >
-            {scriptWordCount}/{MIN_SCRIPT_WORDS} mots minimum
-          </div>
-        )}
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "6px 10px 8px",
-            }}
-          >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                style={{
-                  background: "#f7f7f7",
-                  border: "1px solid #e8e8e8",
-                  borderRadius: 8,
-                  padding: "5px 10px",
-                  fontSize: 12,
-                  color: "#7b746d",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  outline: "none",
-                }}
-              >
-                {availableDurations.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={format}
-                onChange={(e) => setFormat(e.target.value)}
-                style={{
-                  background: "#f7f7f7",
-                  border: "1px solid #e8e8e8",
-                  borderRadius: 8,
-                  padding: "5px 10px",
-                  fontSize: 12,
-                  color: "#7b746d",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  outline: "none",
-                }}
-              >
-                <option value="9:16">9:16 · Reels</option>
-                <option value="16:9">16:9 · YouTube</option>
-                <option value="1:1">1:1 · Feed</option>
-              </select>
-
-              <button
-                id="tour-voice"
-                type="button"
-                onClick={() => setShowVoicePanel((prev) => !prev)}
-                style={{
-                  background: "#f7f7f7",
-                  border: "1px solid #e8e8e8",
-                  borderRadius: 10,
-                  padding: "6px 10px",
-                  fontSize: 12,
-                  color: "#625b55",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  outline: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 7,
-                }}
-              >
-                <Mic size={13} strokeWidth={1.8} />
-                <span>{selectedVoice?.name || "Voix"}</span>
-                <ChevronDown
-                  size={13}
-                  strokeWidth={1.8}
-                  style={{
-                    transform: showVoicePanel ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.15s ease",
-                  }}
-                />
-              </button>
-            </div>
-
-            <div style={{ fontSize: 10, color: "rgba(23,19,17,0.35)", display: "flex", alignItems: "center", gap: 4 }}>
-              <kbd
-                style={{
-                  background: "rgba(23,19,17,0.04)",
-                  border: "1px solid rgba(23,19,17,0.1)",
-                  borderRadius: 4,
-                  padding: "1px 5px",
-                  fontSize: 9,
-                  fontFamily: "inherit",
-                }}
-              >
-                ⌘/Ctrl
-              </kbd>
-              <kbd
-                style={{
-                  background: "rgba(23,19,17,0.04)",
-                  border: "1px solid rgba(23,19,17,0.1)",
-                  borderRadius: 4,
-                  padding: "1px 5px",
-                  fontSize: 9,
-                  fontFamily: "inherit",
-                }}
-              >
-                ↵
-              </kbd>
-              <span>pour generer</span>
-            </div>
-          </div>
-
-          <button
-            id="tour-generate"
-            type="button"
-            onClick={() => {
-              void submit();
-            }}
-            disabled={!canSubmit}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 12,
-              background: canSubmit ? "#10B981" : "#ecebea",
-              border: "1px solid transparent",
-              cursor: canSubmit ? "pointer" : "not-allowed",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: cooldown > 0 ? 10 : 16,
-              fontWeight: 700,
-              color: canSubmit ? "#fff" : "#c3c3c3",
-              transition: "all 0.15s",
-              flexShrink: 0,
-              boxShadow: canSubmit ? "0 4px 12px rgba(16,185,129,0.3)" : "none",
-            }}
-          >
-            {cooldown > 0 ? `${cooldown}s` : "↑"}
-          </button>
-          </div>
+                  <m.Icon size={14} strokeWidth={1.9} />
+                  {m.label}
+                  {isScriptLocked && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -8,
+                        right: -8,
+                        background: "#f59e0b",
+                        color: "#000",
+                        borderRadius: 100,
+                        fontSize: 8,
+                        fontWeight: 800,
+                        padding: "1px 5px",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      PRO
+                    </span>
+                  )}
+                </button>
+                {index < 1 && <span aria-hidden="true" className="dash-input-mode-divider" />}
+              </div>
+            );
+          })}
         </div>
 
-        {showVoicePanel && (
-          <div
-            style={{
-              position: "absolute",
-              top: "calc(100% + 10px)",
-              left: 0,
-              right: 0,
-              background: "#ffffff",
-              border: "1px solid #e8e8e8",
-              borderRadius: 14,
-              padding: "12px 12px 10px",
-              boxShadow: "0 14px 30px rgba(15,23,42,0.08)",
-              zIndex: 20,
-            }}
-          >
-            <VoicePickerPanel
-              open={showVoicePanel}
-              onClose={() => setShowVoicePanel(false)}
-              voices={VOICES}
-              selectedId={selectedVoiceId}
-              onSelect={setSelectedVoiceId}
-              variant="dash"
-              hint="Choisis une voix et écoute un aperçu avant de générer."
-            />
-          </div>
-        )}
+        <div className={`dash-input-composer-wrap${isPickerOpen ? " is-picker-open" : ""}`}>
+          <BackgroundComponents glow="red" className="dash-input-composer-glow" aria-hidden />
+          <AiPromptBox
+            value={currentValue}
+            onChange={(v) => (mode === "ai" ? setPrompt(v) : setCustomScript(v))}
+            onKeyDown={handlePromptKeyDown}
+            placeholder={mode === "ai" ? "Décris ta vidéo…" : "Colle ton script…"}
+            format={format}
+            onFormatChange={setFormat}
+            formatIcons={FORMAT_ICONS}
+            voices={VOICES}
+            selectedVoiceId={selectedVoiceId}
+            onVoiceChange={setSelectedVoiceId}
+            canSubmit={canSubmit}
+            onSubmit={() => void submit()}
+            cooldown={cooldown}
+            onPickerOpenChange={setIsPickerOpen}
+          />
+        </div>
       </div>
 
       {isFreePlan && (
         <div
+          className="dash-input-foreground"
           style={{
             fontSize: 11,
-            color: "rgba(23,19,17,0.35)",
+            color: "var(--dash-text-tertiary)",
             textAlign: "center",
             marginTop: 8,
             width: "100%",
@@ -422,7 +169,7 @@ export function DashboardInputScreen(props: Props) {
           <span
             role="button"
             tabIndex={0}
-            style={{ color: "#10B981", cursor: "pointer" }}
+            style={{ color: "var(--dash-brand)", cursor: "pointer" }}
             onClick={() => router.push("/pricing")}
             onKeyDown={(e) => {
               if (e.key === "Enter") router.push("/pricing");
@@ -433,42 +180,12 @@ export function DashboardInputScreen(props: Props) {
         </div>
       )}
 
-      {(draftRestored || prompt.trim() || customScript.trim()) && (
-        <div
-          style={{
-            marginTop: 8,
-            fontSize: 10,
-            color: "rgba(23,19,17,0.35)",
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-          }}
-        >
-          <span>📝</span> Brouillon restaure ·
-          <button
-            type="button"
-            onClick={clearDraftContent}
-            style={{
-              background: "none",
-              border: "none",
-              color: "rgba(23,19,17,0.45)",
-              cursor: "pointer",
-              fontSize: 10,
-              fontFamily: "inherit",
-              padding: 0,
-              textDecoration: "underline",
-            }}
-          >
-            Effacer
-          </button>
-        </div>
-      )}
-
       {promptHistory.length > 0 && (
         <div
+          className="dash-input-foreground"
           style={{
             fontSize: 10,
-            color: "rgba(23,19,17,0.3)",
+            color: "var(--dash-text-tertiary)",
             marginTop: 4,
             textAlign: "right",
             width: "100%",
@@ -479,7 +196,10 @@ export function DashboardInputScreen(props: Props) {
         </div>
       )}
 
-      <div id="tour-suggestions" style={{ marginTop: 20, textAlign: "center" }}>
+      <div
+        id="tour-suggestions"
+        className={`dash-input-suggestions${isPickerOpen ? " is-behind-picker" : ""}`}
+      >
         <div
           style={{
             display: "flex",
@@ -493,34 +213,11 @@ export function DashboardInputScreen(props: Props) {
             <button
               key={s.label}
               type="button"
+              className="dash-input-suggestion"
               onClick={() => {
                 const suggestionPrompt = `Cree une video ${s.label.toLowerCase()} percutante`;
                 if (mode === "ai") setPrompt(suggestionPrompt);
                 else setCustomScript(suggestionPrompt);
-              }}
-              style={{
-                padding: "7px 14px",
-                background: "#ffffff",
-                border: "1px solid #e8e8e8",
-                borderRadius: 100,
-                fontSize: 12,
-                color: "#7b746d",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "all 0.15s",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(16,185,129,0.08)";
-                e.currentTarget.style.color = "#0d9668";
-                e.currentTarget.style.borderColor = "rgba(16,185,129,0.22)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#ffffff";
-                e.currentTarget.style.color = "#7b746d";
-                e.currentTarget.style.borderColor = "#e8e8e8";
               }}
             >
               <s.icon size={13} strokeWidth={1.9} />
@@ -531,7 +228,10 @@ export function DashboardInputScreen(props: Props) {
       </div>
 
       {error && (
-        <div style={{ marginTop: 14, fontSize: 13, color: "#ef4444", textAlign: "center" }}>
+        <div
+          className="dash-input-foreground"
+          style={{ marginTop: 14, fontSize: 13, color: "#ef4444", textAlign: "center" }}
+        >
           {error}
         </div>
       )}

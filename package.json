@@ -21,6 +21,8 @@
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@google/generative-ai": "^0.24.1",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@react-three/fiber": "^8.17.10",
     "@remotion/captions": "4.0.466",
     "@remotion/cli": "4.0.466",

@@ -2,8 +2,16 @@
 
 import { useClerk, useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import {
+  ArrowRight,
+  Check,
+  CreditCard,
+  Star,
+} from "lucide-react";
 import { colors } from "@/lib/colors";
 import BackButton from "@/components/BackButton";
+import { AccountPersonalStats } from "@/components/account/account-personal-stats";
+import { AccountInvoices } from "@/components/account/account-invoices";
 import { Sidebar } from "@/components/Sidebar";
 import Toast from "@/components/Toast";
 
@@ -20,13 +28,6 @@ export default function AccountPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
-  const [stats, setStats] = useState<{
-    total: number;
-    totalDuration: number;
-    topFormat: string;
-    thisMonth: number;
-  } | null>(null);
-  const [invoices, setInvoices] = useState<any[]>([]);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info";
@@ -46,28 +47,6 @@ export default function AccountPage() {
 
   useEffect(() => {
     document.title = "Mon compte — Motionr";
-  }, []);
-
-  useEffect(() => {
-    if (credits?.plan !== "free") {
-      fetch("/api/stripe/invoices")
-        .then((r) => r.json())
-        .then((d) => setInvoices(d.invoices || []))
-        .catch(() => setInvoices([]));
-    } else {
-      setInvoices([]);
-    }
-  }, [credits?.plan]);
-
-  useEffect(() => {
-    fetch("/api/user/stats")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d?.error) setStats(d);
-      })
-      .catch(() => {
-        /* ignore */
-      });
   }, []);
 
   const openPortal = async () => {
@@ -169,8 +148,8 @@ export default function AccountPage() {
                 width: 56,
                 height: 56,
                 borderRadius: "50%",
-                background: "rgba(16,185,129,0.14)",
-                border: `2px solid rgba(16,185,129,0.25)`,
+                background: "rgba(239,68,68,0.14)",
+                border: `2px solid rgba(239,68,68,0.25)`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -212,58 +191,7 @@ export default function AccountPage() {
           </div>
         </div>
 
-        <div
-          style={{
-            background: "#ffffff",
-            borderRadius: 20,
-            padding: "24px",
-            border: "1.5px solid #e8e8e8",
-            marginBottom: 16,
-            boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: "#9b938c",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: 16,
-            }}
-          >
-            Mes statistiques
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-            {[
-              { label: "Videos totales", value: stats?.total || 0, icon: "🎬" },
-              { label: "Ce mois", value: stats?.thisMonth || 0, icon: "📅" },
-              { label: "Format favori", value: stats?.topFormat || "—", icon: "📱" },
-              {
-                label: "Duree totale",
-                value: stats ? `${Math.round((stats.totalDuration || 0) / 60)}min` : "—",
-                icon: "⏱️",
-              },
-            ].map((s) => (
-              <div
-                key={s.label}
-                style={{
-                  background: "rgba(23,19,17,0.03)",
-                  borderRadius: 12,
-                  padding: "16px",
-                  border: "1px solid rgba(23,19,17,0.08)",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ fontSize: 24, marginBottom: 8 }}>{s.icon}</div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: colors.accent, letterSpacing: "-0.04em" }}>
-                  {s.value}
-                </div>
-                <div style={{ fontSize: 11, color: colors.textMuted, marginTop: 4 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <AccountPersonalStats />
 
         <div
           style={{
@@ -310,8 +238,8 @@ export default function AccountPage() {
                     style={{
                       padding: "4px 12px",
                       borderRadius: 100,
-                      background: "rgba(16,185,129,0.08)",
-                      border: "1px solid rgba(16,185,129,0.2)",
+                      background: "rgba(239,68,68,0.08)",
+                      border: "1px solid rgba(239,68,68,0.2)",
                       fontSize: 13,
                       fontWeight: 700,
                       color: planColors[credits?.plan || "free"] || "#888",
@@ -342,10 +270,14 @@ export default function AccountPage() {
                       fontSize: 12,
                       fontWeight: 700,
                       textDecoration: "none",
-                      boxShadow: "0 8px 24px rgba(16,185,129,0.3)",
+                      boxShadow: "0 8px 24px rgba(239,68,68,0.3)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
                     }}
                   >
-                    Upgrader →
+                    Upgrader
+                    <ArrowRight size={14} strokeWidth={2} />
                   </a>
                 ) : null}
               </div>
@@ -377,7 +309,8 @@ export default function AccountPage() {
                       gap: 6,
                     }}
                   >
-                    💳 {portalLoading ? "..." : "Mettre a jour ma carte"}
+                    <CreditCard size={14} strokeWidth={1.75} />
+                    {portalLoading ? "..." : "Mettre a jour ma carte"}
                   </button>
                   <button
                     onClick={cancelSubscription}
@@ -452,82 +385,7 @@ export default function AccountPage() {
           )}
         </div>
 
-        {invoices.length > 0 && (
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 20,
-              padding: "24px",
-              border: "1.5px solid #e8e8e8",
-              marginBottom: 16,
-              boxShadow: "0 14px 36px rgba(24,19,15,0.08)",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#9b938c",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                marginBottom: 16,
-              }}
-            >
-              Factures
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {invoices.map((inv) => (
-                <div
-                  key={inv.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "10px 0",
-                    borderBottom: "1px solid rgba(23,19,17,0.08)",
-                  }}
-                >
-                  <div>
-                    <div style={{ fontSize: 13, color: colors.text, fontWeight: 500 }}>
-                      {inv.number || inv.id}
-                    </div>
-                    <div style={{ fontSize: 11, color: colors.textMuted, marginTop: 2 }}>
-                      {new Date(inv.date * 1000).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: colors.accent }}>
-                      {inv.amount}€
-                    </div>
-                    {inv.pdf && (
-                      <a
-                        href={inv.pdf}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          padding: "5px 10px",
-                          background: "rgba(23,19,17,0.04)",
-                          border: "1px solid rgba(23,19,17,0.12)",
-                          borderRadius: 6,
-                          fontSize: 11,
-                          color: "rgba(23,19,17,0.6)",
-                          textDecoration: "none",
-                          transition: "all 0.15s",
-                        }}
-                      >
-                        PDF ↓
-                      </a>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <AccountInvoices plan={credits?.plan} />
 
         {credits?.plan === "free" && (
           <div
@@ -618,10 +476,21 @@ export default function AccountPage() {
                     }}
                   >
                     <div style={{ textAlign: "left" }}>
-                      <div style={{ fontSize: 14, fontWeight: 700 }}>
-                        {isCurrent ? "✓ " : plan.popular ? "⭐ " : ""}
-                        {plan.name}
-                        {isCurrent ? " — Plan actuel" : ""}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontSize: 14,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {isCurrent && <Check size={14} strokeWidth={2.5} />}
+                        {plan.popular && !isCurrent && <Star size={14} strokeWidth={1.75} />}
+                        <span>
+                          {plan.name}
+                          {isCurrent ? " — Plan actuel" : ""}
+                        </span>
                       </div>
                       <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>
                         {plan.videos}

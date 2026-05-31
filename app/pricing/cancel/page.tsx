@@ -34,7 +34,7 @@ export default function CancelPage() {
           href="/pricing"
           style={{
             padding: "14px 32px",
-            background: "#10B981",
+            background: "#ef4444",
             color: "#fff",
             borderRadius: 10,
             fontSize: 15,

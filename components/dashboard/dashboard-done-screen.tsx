@@ -44,9 +44,9 @@ export function DashboardDoneScreen({
             width: frameWidth,
             borderRadius: 14,
             overflow: "hidden",
-            border: "1.5px solid rgba(16,185,129,0.22)",
+            border: "1.5px solid rgba(239,68,68,0.22)",
             boxShadow:
-              "0 0 0 1px rgba(16,185,129,0.1), 0 12px 32px rgba(15,23,42,0.08)",
+              "0 0 0 1px rgba(239,68,68,0.1), 0 12px 32px rgba(15,23,42,0.08)",
             background: "#ffffff",
           }}
         >
@@ -86,13 +86,13 @@ export function DashboardDoneScreen({
           }}
           style={{
             padding: "8px 16px",
-            background: copied ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.06)",
+            background: copied ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.06)",
             border: `1px solid ${
-              copied ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.1)"
+              copied ? "rgba(239,68,68,0.3)" : "rgba(255,255,255,0.1)"
             }`,
             borderRadius: 8,
             fontSize: 12,
-            color: copied ? "#10B981" : "rgba(255,255,255,0.6)",
+            color: copied ? "#ef4444" : "rgba(255,255,255,0.6)",
             cursor: "pointer",
             fontFamily: "inherit",
             display: "flex",

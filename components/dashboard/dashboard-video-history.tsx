@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Trash2 } from "lucide-react";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 
 export type DashboardVideoHistoryProps = {
@@ -16,37 +17,32 @@ export function DashboardVideoHistory({
   videos,
   selectedVideoId,
   onSelectVideo,
+  onDelete,
 }: DashboardVideoHistoryProps) {
   useEffect(() => {
     console.log("📹 VideoHistory received:", videos?.length);
   }, [videos]);
 
   if (!videos || videos.length === 0) {
-    return (
-      <div style={{ padding: "16px", color: "#000000", fontSize: "14px" }}>
-        Aucune vidéo
-      </div>
-    );
+    return <div className="dash-sidebar-empty">Aucune vidéo</div>;
   }
 
+  const handleDelete = (e: React.MouseEvent, videoId: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (window.confirm("Supprimer cette vidéo ?")) {
+      onDelete(videoId);
+    }
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-        padding: "8px",
-        overflowY: "auto",
-        maxHeight: "100%",
-      }}
-    >
-      {videos.map((video) => {
-        const isActive = selectedVideoId === video.id;
-        return (
+    <div className="dash-video-history-list">
+      {videos.map((video) => (
         <div
           key={video.id}
           role="button"
           tabIndex={0}
+          className={`dash-vid-item${selectedVideoId === video.id ? " active" : ""}`}
           onClick={() => onSelectVideo(video)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
@@ -54,27 +50,28 @@ export function DashboardVideoHistory({
               onSelectVideo(video);
             }
           }}
-          style={{
-            background: isActive ? "rgba(16,185,129,0.12)" : "rgba(0,0,0,0.06)",
-            borderRadius: "8px",
-            padding: "10px",
-            cursor: "pointer",
-            color: "#000000",
-            fontSize: "12px",
-            border: isActive
-              ? "1px solid rgba(16,185,129,0.35)"
-              : "1px solid rgba(0,0,0,0.08)",
-          }}
         >
-          <div style={{ fontWeight: 600, marginBottom: 4, color: "#000000" }}>
-            {video.title || video.prompt?.slice(0, 40) || "Vidéo sans titre"}
-          </div>
-          <div style={{ color: "rgba(0,0,0,0.4)", fontSize: 11 }}>
-            {new Date(video.created_at).toLocaleDateString("fr-FR")}
+          <div className="dash-vid-item-inner">
+            <div className="dash-vid-item-content">
+              <div className="dash-vid-title dash-truncate">
+                {video.title || video.prompt?.slice(0, 40) || "Vidéo sans titre"}
+              </div>
+              <div className="dash-vid-meta dash-truncate">
+                {new Date(video.created_at).toLocaleDateString("fr-FR")}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="dash-vid-delete"
+              aria-label="Supprimer la vidéo"
+              title="Supprimer"
+              onClick={(e) => handleDelete(e, video.id)}
+            >
+              <Trash2 size={15} strokeWidth={1.75} />
+            </button>
           </div>
         </div>
-        );
-      })}
+      ))}
     </div>
   );
 }

@@ -311,57 +311,6 @@ export default function DashboardPage() {
         onStartTour={startTour}
       />
 
-      {state.credits && state.screen === "input" && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 16,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 50,
-            display: "flex",
-            gap: 12,
-            fontSize: 12,
-            color: "rgba(255,255,255,0.3)",
-            background: "rgba(23,19,17,0.88)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 999,
-            padding: "8px 16px",
-            backdropFilter: "blur(8px)",
-          }}
-        >
-          <span>
-            <span
-              style={{
-                color:
-                  (state.credits.remainingToday ?? 0) > 2
-                    ? "rgba(255,255,255,0.5)"
-                    : "#f59e0b",
-                fontWeight: 600,
-              }}
-            >
-              {state.credits.remainingToday ?? 0}
-            </span>
-            /{state.credits.dailyLimit ?? 0} aujourd&apos;hui
-          </span>
-          <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
-          <span>
-            <span
-              style={{
-                color:
-                  (state.credits.remainingThisMonth ?? 0) > 5
-                    ? "rgba(255,255,255,0.5)"
-                    : "#f59e0b",
-                fontWeight: 600,
-              }}
-            >
-              {state.credits.remainingThisMonth ?? state.credits.videos_remaining}
-            </span>
-            /{state.credits.monthlyLimit ?? state.credits.videos_limit} ce mois
-          </span>
-        </div>
-      )}
-
       {showTour && currentTourStep && (
         <TourTooltip
           key={`${currentTourStep.id}-${tourStep}`}
@@ -468,7 +417,7 @@ function TourTooltip({
                 flex: 1,
                 height: 2,
                 borderRadius: 2,
-                background: i <= current ? "#10B981" : "rgba(255,255,255,0.1)",
+                background: i <= current ? "#ef4444" : "rgba(255,255,255,0.1)",
               }}
             />
           ))}
@@ -485,7 +434,7 @@ function TourTooltip({
             style={{
               flex: 1,
               padding: 8,
-              background: "#10B981",
+              background: "#ef4444",
               border: "none",
               borderRadius: 8,
               fontSize: 12,
@@ -493,7 +442,7 @@ function TourTooltip({
               color: "#fff",
               cursor: "pointer",
               fontFamily: "inherit",
-              boxShadow: "0 6px 16px rgba(16,185,129,0.28)",
+              boxShadow: "0 6px 16px rgba(239,68,68,0.28)",
             }}
           >
             {current === total - 1 ? "Terminer ✓" : "Suivant →"}
@@ -567,10 +516,10 @@ function TargetHighlight({ targetId }: { targetId: string }) {
         left: rect.left - 6,
         width: rect.width + 12,
         height: rect.height + 12,
-        border: "2px solid #10B981",
+        border: "2px solid #ef4444",
         borderRadius: 10,
         zIndex: 9999,
-        boxShadow: "0 0 0 4px rgba(16,185,129,0.15), 0 0 20px rgba(16,185,129,0.3)",
+        boxShadow: "0 0 0 4px rgba(239,68,68,0.15), 0 0 20px rgba(239,68,68,0.3)",
         pointerEvents: "none",
       }}
     />

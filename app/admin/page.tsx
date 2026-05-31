@@ -264,7 +264,7 @@ export default function AdminPage() {
               ...(logs?.recentVideos || []).map((v: any) => ({
                 type: "video",
                 icon: "🎬",
-                color: "#10B981",
+                color: "#ef4444",
                 text: `Video generee — ${(v.prompt || "").slice(0, 40)}...`,
                 date: v.created_at,
                 status: v.status || "done",
@@ -326,7 +326,7 @@ export default function AdminPage() {
                           ? "#ef4444"
                           : log.status === "paid"
                             ? "#f59e0b"
-                            : "#10B981",
+                            : "#ef4444",
                       padding: "2px 6px",
                       borderRadius: 4,
                       background:
@@ -334,7 +334,7 @@ export default function AdminPage() {
                           ? "rgba(239,68,68,0.1)"
                           : log.status === "paid"
                             ? "rgba(245,158,11,0.1)"
-                            : "rgba(16,185,129,0.1)",
+                            : "rgba(239,68,68,0.1)",
                     }}
                   >
                     {log.status}

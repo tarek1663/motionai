@@ -15,7 +15,7 @@ export default function Loading() {
           height: 32,
           borderRadius: "50%",
           border: "2px solid #e8e8e8",
-          borderTop: "2px solid #10B981",
+          borderTop: "2px solid #ef4444",
           animation: "spin 0.8s linear infinite",
         }}
       />

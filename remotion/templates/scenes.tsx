@@ -2824,7 +2824,7 @@ export const GlitchSwitchScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
               fontFamily: FONT,
               letterSpacing: "-0.03em",
               lineHeight: 1,
-              color: scene.accentColor || "#10B981",
+              color: scene.accentColor || "#ef4444",
               ...MAIN_TEXT_WRAP,
               opacity: 0.4,
               transform: `translate(${-glitchX * 1.5}px, ${glitchY}px)`,
@@ -2996,7 +2996,7 @@ export const NotificationScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
   const { fps, durationInFrames } = useVideoConfig();
   const motion = useContinuousMotion();
   const bg = scene.bg || "#000000";
-  const accent = scene.accentColor || "#10B981";
+  const accent = scene.accentColor || "#ef4444";
 
   const slideIn = spring({
     frame,

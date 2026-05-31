@@ -1,10 +1,10 @@
 export const colors = {
-  // ── Accent ──────────────────────────────
-  accent: "#0d9668",
-  accentHover: "#0a7f59",
-  accentLight: "#34d399",
-  accentSubtle: "rgba(16,185,129,0.12)",
-  accentBorder: "rgba(16,185,129,0.36)",
+  // ── Accent (rouge MotionAI) ──────────────────────────────
+  accent: "#ef4444",
+  accentHover: "#dc2626",
+  accentLight: "#f87171",
+  accentSubtle: "rgba(239, 68, 68, 0.12)",
+  accentBorder: "rgba(239, 68, 68, 0.36)",
 
   // ── Backgrounds ─────────────────────────
   bg: "#ffffff",
@@ -28,8 +28,8 @@ export const colors = {
 
   // ── Sidebar ─────────────────────────────
   sidebarBg: "#ffffff",
-  sidebarBorder: "rgba(16,185,129,0.2)",
-  sidebarActive: "#10B981",
+  sidebarBorder: "rgba(239, 68, 68, 0.2)",
+  sidebarActive: "#ef4444",
   sidebarIdle: "#9b938c",
 } as const;
 

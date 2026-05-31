@@ -7,7 +7,10 @@ import { DashboardQuestionsScreen } from "@/components/dashboard/dashboard-quest
 import { DashboardGeneratingScreen } from "@/components/dashboard/dashboard-generating-screen";
 import { DashboardDoneScreen } from "@/components/dashboard/dashboard-done-screen";
 import { DashboardViewingScreen } from "@/components/dashboard/dashboard-viewing-screen";
+import { DashboardPricingScreen } from "@/components/dashboard/dashboard-pricing-screen";
+import { cn } from "@/lib/utils";
 import Toast from "@/components/Toast";
+import { BoltDashboardBackground } from "@/components/ui/bolt-style-chat";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
@@ -54,6 +57,7 @@ export function DashboardShell(props: Props) {
 
   return (
     <div className="dash-root">
+      <BoltDashboardBackground />
       <DashboardSidebar
         user={user}
         videos={videos}
@@ -66,10 +70,17 @@ export function DashboardShell(props: Props) {
         credits={credits}
         deleteVideo={deleteVideo}
         renameVideo={renameVideo}
+        setScreen={setScreen}
         onStartTour={onStartTour}
       />
 
       <main className="dash-main">
+        <div
+          className={cn(
+            "dash-main__content",
+            screen === "pricing" && "dash-main__content--pricing"
+          )}
+        >
         {showViewing && (
           <DashboardViewingScreen
             video={selectedVideo}
@@ -123,6 +134,11 @@ export function DashboardShell(props: Props) {
             credits={props.credits}
           />
         )}
+
+        {!showViewing && screen === "pricing" && (
+          <DashboardPricingScreen credits={props.credits} />
+        )}
+        </div>
       </main>
 
       {toast && (

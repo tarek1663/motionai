@@ -86,7 +86,7 @@ export function GlobalAnnouncementBar({ onEligibleChange }: Props) {
           alignItems: "center",
           gap: 8,
           background: "rgba(255,255,255,0.98)",
-          border: "1px solid rgba(16,185,129,0.38)",
+          border: "1px solid rgba(239,68,68,0.38)",
           borderRadius: 100,
           padding: "5px 16px",
           position: "relative",
@@ -95,16 +95,16 @@ export function GlobalAnnouncementBar({ onEligibleChange }: Props) {
           pointerEvents: "auto",
           backdropFilter: "blur(10px)",
           boxShadow:
-            "0 0 0 1px rgba(16,185,129,0.14), 0 8px 24px rgba(15,23,42,0.12), 0 0 20px rgba(16,185,129,0.18)",
+            "0 0 0 1px rgba(239,68,68,0.14), 0 8px 24px rgba(15,23,42,0.12), 0 0 20px rgba(239,68,68,0.18)",
         }}
       >
         <div className="shimmer-bar" aria-hidden="true" />
         <span
           style={{
             fontSize: 14,
-            color: "#10B981",
+            color: "#ef4444",
             fontWeight: 800,
-            textShadow: "0 0 18px rgba(16,185,129,0.35)",
+            textShadow: "0 0 18px rgba(239,68,68,0.35)",
             letterSpacing: "-0.01em",
           }}
         >

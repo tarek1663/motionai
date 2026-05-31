@@ -65,7 +65,7 @@ export default function NotFound() {
           type="button"
           onClick={() => router.push("/dashboard")}
           style={{
-            background: "#10B981",
+            background: "#ef4444",
             border: "none",
             borderRadius: 10,
             padding: "10px 20px",

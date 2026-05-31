@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-type GlowVariant = "yellow" | "green";
+type GlowVariant = "yellow" | "green" | "red";
 
 type BackgroundComponentsProps = React.HTMLAttributes<HTMLDivElement> & {
   glow?: GlowVariant;
@@ -37,7 +37,7 @@ const glowStyles: Record<
       top: "-8%",
       bottom: "-18%",
       backgroundImage:
-        "radial-gradient(ellipse at center, rgba(16,185,129,0.28) 0%, rgba(16,185,129,0.18) 26%, rgba(16,185,129,0.08) 48%, rgba(16,185,129,0) 74%)",
+        "radial-gradient(ellipse at center, rgba(239,68,68,0.28) 0%, rgba(239,68,68,0.18) 26%, rgba(239,68,68,0.08) 48%, rgba(239,68,68,0) 74%)",
       filter: "blur(64px)",
       opacity: 1,
     },
@@ -47,9 +47,31 @@ const glowStyles: Record<
       top: "-2%",
       bottom: "-10%",
       backgroundImage:
-        "radial-gradient(ellipse at center, rgba(16,185,129,0.22) 0%, rgba(16,185,129,0) 68%)",
+        "radial-gradient(ellipse at center, rgba(239,68,68,0.22) 0%, rgba(239,68,68,0) 68%)",
       filter: "blur(40px)",
       opacity: 0.95,
+    },
+  },
+  red: {
+    innerStyle: {
+      left: "-12%",
+      right: "-12%",
+      top: "-14%",
+      bottom: "-14%",
+      backgroundImage:
+        "radial-gradient(ellipse at center, rgba(239, 68, 68, 0.52) 0%, rgba(239, 68, 68, 0.2) 48%, transparent 72%)",
+      filter: "blur(32px)",
+      opacity: 0.38,
+    },
+    secondaryStyle: {
+      left: "-5%",
+      right: "-5%",
+      top: "-5%",
+      bottom: "-5%",
+      backgroundImage:
+        "radial-gradient(ellipse at center, rgba(248, 113, 113, 0.26) 0%, transparent 68%)",
+      filter: "blur(20px)",
+      opacity: 0.3,
     },
   },
 };
