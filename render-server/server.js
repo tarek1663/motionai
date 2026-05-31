@@ -13,6 +13,51 @@ const twemoji = require("@twemoji/api");
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const { createClient } = require("@supabase/supabase-js");
+
+const supabase =
+  process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+    : null;
+
+const uploadVideoToSupabase = async (localPath, jobId) => {
+  if (!supabase) {
+    console.warn("☁️ Supabase not configured — skip upload");
+    return null;
+  }
+
+  try {
+    console.log("☁️ Uploading video to Supabase Storage...");
+    const fileBuffer = fs.readFileSync(localPath);
+    const fileName = `videos/${jobId}.mp4`;
+
+    const { error } = await supabase.storage.from("videos").upload(fileName, fileBuffer, {
+      contentType: "video/mp4",
+      upsert: true,
+    });
+
+    if (error) {
+      console.error("☁️ Upload error:", error.message);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from("videos").getPublicUrl(fileName);
+    console.log("☁️ Video uploaded:", urlData.publicUrl);
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error("☁️ Upload failed:", err?.message || err);
+    return null;
+  }
+};
+
+const getRenderServerBaseUrl = () => {
+  let base = process.env.RENDER_SERVER_URL || "http://localhost:3001";
+  if (!base.startsWith("http://") && !base.startsWith("https://")) {
+    base = `https://${base}`;
+  }
+  return base.replace(/\/$/, "");
+};
+
 const TWEMOJI_CDN = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg";
 
 const getTwemojiSvgUrl = (emoji) => {
@@ -147,6 +192,21 @@ const writeJobProgress = (progressPath, progress, status) => {
       status: status || "rendering",
     }),
   );
+};
+
+const writeJobResult = (jobId, payload) => {
+  const resultPath = path.join(RENDERS_DIR, `${jobId}.result.json`);
+  fs.writeFileSync(resultPath, JSON.stringify(payload));
+};
+
+const readJobResult = (jobId) => {
+  const resultPath = path.join(RENDERS_DIR, `${jobId}.result.json`);
+  if (!fs.existsSync(resultPath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(resultPath, "utf-8"));
+  } catch {
+    return null;
+  }
 };
 
 const cleanSceneDurations = (sceneDurations) => {
@@ -988,8 +1048,20 @@ app.post("/render", async (req, res) => {
           },
         });
 
-        writeJobProgress(progressPath, 100, "rendering");
-        console.log("✅ Render done:", jobId);
+        const railwayUrl = `${getRenderServerBaseUrl()}/video/${jobId}.mp4`;
+        const supabaseUrl = await uploadVideoToSupabase(outPath, jobId);
+        const finalUrl = supabaseUrl || railwayUrl;
+
+        writeJobResult(jobId, {
+          status: "done",
+          progress: 100,
+          url: finalUrl,
+          videoUrl: finalUrl,
+          supabaseUrl,
+          railwayUrl,
+        });
+        writeJobProgress(progressPath, 100, "done");
+        console.log("✅ Render done — URL:", finalUrl);
       } catch (err) {
         const message = err?.message || "Render failed";
         console.error("Render error:", message);
@@ -1014,9 +1086,15 @@ app.get("/render/:jobId", (req, res) => {
   }
 
   if (fs.existsSync(outPath)) {
+    const result = readJobResult(jobId);
+    const fallbackUrl = `${getRenderServerBaseUrl()}/video/${jobId}.mp4`;
+    const videoUrl = result?.videoUrl || result?.url || result?.supabaseUrl || fallbackUrl;
+
     return res.json({
       status: "done",
-      videoUrl: `${process.env.RENDER_SERVER_URL}/video/${jobId}.mp4`,
+      videoUrl,
+      url: videoUrl,
+      supabaseUrl: result?.supabaseUrl ?? null,
       progress: 100,
     });
   }

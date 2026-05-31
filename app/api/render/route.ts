@@ -53,12 +53,16 @@ export async function POST(req: NextRequest) {
     const showWatermark = plan === "free";
     console.log("💧 Watermark:", showWatermark, "— Plan:", plan);
 
-    await supabase.from("videos").insert({
-      user_id: userId,
-      status: "rendering",
-      prompt: body.prompt || "En cours...",
-      created_at: new Date().toISOString(),
-    });
+    const { data: renderingRow } = await supabase
+      .from("videos")
+      .insert({
+        user_id: userId,
+        status: "rendering",
+        prompt: body.prompt || "En cours...",
+        created_at: new Date().toISOString(),
+      })
+      .select("id")
+      .single();
 
     let RENDER_URL = process.env.RENDER_SERVER_URL || "http://localhost:3001";
     if (!RENDER_URL.startsWith("http://") && !RENDER_URL.startsWith("https://")) {
@@ -73,7 +77,18 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     if (!res.ok) {
+      if (renderingRow?.id) {
+        await supabase.from("videos").delete().eq("id", renderingRow.id);
+      }
       return NextResponse.json(data, { status: res.status });
+    }
+
+    if (data.jobId && renderingRow?.id) {
+      await supabase
+        .from("videos")
+        .update({ job_id: data.jobId })
+        .eq("id", renderingRow.id)
+        .eq("user_id", userId);
     }
 
     await incrementVideoCount(userId);
