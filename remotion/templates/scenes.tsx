@@ -8,6 +8,7 @@ import {
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Inter";
 import React from "react";
+import { SFX } from "../SFX";
 
 const E_OUT = Easing.bezier(0.16, 1, 0.3, 1);
 const E_IN = Easing.bezier(0.4, 0, 1, 1);
@@ -750,6 +751,7 @@ export const WordsUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <SFX type="whoosh" volume={0.1} />
       <GeoBackground bg={bg} geo={scene.geo || "dots"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
@@ -818,6 +820,7 @@ export const LettersUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      {frame === 0 && <SFX type="click" volume={0.08} />}
       <GeoBackground bg={bg} geo={scene.geo || "circles"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.05em" }}>
@@ -1031,6 +1034,7 @@ export const MorphBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      {frame === midPoint && <SFX type="whoosh" volume={0.08} />}
       <GeoBackground bg={bg} geo={scene.geo || "dots"} />
       <AbsoluteFill
         style={{
@@ -1134,6 +1138,7 @@ export const MorphScaleScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      {frame === midPoint && <SFX type="whoosh" volume={0.08} />}
       <GeoBackground bg={bg} geo={scene.geo || "circles"} />
       <AbsoluteFill
         style={{
@@ -1518,9 +1523,11 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   });
   const { opacity: fadeOut } = useAppleTiming();
   const opacity = Math.min(fadeIn, fadeOut);
+  const endFrame = Math.floor(durationInFrames * 0.75);
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      {frame === endFrame && <SFX type="ding" volume={0.1} />}
       <GeoBackground bg={bg} geo={scene.geo} />
       <AbsoluteFill
         style={{
@@ -2473,6 +2480,7 @@ export const IrisScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <SFX type="swoosh" volume={0.1} />
       <div
         style={{
           position: "absolute",
@@ -2539,6 +2547,7 @@ export const CurtainScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <SFX type="swoosh" volume={0.1} />
       <GeoBackground bg={bg} geo={scene.geo} />
       <div
         style={{
@@ -2618,6 +2627,7 @@ export const DiagonalWipeScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
 
   return (
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <SFX type="swoosh" volume={0.1} />
       <GeoBackground bg={bg} geo={scene.geo} />
       <div
         style={{
