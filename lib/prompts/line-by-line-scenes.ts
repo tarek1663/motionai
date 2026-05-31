@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { UNIVERSAL_VIDEO_SYSTEM_PROMPT } from "@/lib/prompts/universal-video-system";
 
 export type LineByLineResearch = {
   keyStats?: Array<{ value: string; label: string; raw?: number }>;
@@ -110,6 +111,7 @@ export async function generateScenesLineByLine(
   const scenesResponse = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 6000,
+    system: UNIVERSAL_VIDEO_SYSTEM_PROMPT,
     messages: [{ role: "user", content: prompt }],
   });
 
@@ -122,6 +124,7 @@ export async function generateScenesLineByLine(
     const fixResponse = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 6000,
+      system: UNIVERSAL_VIDEO_SYSTEM_PROMPT,
       messages: [
         {
           role: "user",

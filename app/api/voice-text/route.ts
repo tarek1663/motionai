@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { checkGenerationLimits } from "@/lib/check-limits";
 import { generateVoiceText } from "@/lib/claude";
+import { UNIVERSAL_VIDEO_SYSTEM_PROMPT } from "@/lib/prompts/universal-video-system";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -59,12 +60,13 @@ export async function POST(req: NextRequest) {
       client.messages.create({
         model: "claude-sonnet-4-5",
         max_tokens: 1000,
+        system: `${UNIVERSAL_VIDEO_SYSTEM_PROMPT}
+
+Tu es un expert en copywriting pour vidéos motion design premium.`,
         messages: [
           {
             role: "user",
-            content: `Tu es un expert en copywriting pour publicités vidéo premium.
-
-Génère un script voix-off pour une vidéo de ${sec} secondes sur : "${prompt}"
+            content: `Génère un script voix-off pour une vidéo de ${sec} secondes sur : "${prompt}"
 
 RÈGLES ABSOLUES :
 - Texte fluide et naturel — comme un vrai présentateur

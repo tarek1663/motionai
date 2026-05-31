@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateScenesLineByLine } from "@/lib/prompts/line-by-line-scenes";
+import { UNIVERSAL_VIDEO_SYSTEM_PROMPT } from "@/lib/prompts/universal-video-system";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -73,6 +74,7 @@ async function runWebResearch(subject: string): Promise<ResearchData> {
   const researchResponse = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 2000,
+    system: UNIVERSAL_VIDEO_SYSTEM_PROMPT,
     tools: [
       {
         type: "web_search_20250305",
@@ -128,10 +130,11 @@ async function runCreativePlan(
   const planResponse = await client.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 1000,
+    system: UNIVERSAL_VIDEO_SYSTEM_PROMPT,
     messages: [
       {
         role: "user",
-        content: `Tu es directeur artistique senior.
+        content: `Tu es directeur artistique senior pour une vidéo motion design.
 
 SUJET : "${subject}"
 CONCEPT : ${researchData.concept || "impact et dynamisme"}
