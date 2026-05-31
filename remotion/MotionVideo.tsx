@@ -17,6 +17,8 @@ import {
   WordsUpBlurScene,
   WordsInLeftScene,
   WordsRightScene,
+  MorphBlurScene,
+  MorphScaleScene,
   GeoBgTestScene,
   PhotoRevealScene,
   PhotoCollageScene,
@@ -137,8 +139,12 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
 }) => {
   const sceneWithIndex = { ...scene, _index: index };
 
+  const hasMorphWords =
+    Boolean(scene.wordA?.trim()) || Boolean(scene.wordB?.trim());
+
   if (
     !scene.text?.trim() &&
+    !hasMorphWords &&
     !scene.photoUrl &&
     !scene.photoUrl2 &&
     !scene.photoUrl3 &&
@@ -167,6 +173,10 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
       return <WordsInLeftScene scene={sceneWithIndex} />;
     case "wordsright":
       return <WordsRightScene scene={sceneWithIndex} />;
+    case "morphblur":
+      return <MorphBlurScene scene={sceneWithIndex} />;
+    case "morphscale":
+      return <MorphScaleScene scene={sceneWithIndex} />;
     case "geobgtest":
       return <GeoBgTestScene scene={sceneWithIndex} />;
     case "photoreveal":

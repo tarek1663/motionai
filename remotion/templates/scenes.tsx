@@ -25,6 +25,8 @@ export type SceneData = {
     | "wordsupblur"
     | "wordsinleft"
     | "wordsright"
+    | "morphblur"
+    | "morphscale"
     | "geobgtest"
     | "photoreveal"
     | "photocollage"
@@ -70,6 +72,8 @@ export type SceneData = {
     | "emojiburst"
     | "particles";
   text?: string;
+  wordA?: string;
+  wordB?: string;
   emoji?: string;
   emojis?: string[];
   emojiSize?: number;
@@ -957,6 +961,209 @@ export const WordsRightScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
               }}>{word}</span>
             );
           })}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── MORPH BLUR ───────────────────────────────────────
+// Mot A disparaît en blur, Mot B apparaît depuis le blur
+export const MorphBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+
+  const wordA = scene.wordA || scene.text || "";
+  const wordB = scene.wordB || "";
+
+  const midPoint = Math.floor(durationInFrames * 0.45);
+
+  const aOpacity = interpolate(frame, [Math.max(0, midPoint - 12), midPoint], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_IN,
+  });
+  const aBlur = interpolate(frame, [Math.max(0, midPoint - 12), midPoint], [0, 18], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_IN,
+  });
+
+  const bOpacity = interpolate(frame, [midPoint, Math.min(durationInFrames, midPoint + 20)], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+  const bBlur = interpolate(frame, [midPoint, Math.min(durationInFrames, midPoint + 20)], [18, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+
+  const fadeOut = interpolate(
+    frame,
+    [Math.max(0, durationInFrames - 20), Math.max(1, durationInFrames)],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN },
+  );
+
+  const fadeIn = interpolate(frame, [0, 16], [0, 1], {
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+
+  const fontSizeA = autoFontSize(wordA, 160, 56);
+  const fontSizeB = autoFontSize(wordB, 160, 56);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo || "dots"} />
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          opacity: Math.min(fadeIn, fadeOut),
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            fontSize: fontSizeA,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: textColor(bg),
+            opacity: aOpacity,
+            filter: `blur(${aBlur}px)`,
+            whiteSpace: "nowrap",
+            textAlign: "center",
+          }}
+        >
+          {wordA}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            fontSize: fontSizeB,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: safeAccent(scene.accentColor, bg),
+            opacity: bOpacity,
+            filter: `blur(${bBlur}px)`,
+            whiteSpace: "nowrap",
+            textAlign: "center",
+          }}
+        >
+          {wordB}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── MORPH SCALE ──────────────────────────────────────
+// Mot A rapetisse et disparaît, Mot B grandit depuis le centre
+export const MorphScaleScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+
+  const wordA = scene.wordA || scene.text || "";
+  const wordB = scene.wordB || "";
+
+  const midPoint = Math.floor(durationInFrames * 0.45);
+
+  const aOpacity = interpolate(frame, [Math.max(0, midPoint - 14), midPoint], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_IN,
+  });
+  const aScale = interpolate(frame, [Math.max(0, midPoint - 14), midPoint], [1, 0.65], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_IN,
+  });
+
+  const bOpacity = interpolate(frame, [midPoint, Math.min(durationInFrames, midPoint + 22)], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+  const bScale = interpolate(frame, [midPoint, Math.min(durationInFrames, midPoint + 22)], [1.35, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+  const bBlur = interpolate(frame, [midPoint, Math.min(durationInFrames, midPoint + 22)], [10, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+
+  const fadeOut = interpolate(
+    frame,
+    [Math.max(0, durationInFrames - 20), Math.max(1, durationInFrames)],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN },
+  );
+  const fadeIn = interpolate(frame, [0, 16], [0, 1], {
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+
+  const fontSizeA = autoFontSize(wordA, 160, 56);
+  const fontSizeB = autoFontSize(wordB, 160, 56);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo || "circles"} />
+      <AbsoluteFill
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          opacity: Math.min(fadeIn, fadeOut),
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            fontSize: fontSizeA,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: textColor(bg),
+            opacity: aOpacity,
+            transform: `scale(${aScale})`,
+            whiteSpace: "nowrap",
+            textAlign: "center",
+          }}
+        >
+          {wordA}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            fontSize: fontSizeB,
+            fontWeight: 700,
+            fontFamily: FONT,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: safeAccent(scene.accentColor, bg),
+            opacity: bOpacity,
+            transform: `scale(${bScale})`,
+            filter: `blur(${bBlur}px)`,
+            whiteSpace: "nowrap",
+            textAlign: "center",
+          }}
+        >
+          {wordB}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

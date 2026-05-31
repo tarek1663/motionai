@@ -1079,7 +1079,8 @@ RÈGLES DE DYNAMISME MAXIMUM :
 - Transitions courtes : 40-50 frames max
 
 CATALOGUE COMPLET :
-Texte (7 effets Apple UNIQUEMENT) : wordsup, wordsdown, lettersup, lettersdown, wordsupblur, wordsinleft, wordsright
+Texte (7 effets Apple) : wordsup, wordsdown, lettersup, lettersdown, wordsupblur, wordsinleft, wordsright
+Morphing : morphblur, morphscale (wordA + wordB, mots courts, 150f min)
 Stats : counter, multistats, progressbar, socialstats, bgnumber
 Formes : linedraw, shape, expandingshape
 Transitions : iris, curtain, diagonalwipe, splitvertical, pixeldissolve, lightsweep, glitchswitch

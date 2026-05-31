@@ -243,6 +243,19 @@ RÈGLE DE SÉLECTION TEXTE :
 - Moment fort → wordsupblur ou lettersup
 - Alterner TOUJOURS les 7 types — jamais deux identiques consécutifs
 
+NOUVELLES SCÈNES MORPHING :
+- morphblur: wordA disparaît en blur, wordB apparaît depuis le blur — pour les contrastes forts
+- morphscale: wordA rapetisse, wordB grandit depuis le centre — très impactant
+
+UTILISATION MORPHING :
+- Contraste/comparaison : wordA: "Lent.", wordB: "Rapide."
+- Transformation : wordA: "Avant.", wordB: "Après."
+- Révélation : wordA: "Complexe.", wordB: "Simple."
+- Marque : wordA: "Cher.", wordB: "Gratuit."
+- UNIQUEMENT sur des mots courts (1-3 mots max)
+- durationFrames: 150 minimum pour laisser le temps au morphing
+- Champs obligatoires : wordA, wordB (text optionnel = alias de wordA)
+
 RÈGLE PHOTOS OBLIGATOIRE :
 - TOUJOURS inclure un champ "text" sur les scènes photo
 - Le texte doit décrire ou commenter la photo
