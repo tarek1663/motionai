@@ -139,19 +139,27 @@ const writeJobProgress = (progressPath, progress, status) => {
   );
 };
 
-const recalcSceneDurations = (scenes) => {
-  const ANTICIPATION = 3;
+const cleanSceneDurations = (sceneDurations) => {
+  if (!sceneDurations || sceneDurations.length === 0) return [];
+
+  const cleaned = [];
   let currentFrame = 0;
-  return (scenes || []).map((scene, i) => {
-    const duration = scene.durationFrames || 90;
-    const start = Math.max(0, currentFrame - (i > 0 ? ANTICIPATION : 0));
-    const result = {
-      startFrame: start,
+
+  sceneDurations.forEach((timing) => {
+    const duration = Math.max(
+      40,
+      typeof timing === "number"
+        ? timing
+        : timing.durationFrames || 80,
+    );
+    cleaned.push({
+      startFrame: currentFrame,
       durationFrames: duration,
-    };
+    });
     currentFrame += duration;
-    return result;
   });
+
+  return cleaned;
 };
 
 const syncScenesWithVoice = (scenes, wordTimestamps, fps = 60) => {
@@ -912,11 +920,13 @@ app.post("/render", async (req, res) => {
           ),
         );
 
-        const sceneDurations = syncScenesWithVoice(
+        const syncedDurations = syncScenesWithVoice(
           enrichedWithEmoji,
           wordTimestamps.length ? wordTimestamps : phraseTimestamps,
           60,
         );
+        const sceneDurations = cleanSceneDurations(syncedDurations);
+        const CROSSFADE_FRAMES = 8;
         const computedTotalFrames = sceneDurations.reduce(
           (acc, s) => acc + s.durationFrames,
           0,
@@ -924,7 +934,8 @@ app.post("/render", async (req, res) => {
         const lastSceneEnd =
           sceneDurations.length > 0
             ? sceneDurations[sceneDurations.length - 1].startFrame +
-              sceneDurations[sceneDurations.length - 1].durationFrames
+              sceneDurations[sceneDurations.length - 1].durationFrames +
+              CROSSFADE_FRAMES
             : 0;
         const adjustedTotalFrames = Math.max(
           requestedTotalFrames || lastSceneEnd || computedTotalFrames || 1800,

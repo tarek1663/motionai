@@ -63,7 +63,6 @@ import {
   EmojiScene,
   EmojiBurstScene,
   ParticlesScene,
-  DynamicVignette,
   GeoBackground,
 } from "./templates/scenes";
 
@@ -80,33 +79,9 @@ export type MotionVideoProps = {
   showWatermark?: boolean;
 };
 
-const MIN_SCENE_FRAMES = 120;
 const CROSSFADE_FRAMES = 8;
-
-const SceneCrossfade: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const frame = useCurrentFrame();
-  const fade = interpolate(frame, [0, CROSSFADE_FRAMES], [1, 0], {
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-
-  return (
-    <AbsoluteFill>
-      {children}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 99,
-          background: "#000000",
-          opacity: fade,
-          pointerEvents: "none",
-        }}
-      />
-      <DynamicVignette />
-    </AbsoluteFill>
-  );
-};
+const EASE_OUT = Easing.bezier(0.16, 1, 0.3, 1);
+const EASE_IN = Easing.bezier(0.4, 0, 1, 1);
 
 const TEXT_SCENE_TYPES = new Set([
   "wordsup",
@@ -365,6 +340,39 @@ const SceneRenderer: React.FC<{ scene: SceneData; index: number }> = ({
   return renderSceneContent(scene, sceneWithIndex);
 };
 
+const SceneWrapper: React.FC<{
+  scene: SceneData;
+  index: number;
+  duration: number;
+  crossfadeFrames: number;
+}> = ({ scene, index, duration, crossfadeFrames }) => {
+  const frame = useCurrentFrame();
+
+  const fadeIn = interpolate(frame, [0, crossfadeFrames], [0, 1], {
+    extrapolateRight: "clamp",
+    easing: EASE_OUT,
+  });
+
+  const fadeOut = interpolate(
+    frame,
+    [duration - crossfadeFrames, duration],
+    [1, 0],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: EASE_IN,
+    },
+  );
+
+  const opacity = Math.min(fadeIn, fadeOut);
+
+  return (
+    <AbsoluteFill style={{ opacity }}>
+      <SceneRenderer scene={scene} index={index} />
+    </AbsoluteFill>
+  );
+};
+
 const MusicAudio: React.FC<{
   src: string;
   targetVolume: number;
@@ -458,26 +466,27 @@ export const MotionVideo: React.FC<MotionVideoProps> = ({
       </Sequence>
 
       {allScenes.map((scene, index) => {
-        const ts = timings[index];
-        const fromTiming = getSceneTiming(
+        const timing = timings[index];
+        const fallback = getSceneTiming(
           timings,
           safeTotalFrames,
           allScenes.length,
           index,
         );
+
         const from =
-          ts &&
-          typeof ts !== "number" &&
-          Number.isFinite(ts.startFrame)
-            ? ts.startFrame!
-            : fromTiming.from;
+          timing && typeof timing !== "number" && Number.isFinite(timing.startFrame)
+            ? Math.max(0, timing.startFrame)
+            : fallback.from;
         const duration =
-          ts &&
-          typeof ts !== "number" &&
-          Number.isFinite(ts.durationFrames) &&
-          ts.durationFrames! > 0
-            ? ts.durationFrames!
-            : Math.max(MIN_SCENE_FRAMES, fromTiming.duration);
+          timing &&
+          typeof timing !== "number" &&
+          Number.isFinite(timing.durationFrames) &&
+          timing.durationFrames! > 0
+            ? timing.durationFrames!
+            : typeof timing === "number" && timing > 0
+              ? timing
+              : fallback.duration;
 
         if (!Number.isFinite(from) || !Number.isFinite(duration) || duration <= 0) {
           return null;
@@ -486,12 +495,15 @@ export const MotionVideo: React.FC<MotionVideoProps> = ({
         return (
           <Sequence
             key={index}
-            from={Math.max(0, from - CROSSFADE_FRAMES)}
+            from={from}
             durationInFrames={duration + CROSSFADE_FRAMES}
           >
-            <SceneCrossfade>
-              <SceneRenderer scene={scene} index={index} />
-            </SceneCrossfade>
+            <SceneWrapper
+              scene={scene}
+              index={index}
+              duration={duration}
+              crossfadeFrames={CROSSFADE_FRAMES}
+            />
           </Sequence>
         );
       })}
