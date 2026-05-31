@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateScenesFromVoice, generateScenesFromWordTimestamps } from "@/lib/claude";
-import { buildCinemaSystemPrompt } from "@/lib/prompts/cinema-scenes-system";
+import { buildContextualScenePrompt } from "@/lib/prompts/cinema-scenes-system";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -223,8 +223,9 @@ export async function POST(req: NextRequest) {
     ]
       .filter(Boolean)
       .join("\n");
-    const systemPrompt = buildCinemaSystemPrompt(
+    const systemPrompt = buildContextualScenePrompt(
       subject,
+      voiceoverText,
       durationSec,
       accent,
       {
