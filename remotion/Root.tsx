@@ -12,47 +12,49 @@ const fps = 60;
 const defaultProps = {
   scenes: [
     {
-      type: "morphblur",
-      wordA: "Lent.",
-      wordB: "Rapide.",
-      bg: "#000000",
-      accentColor: "#ffffff",
-      geo: "dots",
-      durationFrames: 150,
-    },
-    {
-      type: "morphscale",
-      wordA: "Cher.",
-      wordB: "Gratuit.",
-      bg: "#ffffff",
-      accentColor: "#000000",
-      geo: "circles",
-      durationFrames: 150,
-    },
-    {
-      type: "morphblur",
-      wordA: "Avant.",
-      wordB: "Après.",
+      type: "lettersup",
+      text: "Motionr.",
       bg: "#000000",
       accentColor: "#10B981",
+      geo: "dots",
+      durationFrames: 80,
+    },
+    {
+      type: "wordsupblur",
+      text: "Crée sans limite.",
+      bg: "#ffffff",
+      accentColor: "#000000",
       geo: "grid",
+      durationFrames: 100,
+    },
+    {
+      type: "counter",
+      text: "vidéos générées",
+      bg: "#000000",
+      accentColor: "#10B981",
+      geo: "circles",
+      counterTo: 12400,
       durationFrames: 150,
     },
     {
-      type: "morphscale",
-      wordA: "Complexe.",
-      wordB: "Simple.",
+      type: "lettersdown",
+      text: "Commence.",
       bg: "#ffffff",
       accentColor: "#000000",
       geo: "diagonal",
-      durationFrames: 150,
+      durationFrames: 80,
     },
   ],
-  sceneDurations: Array.from({ length: 4 }, (_, i) => ({
-    startFrame: i * 150,
-    durationFrames: 150,
-  })),
-  totalFrames: 600,
+  sceneDurations: (() => {
+    const durations = [80, 100, 150, 80];
+    let current = 0;
+    return durations.map((d) => {
+      const result = { startFrame: current, durationFrames: d };
+      current += d;
+      return result;
+    });
+  })(),
+  totalFrames: 410,
   audioSrc: null,
   musicSrc: null,
   musicVolume: 0.12,
@@ -80,7 +82,7 @@ const RemotionRoot = () => (
       const total =
         Number.isFinite(p.totalFrames) && p.totalFrames > 0
           ? p.totalFrames
-          : 600;
+          : 410;
 
       const fmt = (p as { format?: string }).format || "9:16";
       const w = fmt === "16:9" ? 1920 : 1080;
