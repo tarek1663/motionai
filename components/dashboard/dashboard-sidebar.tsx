@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import {
@@ -27,6 +28,7 @@ export type DashboardSidebarProps = Pick<
   | "credits"
   | "deleteVideo"
   | "renameVideo"
+  | "setScreen"
 > & {
   onViewVideo: (video: DashboardVideo) => void;
   onStartTour?: () => void;
@@ -44,6 +46,7 @@ export function DashboardSidebar({
   resetCreation,
   deleteVideo,
   renameVideo,
+  setScreen,
   onStartTour,
 }: DashboardSidebarProps) {
   const accent = colors.accent;
@@ -156,6 +159,13 @@ export function DashboardSidebar({
                 <span className="dash-credits-plan">
                   {credits.planName || (credits.plan === "free" ? "Gratuit" : credits.plan)}
                 </span>
+                <button
+                  type="button"
+                  className="dash-credits-change-plan"
+                  onClick={() => setScreen("pricing")}
+                >
+                  Changer de plan
+                </button>
               </div>
               <div className="dash-credits-track">
                 <div
@@ -169,105 +179,41 @@ export function DashboardSidebar({
               <div className="dash-credits-meta">
                 {credits.videos_used}/{credits.videos_limit} vidéos · {credits.videos_remaining} restantes
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 12,
-                  marginTop: 8,
-                  fontSize: 11,
-                  color: "rgba(255,255,255,0.3)",
-                  flexWrap: "wrap",
-                }}
-              >
-                <span>
-                  <span
-                    style={{
-                      color:
-                        (credits.remainingToday ?? 0) > 2
-                          ? "rgba(255,255,255,0.5)"
-                          : "#f59e0b",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {credits.remainingToday ?? 0}
-                  </span>
-                  /{credits.dailyLimit ?? 0} aujourd&apos;hui
-                </span>
-                <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
-                <span>
-                  <span
-                    style={{
-                      color:
-                        (credits.remainingThisMonth ?? 0) > 5
-                          ? "rgba(255,255,255,0.5)"
-                          : "#f59e0b",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {credits.remainingThisMonth ?? credits.videos_remaining}
-                  </span>
-                  /{credits.monthlyLimit ?? credits.videos_limit} ce mois
-                </span>
-              </div>
             </div>
           </>
         )}
 
         <div className="dash-sidebar-footer">
-          <div
-            id="tour-server"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "8px 16px",
-              fontSize: 11,
-              color: "rgba(255,255,255,0.3)",
-            }}
-          >
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background:
-                  serverStatus === "online"
-                    ? "#10B981"
-                    : serverStatus === "offline"
-                      ? "#ef4444"
-                      : "#f59e0b",
-                boxShadow:
-                  serverStatus === "online" ? "0 0 6px rgba(16,185,129,0.5)" : "none",
-              }}
-            />
-            {serverStatus === "online"
-              ? "Serveur en ligne"
-              : serverStatus === "offline"
-                ? "Serveur hors ligne"
-                : "Verification..."}
+          <div className="dash-sidebar-footer-meta">
+            <div id="tour-server" className="dash-sidebar-server-status">
+              <span
+                className="dash-sidebar-server-status__dot"
+                data-status={serverStatus}
+                aria-hidden
+              />
+              <span>
+                {serverStatus === "online"
+                  ? "Serveur en ligne"
+                  : serverStatus === "offline"
+                    ? "Serveur hors ligne"
+                    : "Verification..."}
+              </span>
+            </div>
+            {onStartTour && (
+              <button
+                type="button"
+                id="tour-guide"
+                className="dash-sidebar-how-btn"
+                onClick={onStartTour}
+              >
+                Comment ça marche
+              </button>
+            )}
           </div>
-          <a href="/account" className="dash-sidebar-footer-link">
+          <Link href="/settings" className="dash-sidebar-footer-link">
             <Settings size={20} strokeWidth={1.75} />
             {copy.settings}
-          </a>
-          <button
-            type="button"
-            onClick={onStartTour}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: 11,
-              color: "rgba(255,255,255,0.2)",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              padding: "4px 0",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            ❓ Guide d'utilisation
-          </button>
+          </Link>
           <div className="dash-sidebar-profile">
             <UserButton afterSignOutUrl="/" />
             <div className="dash-sidebar-profile-text">
