@@ -1231,11 +1231,27 @@ export const PhotoCollageScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
 // ═══════════════════════════════════════════════════════
 
 // ─── COMPTEUR ─────────────────────────────────────────
+const parseSafeCounter = (raw: unknown): number => {
+  if (typeof raw === "number" && !isNaN(raw) && isFinite(raw)) return raw;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const parsed = Number(raw.replace(/\s/g, "").replace(/,/g, ""));
+    if (!isNaN(parsed) && isFinite(parsed)) return parsed;
+  }
+  return 0;
+};
+
+const safeNumber = (val: number): string => {
+  if (isNaN(val) || !isFinite(val)) return "0";
+  return val.toLocaleString("fr-FR");
+};
+
 const formatCounterValue = (
   current: number,
   prefix: string,
   suffix: string,
 ): string => {
+  if (isNaN(current) || !isFinite(current)) current = 0;
+
   const isCurrency =
     prefix.includes("$") ||
     prefix.includes("€") ||
@@ -1243,16 +1259,16 @@ const formatCounterValue = (
     suffix.includes("€");
 
   if (isCurrency) {
-    return `${prefix}${current.toLocaleString("fr-FR")}${suffix}`;
+    return `${prefix}${safeNumber(current)}${suffix}`;
   }
 
   if (current >= 1000000) {
     return `${prefix}${(current / 1000000).toFixed(1)}M${suffix}`;
   }
   if (current >= 10000) {
-    return `${prefix}${(current / 1000).toFixed(0)}K${suffix}`;
+    return `${prefix}${safeNumber(Math.round(current / 1000))}K${suffix}`;
   }
-  return `${prefix}${current.toLocaleString("fr-FR")}${suffix}`;
+  return `${prefix}${safeNumber(current)}${suffix}`;
 };
 
 export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
@@ -1260,7 +1276,11 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const { durationInFrames } = useVideoConfig();
   const motion = useContinuousMotion();
   const bg = scene.bg || "#ffffff";
-  const target = scene.counterTo ?? 1000;
+  const rawTarget = scene.counterTo;
+  const target =
+    typeof rawTarget === "number" && !isNaN(rawTarget) && isFinite(rawTarget)
+      ? rawTarget
+      : parseSafeCounter(rawTarget);
   const suffix = scene.suffix || "";
   const prefix = scene.prefix || "";
 
@@ -1269,6 +1289,8 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     easing: Easing.out(Easing.cubic),
   });
   const current = Math.round(target * progress);
+  const displayCurrent =
+    isNaN(current) || !isFinite(current) ? 0 : current;
 
   const fadeIn = interpolate(frame, [0, 20], [0, 1], {
     extrapolateRight: "clamp",
@@ -1304,7 +1326,7 @@ export const CounterScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             textAlign: "center",
           }}
         >
-          {formatCounterValue(current, prefix, suffix)}
+          {formatCounterValue(displayCurrent, prefix, suffix)}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -1317,7 +1339,11 @@ export const ProgressBarScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const { durationInFrames } = useVideoConfig();
   const motion = useContinuousMotion();
   const bg = scene.bg || "#000000";
-  const target = scene.counterTo ?? 75;
+  const rawTarget = scene.counterTo;
+  const target =
+    typeof rawTarget === "number" && !isNaN(rawTarget) && isFinite(rawTarget)
+      ? rawTarget
+      : parseSafeCounter(rawTarget);
   const accent = scene.accentColor || (isLight(bg) ? "#000000" : "#ffffff");
 
   const progress = interpolate(frame, [8, Math.max(9, durationInFrames * 0.75)], [0, target], {
@@ -1377,7 +1403,7 @@ export const ProgressBarScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
         >
           <div
             style={{
-              width: `${barWidth}%`,
+              width: `${isNaN(barWidth) || !isFinite(barWidth) ? 0 : barWidth}%`,
               height: "100%",
               background: accent,
               borderRadius: 100,
@@ -1397,7 +1423,7 @@ export const ProgressBarScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             fontVariantNumeric: "tabular-nums",
           }}
         >
-          {Math.round(progress)}%
+          {safeNumber(Math.round(progress))}%
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -1411,7 +1437,10 @@ export const MultiStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
   const motion = useContinuousMotion();
   const bg = scene.bg || "#ffffff";
 
-  const stats = scene.stats || [];
+  const stats = (scene.stats || []).map((stat) => ({
+    ...stat,
+    value: parseSafeCounter(stat.value),
+  }));
   if (stats.length === 0) return null;
 
   const { opacity: fadeOut } = useAppleTiming();
@@ -1445,7 +1474,9 @@ export const MultiStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             [0, 1],
             { extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) },
           );
-          const current = Math.round(stat.value * countProgress);
+          const rawCurrent = Math.round(stat.value * countProgress);
+          const current =
+            isNaN(rawCurrent) || !isFinite(rawCurrent) ? 0 : rawCurrent;
 
           const isLast = i === stats.length - 1;
           const borderColor = isLight(bg)
@@ -1481,7 +1512,9 @@ export const MultiStatsScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
                   ...MAIN_TEXT_WRAP,
                 }}
               >
-                {current >= 1000 ? `${(current / 1000).toFixed(0)}K` : current}
+                {current >= 1000
+                  ? `${safeNumber(Math.round(current / 1000))}K`
+                  : safeNumber(current)}
                 {stat.suffix}
               </div>
             </div>

@@ -249,11 +249,15 @@ RÈGLE PHOTOS OBLIGATOIRE :
 - JAMAIS de scène photo sans texte
 
 RÈGLE COUNTER :
+- counterTo DOIT être un nombre entier — jamais une string
+- Exemples valides : counterTo: 750000000, counterTo: 98, counterTo: 17
+- JAMAIS : counterTo: "750M" ou counterTo: null
+- Si la valeur est inconnue → ne pas utiliser counter du tout
 - counterTo doit être la valeur EXACTE à afficher — jamais arrondir
 - Si c'est un prix → prefix: "€" ou "$" suffix: "" counterTo: 800 (pas 1000)
 - Si c'est des utilisateurs → counterTo: 50000 suffix: "+"
 - Si c'est un pourcentage → counterTo: 94 suffix: "%"
-- JAMAIS mettre counterTo: 1000 si la vraie valeur est 800
+- stats[].value dans multistats : nombre entier uniquement, jamais de string
 
 RÈGLE IMAGES RENFORCÉE :
 - photoreveal ou photocollage sur au minimum 3 scènes par vidéo
