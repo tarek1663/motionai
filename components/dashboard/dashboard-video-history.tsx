@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clapperboard, Trash2 } from "lucide-react";
 import { copy } from "@/lib/dashboard/copy";
 import { formatRelativeDate, getVideoSummary } from "@/lib/dashboard/utils";
 import { getVideoDisplayTitle } from "@/lib/dashboard/videos";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 
-type Props = {
+export type DashboardVideoHistoryProps = {
   videos: DashboardVideo[];
   loadingVideos: boolean;
   selectedVideoId?: string;
@@ -23,7 +23,11 @@ export function DashboardVideoHistory({
   onSelect,
   onDelete,
   onRename,
-}: Props) {
+}: DashboardVideoHistoryProps) {
+  useEffect(() => {
+    console.log("📹 VideoHistory received:", videos?.length);
+  }, [videos]);
+
   if (loadingVideos) {
     return (
       <div className="dash-sidebar-skeleton-wrap">
@@ -34,11 +38,11 @@ export function DashboardVideoHistory({
     );
   }
 
-  if (!videos.length) {
+  if (!videos || videos.length === 0) {
     return (
       <div className="dash-sidebar-empty">
         <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
-        Tes videos apparaitront ici apres ta premiere generation.
+        Aucune vidéo
       </div>
     );
   }

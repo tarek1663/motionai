@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardInputScreen } from "@/components/dashboard/dashboard-input-screen";
 import { DashboardQuestionsScreen } from "@/components/dashboard/dashboard-questions-screen";
@@ -35,6 +36,10 @@ export function DashboardShell(props: Props) {
     toast,
     setToast,
   } = props;
+
+  useEffect(() => {
+    console.log("📹 Shell passing videos:", videos?.length);
+  }, [videos]);
 
   return (
     <div className="dash-root">

@@ -15,7 +15,7 @@ import { copy } from "@/lib/dashboard/copy";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
-type Props = Pick<
+export type DashboardSidebarProps = Pick<
   UseDashboardReturn,
   | "user"
   | "videos"
@@ -29,8 +29,7 @@ type Props = Pick<
   | "credits"
   | "deleteVideo"
   | "renameVideo"
->;
-type ExtraProps = {
+> & {
   onStartTour?: () => void;
 };
 
@@ -48,12 +47,12 @@ export function DashboardSidebar({
   deleteVideo,
   renameVideo,
   onStartTour,
-}: Props & ExtraProps) {
+}: DashboardSidebarProps) {
   const accent = colors.accent;
   const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
 
   useEffect(() => {
-    console.log("📹 Sidebar videos:", videos?.length, "loading:", loadingVideos);
+    console.log("📹 Sidebar received videos:", videos?.length, "loading:", loadingVideos);
   }, [videos, loadingVideos]);
 
   useEffect(() => {
