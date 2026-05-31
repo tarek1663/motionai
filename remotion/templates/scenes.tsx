@@ -6,12 +6,36 @@ import {
   useVideoConfig,
   Easing,
 } from "remotion";
+import { loadFont } from "@remotion/google-fonts/Inter";
 import React from "react";
 
 const E_OUT = Easing.bezier(0.16, 1, 0.3, 1);
 const E_IN = Easing.bezier(0.4, 0, 1, 1);
-const FONT =
-  "'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', sans-serif";
+
+const { fontFamily: interFontFamily } = loadFont("normal", {
+  weights: ["400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
+
+const FONT = `'${interFontFamily}', 'SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Arial', sans-serif`;
+
+const GEO_TYPES = [
+  "dots",
+  "grid",
+  "circles",
+  "diagonal",
+  "cross",
+  "lines",
+  "perspective",
+  "radial",
+] as const;
+
+const pickDefaultGeo = (bg: string): string => {
+  const seed = (bg || "#000000")
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return GEO_TYPES[seed % GEO_TYPES.length];
+};
 
 // ---------------------------------------------------------
 // TYPES
@@ -576,9 +600,11 @@ const GEO_MAP: Record<string, React.FC<{ bg: string }>> = {
 // ═══════════════════════════════════════════════════════
 
 export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo }) => {
-  const activeGeo = geo && geo !== "none" ? geo : "dots";
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
+
+  // Toujours un fond géométrique — pattern par défaut selon la couleur de fond
+  const activeGeo = geo && geo !== "none" ? geo : pickDefaultGeo(bg);
   const isShortScene = durationInFrames < 70;
 
   const scale = interpolate(

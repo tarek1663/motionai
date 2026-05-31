@@ -78,6 +78,16 @@ setInterval(cleanOldFiles, 60 * 60 * 1000);
 
 const bundleCache = new Map();
 
+// Inter (@remotion/google-fonts) — proche de SF Pro, chargée via remotion/Root.tsx au bundle
+try {
+  require("@remotion/google-fonts/Inter").loadFont("normal", {
+    weights: ["400", "500", "600", "700", "800", "900"],
+    subsets: ["latin"],
+  });
+} catch (err) {
+  console.warn("Inter font preload:", err.message);
+}
+
 const getBundleLocation = async () => {
   if (bundleCache.has("bundle")) {
     return bundleCache.get("bundle");

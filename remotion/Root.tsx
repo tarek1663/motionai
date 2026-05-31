@@ -1,5 +1,11 @@
 import { registerRoot, Composition } from "remotion";
+import { loadFont } from "@remotion/google-fonts/Inter";
 import { MotionVideo, MotionVideoProps } from "./MotionVideo";
+
+loadFont("normal", {
+  weights: ["400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
 
 const fps = 60;
 
