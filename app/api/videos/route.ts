@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { normalizeDashboardVideos } from "@/lib/dashboard/videos";
 import { supabase } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ videos: [] });
     }
 
-    return NextResponse.json({ videos: data || [] });
+    return NextResponse.json({ videos: normalizeDashboardVideos(data || []) });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("📹 Videos route error:", message);

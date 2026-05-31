@@ -14,6 +14,7 @@ import { colors } from "@/lib/colors";
 import type { CreditsInfo } from "@/lib/dashboard/credits";
 import { copy } from "@/lib/dashboard/copy";
 import { formatRelativeDate, getVideoSummary } from "@/lib/dashboard/utils";
+import { getVideoDisplayTitle } from "@/lib/dashboard/videos";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
@@ -53,6 +54,10 @@ export function DashboardSidebar({
 }: Props & ExtraProps) {
   const accent = colors.accent;
   const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
+
+  useEffect(() => {
+    console.log("📹 Videos in render:", videos?.length);
+  }, [videos]);
 
   useEffect(() => {
     const checkServer = async () => {
@@ -382,7 +387,7 @@ function VideoListItem({
           onDoubleClick={(e) => {
             e.stopPropagation();
             setEditingVideoId(video.id);
-            setEditingTitle(video.prompt || "");
+            setEditingTitle(getVideoDisplayTitle(video));
           }}
         >
           {editingVideoId === video.id ? (
@@ -391,7 +396,7 @@ function VideoListItem({
               value={editingTitle}
               onChange={(e) => setEditingTitle(e.target.value)}
               onBlur={() => {
-                if (editingTitle.trim() && editingTitle !== (video.prompt || "")) {
+                if (editingTitle.trim() && editingTitle !== getVideoDisplayTitle(video)) {
                   onRename(editingTitle);
                 }
                 setEditingVideoId(null);
@@ -414,7 +419,7 @@ function VideoListItem({
               }}
             />
           ) : (
-            <div className="dash-vid-title dash-truncate">{video.prompt || "Video sans titre"}</div>
+            <div className="dash-vid-title dash-truncate">{getVideoDisplayTitle(video)}</div>
           )}
           <div className="dash-vid-meta dash-truncate">
             {getVideoSummary(video)} · {formatRelativeDate(video.created_at)}

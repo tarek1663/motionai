@@ -34,6 +34,7 @@ import type {
   QualityMode,
   ScriptMode,
 } from "@/lib/dashboard/types";
+import { normalizeDashboardVideos } from "@/lib/dashboard/videos";
 
 const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
 const COOLDOWN_MS = 45000;
@@ -114,14 +115,14 @@ export function useDashboard() {
   const loadVideos = useCallback(async () => {
     setLoadingVideos(true);
     try {
-      console.log("📹 Loading videos...");
-      const res = await fetch("/api/videos");
-      console.log("📹 Response status:", res.status);
+      const res = await fetch("/api/videos", { cache: "no-store" });
       const data = await res.json();
-      console.log("📹 Videos data:", data);
-      setVideos(data.videos || []);
+      const rawList = Array.isArray(data) ? data : data.videos;
+      const list = normalizeDashboardVideos(rawList);
+      console.log("📹 Setting videos:", list.length);
+      setVideos(list);
     } catch (err) {
-      console.error("📹 Load videos error:", err);
+      console.error("📹 Error:", err);
       setVideos([]);
     } finally {
       setLoadingVideos(false);

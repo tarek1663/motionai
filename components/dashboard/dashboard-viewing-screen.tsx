@@ -3,6 +3,7 @@
 import { ArrowLeft, Download, RefreshCw } from "lucide-react";
 import { copy } from "@/lib/dashboard/copy";
 import { formatRelativeDate } from "@/lib/dashboard/utils";
+import { getVideoDisplayTitle } from "@/lib/dashboard/videos";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 
 type Props = {
@@ -22,7 +23,7 @@ export function DashboardViewingScreen({ video, onBack, onRegenerate }: Props) {
           <ArrowLeft size={14} strokeWidth={1.75} />
           {copy.back}
         </button>
-        <h1 className="dash-page-title">{video.prompt}</h1>
+        <h1 className="dash-page-title">{getVideoDisplayTitle(video)}</h1>
         <div className="dash-meta-row">
           {video.format_name && <span className="dash-badge-mono">{video.format_name}</span>}
           {video.duration > 0 && <span className="dash-badge-mono">{video.duration}s</span>}

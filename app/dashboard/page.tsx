@@ -73,6 +73,10 @@ export default function DashboardPage() {
   const [tourStep, setTourStep] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
 
+  useEffect(() => {
+    console.log("📹 Videos in render:", state.videos?.length);
+  }, [state.videos]);
+
   const refreshActiveTourSteps = useCallback(() => {
     const available = filterAvailableTourSteps(tourSteps);
     setActiveTourSteps(available);
