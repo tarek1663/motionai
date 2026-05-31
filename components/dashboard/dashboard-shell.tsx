@@ -13,35 +13,45 @@ type Props = UseDashboardReturn & {
   onStartTour?: () => void;
 };
 
-export function DashboardShell(state: Props) {
+export function DashboardShell(props: Props) {
   const {
-    screen,
+    user,
+    videos,
+    loadingVideos,
     selectedVideo,
-    setScreen,
     setSelectedVideo,
+    setScreen,
     setMode,
     setPrompt,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    resetCreation,
+    credits,
+    deleteVideo,
+    renameVideo,
+    onStartTour,
+    screen,
     questions,
     toast,
     setToast,
-  } = state;
+  } = props;
 
   return (
     <div className="dash-root">
       <DashboardSidebar
-        user={state.user}
-        videos={state.videos}
-        loadingVideos={state.loadingVideos}
-        selectedVideo={state.selectedVideo}
-        setSelectedVideo={state.setSelectedVideo}
-        setScreen={state.setScreen}
-        sidebarCollapsed={state.sidebarCollapsed}
-        setSidebarCollapsed={state.setSidebarCollapsed}
-        resetCreation={state.resetCreation}
-        credits={state.credits}
-        deleteVideo={state.deleteVideo}
-        renameVideo={state.renameVideo}
-        onStartTour={state.onStartTour}
+        user={user}
+        videos={videos}
+        loadingVideos={loadingVideos}
+        selectedVideo={selectedVideo}
+        setSelectedVideo={setSelectedVideo}
+        setScreen={setScreen}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        resetCreation={resetCreation}
+        credits={credits}
+        deleteVideo={deleteVideo}
+        renameVideo={renameVideo}
+        onStartTour={onStartTour}
       />
 
       <main className="dash-main">
@@ -61,41 +71,41 @@ export function DashboardShell(state: Props) {
           />
         )}
 
-        {screen === "input" && <DashboardInputScreen {...state} />}
+        {screen === "input" && <DashboardInputScreen {...props} />}
 
         {screen === "questions" && questions.length > 0 && (
           <DashboardQuestionsScreen
-            prompt={state.prompt}
-            questions={state.questions}
-            answers={state.answers}
-            otherDetails={state.otherDetails}
-            currentQ={state.currentQ}
-            setCurrentQ={state.setCurrentQ}
-            selectAnswer={state.selectAnswer}
-            setOtherDetail={state.setOtherDetail}
-            backFromQuestions={state.backFromQuestions}
-            finishQuestions={state.finishQuestions}
-            skipQuestions={state.skipQuestions}
+            prompt={props.prompt}
+            questions={props.questions}
+            answers={props.answers}
+            otherDetails={props.otherDetails}
+            currentQ={props.currentQ}
+            setCurrentQ={props.setCurrentQ}
+            selectAnswer={props.selectAnswer}
+            setOtherDetail={props.setOtherDetail}
+            backFromQuestions={props.backFromQuestions}
+            finishQuestions={props.finishQuestions}
+            skipQuestions={props.skipQuestions}
           />
         )}
 
         {screen === "generating" && (
           <DashboardGeneratingScreen
-            progress={state.progress}
-            status={state.status}
-            formatDetected={state.formatDetected}
-            quality={state.quality}
-            setScreen={state.setScreen}
+            progress={props.progress}
+            status={props.status}
+            formatDetected={props.formatDetected}
+            quality={props.quality}
+            setScreen={props.setScreen}
           />
         )}
 
         {screen === "done" && (
           <DashboardDoneScreen
-            videoUrl={state.videoUrl}
-            format={state.format}
-            resetCreation={state.resetCreation}
-            showToast={state.showToast}
-            credits={state.credits}
+            videoUrl={props.videoUrl}
+            format={props.format}
+            resetCreation={props.resetCreation}
+            showToast={props.showToast}
+            credits={props.credits}
           />
         )}
       </main>

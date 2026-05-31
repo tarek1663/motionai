@@ -5,16 +5,13 @@ import { UserButton } from "@clerk/nextjs";
 import {
   ChevronLeft,
   ChevronRight,
-  Clapperboard,
   Plus,
   Settings,
-  Trash2,
 } from "lucide-react";
 import { colors } from "@/lib/colors";
+import { DashboardVideoHistory } from "@/components/dashboard/dashboard-video-history";
 import type { CreditsInfo } from "@/lib/dashboard/credits";
 import { copy } from "@/lib/dashboard/copy";
-import { formatRelativeDate, getVideoSummary } from "@/lib/dashboard/utils";
-import { getVideoDisplayTitle } from "@/lib/dashboard/videos";
 import type { DashboardVideo } from "@/lib/dashboard/types";
 import type { UseDashboardReturn } from "@/hooks/use-dashboard";
 
@@ -56,8 +53,8 @@ export function DashboardSidebar({
   const [serverStatus, setServerStatus] = useState<"online" | "offline" | "checking">("checking");
 
   useEffect(() => {
-    console.log("📹 Videos in render:", videos?.length);
-  }, [videos]);
+    console.log("📹 Sidebar videos:", videos?.length, "loading:", loadingVideos);
+  }, [videos, loadingVideos]);
 
   useEffect(() => {
     const checkServer = async () => {
@@ -84,6 +81,11 @@ export function DashboardSidebar({
     }, 30000);
     return () => window.clearInterval(interval);
   }, []);
+
+  const handleSelect = (video: DashboardVideo) => {
+    setSelectedVideo(video);
+    setScreen("viewing");
+  };
 
   return (
     <>
@@ -114,43 +116,14 @@ export function DashboardSidebar({
         </div>
 
         <div id="tour-history" className="dash-sidebar-scroll">
-          {loadingVideos ? (
-            <div className="dash-sidebar-skeleton-wrap">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="dash-skeleton" />
-              ))}
-            </div>
-          ) : videos.length === 0 ? (
-            <div
-              style={{
-                padding: "24px 16px",
-                textAlign: "center",
-                color: "rgba(255,255,255,0.2)",
-                fontSize: 12,
-                lineHeight: 1.6,
-              }}
-            >
-              <div style={{ fontSize: 24, marginBottom: 8 }}>🎬</div>
-              Tes videos apparaitront ici apres ta premiere generation.
-            </div>
-          ) : (
-            <>
-              <div className="dash-eyebrow">{copy.sidebarRecent}</div>
-              {videos.map((video) => (
-                <VideoListItem
-                  key={video.id}
-                  video={video}
-                  active={selectedVideo?.id === video.id}
-                  onSelect={() => {
-                    setSelectedVideo(video);
-                    setScreen("viewing");
-                  }}
-                  onDelete={() => void deleteVideo(video.id)}
-                  onRename={(title) => void renameVideo(video.id, title)}
-                />
-              ))}
-            </>
-          )}
+          <DashboardVideoHistory
+            videos={videos}
+            loadingVideos={loadingVideos}
+            selectedVideoId={selectedVideo?.id}
+            onSelect={handleSelect}
+            onDelete={(id) => void deleteVideo(id)}
+            onRename={(id, title) => void renameVideo(id, title)}
+          />
         </div>
 
         {credits && (
@@ -174,6 +147,7 @@ export function DashboardSidebar({
                   color: credits.trialDaysLeft <= 1 ? "#ef4444" : "#f59e0b",
                   fontWeight: 600,
                   textAlign: "center",
+                  flexShrink: 0,
                 }}
               >
                 {credits.trialDaysLeft === 0
@@ -281,9 +255,9 @@ export function DashboardSidebar({
                 : "Verification..."}
           </div>
           <a href="/account" className="dash-sidebar-footer-link">
-              <Settings size={20} strokeWidth={1.75} />
-              {copy.settings}
-            </a>
+            <Settings size={20} strokeWidth={1.75} />
+            {copy.settings}
+          </a>
           <button
             type="button"
             onClick={onStartTour}
@@ -329,132 +303,5 @@ export function DashboardSidebar({
         </button>
       )}
     </>
-  );
-}
-
-function VideoListItem({
-  video,
-  active,
-  onSelect,
-  onDelete,
-  onRename,
-}: {
-  video: DashboardVideo;
-  active: boolean;
-  onSelect: () => void;
-  onDelete: () => void;
-  onRename: (title: string) => void;
-}) {
-  const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState("");
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      className={`dash-vid-item${active ? " active" : ""}`}
-      onClick={onSelect}
-      onKeyDown={(e) => e.key === "Enter" && onSelect()}
-    >
-      <div className="dash-vid-item-inner" style={{ gap: 10 }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 6,
-            flexShrink: 0,
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {video.video_url ? (
-            <video
-              src={video.video_url}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              muted
-              preload="metadata"
-            />
-          ) : (
-            <Clapperboard size={14} strokeWidth={1.8} color="rgba(255,255,255,0.45)" />
-          )}
-        </div>
-        <div
-          className="dash-vid-item-content"
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            setEditingVideoId(video.id);
-            setEditingTitle(getVideoDisplayTitle(video));
-          }}
-        >
-          {editingVideoId === video.id ? (
-            <input
-              autoFocus
-              value={editingTitle}
-              onChange={(e) => setEditingTitle(e.target.value)}
-              onBlur={() => {
-                if (editingTitle.trim() && editingTitle !== getVideoDisplayTitle(video)) {
-                  onRename(editingTitle);
-                }
-                setEditingVideoId(null);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") e.currentTarget.blur();
-                if (e.key === "Escape") setEditingVideoId(null);
-              }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(16,185,129,0.4)",
-                borderRadius: 6,
-                padding: "2px 6px",
-                fontSize: 11,
-                color: "#fff",
-                fontFamily: "inherit",
-                width: "100%",
-                outline: "none",
-              }}
-            />
-          ) : (
-            <div className="dash-vid-title dash-truncate">{getVideoDisplayTitle(video)}</div>
-          )}
-          <div className="dash-vid-meta dash-truncate">
-            {getVideoSummary(video)} · {formatRelativeDate(video.created_at)}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!confirm("Supprimer cette vidéo ?")) return;
-            onDelete();
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            color: "rgba(255,255,255,0.2)",
-            cursor: "pointer",
-            padding: "2px 4px",
-            borderRadius: 4,
-            transition: "all 0.15s",
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#ef4444";
-            e.currentTarget.style.background = "rgba(239,68,68,0.1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "rgba(255,255,255,0.2)";
-            e.currentTarget.style.background = "none";
-          }}
-          aria-label="Supprimer la vidéo"
-        >
-          <Trash2 size={13} strokeWidth={2} />
-        </button>
-      </div>
-    </div>
   );
 }

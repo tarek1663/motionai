@@ -304,7 +304,12 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <DashboardShell {...state} onStartTour={startTour} />
+      <DashboardShell
+        {...state}
+        videos={state.videos}
+        loadingVideos={state.loadingVideos}
+        onStartTour={startTour}
+      />
 
       {state.credits && state.screen === "input" && (
         <div
