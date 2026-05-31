@@ -735,14 +735,14 @@ export const WordsUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "dots"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
           {words.map((word, i) => {
             const delay = i * 6;
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.03em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
@@ -769,14 +769,14 @@ export const WordsDownScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "grid"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
           {words.map((word, i) => {
             const delay = i * 6;
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.03em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
@@ -803,14 +803,14 @@ export const LettersUpScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "circles"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.05em" }}>
           {letters.map((letter, i) => {
             const delay = i * 3;
             const progress = interpolate(Math.max(0, frame - delay), [0, 22], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.02em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
@@ -837,14 +837,14 @@ export const LettersDownScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "diagonal"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.05em" }}>
           {letters.map((letter, i) => {
             const delay = i * 3;
             const progress = interpolate(Math.max(0, frame - delay), [0, 22], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.02em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
@@ -871,14 +871,14 @@ export const WordsUpBlurScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "cross"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
           {words.map((word, i) => {
             const delay = i * 6;
             const progress = interpolate(Math.max(0, frame - delay), [0, 32], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.03em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.25], [0, 1], { extrapolateRight: "clamp" }),
@@ -906,14 +906,14 @@ export const WordsInLeftScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "lines"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px", opacity: fadeOut }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
           {words.map((word, i) => {
             const delay = i * 6;
             const progress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.03em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: interpolate(progress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }),
@@ -939,7 +939,7 @@ export const WordsRightScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
     <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
       <GeoBackground bg={bg} geo={scene.geo || "radial"} />
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "0 60px" }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.35em" }}>
           {words.map((word, i) => {
             const delay = i * 6;
             const enterProgress = interpolate(Math.max(0, frame - delay), [0, 28], [0, 1], { extrapolateRight: "clamp", easing: EASE_OUT });
@@ -949,7 +949,7 @@ export const WordsRightScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
             return (
               <span key={i} style={{
                 fontSize, fontWeight: 600, fontFamily: FONT,
-                letterSpacing: "-0.03em", lineHeight: 1.2,
+                letterSpacing: "-0.01em", lineHeight: 1.2,
                 color: textColor(bg),
                 display: "inline-block",
                 opacity: Math.max(0, interpolate(enterProgress, [0, 0.3], [0, 1], { extrapolateRight: "clamp" }) - wordExit),
