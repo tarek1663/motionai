@@ -70,6 +70,8 @@ export type SceneData = {
     | "curtain"
     | "diagonalwipe"
     | "glitchswitch"
+    | "strobe"
+    | "repeatcut"
     | "pixeldissolve"
     | "lightsweep"
     | "notification"
@@ -603,33 +605,21 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
 
-  // Toujours un fond géométrique — pattern par défaut selon la couleur de fond
   const activeGeo = geo && geo !== "none" ? geo : pickDefaultGeo(bg);
-  const isShortScene = durationInFrames < 70;
 
   const scale = interpolate(
     frame,
     [0, Math.max(1, durationInFrames)],
-    [1.0, isShortScene ? 1.025 : 1.012],
+    [1.0, 1.015],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const r = parseInt(bg.replace("#", "").slice(0, 2), 16) || 0;
-  const g = parseInt(bg.replace("#", "").slice(2, 4), 16) || 0;
-  const b = parseInt(bg.replace("#", "").slice(4, 6), 16) || 0;
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  const luminance = getLuminance(bg);
 
   const patternColor =
     luminance > 0.5
-      ? "rgba(0,0,0,0.08)"
-      : "rgba(255,255,255,0.12)";
-
-  const rotation = interpolate(
-    frame,
-    [0, Math.max(1, durationInFrames)],
-    [0, isShortScene ? 6 : 2],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
+      ? "rgba(0,0,0,0.18)"
+      : "rgba(255,255,255,0.18)";
 
   const base: React.CSSProperties = {
     position: "absolute",
@@ -642,13 +632,13 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
   if (activeGeo === "circles") {
     return (
       <div style={base}>
-        {[120, 240, 360, 480, 620, 760].map((radius, i) => (
+        {[100, 200, 320, 450, 580, 720, 860].map((r, i) => (
           <div
             key={i}
             style={{
               position: "absolute",
-              width: radius * 2,
-              height: radius * 2,
+              width: r * 2,
+              height: r * 2,
               borderRadius: "50%",
               border: `1px solid ${patternColor}`,
               top: "50%",
@@ -672,8 +662,8 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
             linear-gradient(${patternColor} 1px, transparent 1px),
             linear-gradient(90deg, ${patternColor} 1px, transparent 1px)
           `,
-            backgroundSize: "60px 60px",
-            transform: `perspective(600px) rotateX(55deg) translateY(40%)`,
+            backgroundSize: "50px 50px",
+            transform: "perspective(500px) rotateX(60deg) translateY(35%)",
             transformOrigin: "center bottom",
           }}
         />
@@ -684,9 +674,8 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
   const patterns: Record<string, React.CSSProperties> = {
     dots: {
       ...base,
-      backgroundImage: `radial-gradient(circle, ${patternColor} 1.5px, transparent 1.5px)`,
-      backgroundSize: "40px 40px",
-      transform: `scale(${scale}) rotate(${rotation}deg)`,
+      backgroundImage: `radial-gradient(circle, ${patternColor} 2px, transparent 2px)`,
+      backgroundSize: "36px 36px",
     },
     grid: {
       ...base,
@@ -694,25 +683,24 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
         linear-gradient(${patternColor} 1px, transparent 1px),
         linear-gradient(90deg, ${patternColor} 1px, transparent 1px)
       `,
-      backgroundSize: "56px 56px",
-      transform: `scale(${scale}) rotate(${rotation}deg)`,
+      backgroundSize: "48px 48px",
     },
     diagonal: {
       ...base,
       backgroundImage: `repeating-linear-gradient(
         45deg,
-        ${patternColor} 0px, ${patternColor} 1px,
-        transparent 1px, transparent 40px
+        ${patternColor} 0px, ${patternColor} 1.5px,
+        transparent 1.5px, transparent 36px
       )`,
     },
     hex: {
       ...base,
       backgroundImage: `
-        radial-gradient(circle, ${patternColor} 1.5px, transparent 1.5px),
-        radial-gradient(circle, ${patternColor} 1.5px, transparent 1.5px)
+        radial-gradient(circle, ${patternColor} 2px, transparent 2px),
+        radial-gradient(circle, ${patternColor} 2px, transparent 2px)
       `,
-      backgroundSize: "30px 52px",
-      backgroundPosition: "0 0, 15px 26px",
+      backgroundSize: "28px 48px",
+      backgroundPosition: "0 0, 14px 24px",
     },
     cross: {
       ...base,
@@ -722,23 +710,22 @@ export const GeoBackground: React.FC<{ bg: string; geo?: string }> = ({ bg, geo 
         linear-gradient(${patternColor} 1px, transparent 1px),
         linear-gradient(90deg, ${patternColor} 1px, transparent 1px)
       `,
-      backgroundSize: "80px 80px, 80px 80px, 20px 20px, 20px 20px",
+      backgroundSize: "72px 72px, 72px 72px, 18px 18px, 18px 18px",
       backgroundPosition: "-1px -1px, -1px -1px, -1px -1px, -1px -1px",
-      transform: `scale(${scale}) rotate(${rotation}deg)`,
     },
     lines: {
       ...base,
       backgroundImage: `repeating-linear-gradient(
         0deg,
-        ${patternColor} 0px, ${patternColor} 1px,
-        transparent 1px, transparent 48px
+        ${patternColor} 0px, ${patternColor} 1.5px,
+        transparent 1.5px, transparent 42px
       )`,
     },
     radial: {
       ...base,
       backgroundImage: `
-        radial-gradient(ellipse 70% 60% at 50% 50%,
-          ${luminance > 0.5 ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.06)"} 0%,
+        radial-gradient(ellipse 65% 55% at 50% 50%,
+          ${luminance > 0.5 ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.08)"} 0%,
           transparent 100%
         )
       `,
@@ -2653,6 +2640,114 @@ export const DiagonalWipeScene: React.FC<{ scene: SceneData }> = ({ scene }) => 
             textShadow: mainTextShadow(bg),
             ...MAIN_TEXT_WRAP,
             opacity: Math.min(textFade, textFadeOut),
+          }}
+        >
+          {scene.text}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── STROBE — flash rapide énergique ──────────────────
+export const StrobeScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+  const strobeColor = scene.accentColor || (isLight(bg) ? "#000000" : "#ffffff");
+  const beat = 3;
+  const pulse = Math.floor(frame / beat) % 2 === 0;
+  const flashOpacity = pulse ? 0.92 : 0;
+  const textScale = pulse ? 1.12 : 0.96;
+  const textOpacity = Math.min(
+    interpolate(frame, [0, 6], [0, 1], { extrapolateRight: "clamp", easing: E_OUT }),
+    interpolate(
+      Math.max(0, frame - Math.max(0, durationInFrames - 8)),
+      [0, Math.max(1, 8)],
+      [1, 0],
+      { extrapolateRight: "clamp", easing: E_IN },
+    ),
+  );
+  const fontSize = autoFontSize(scene.text || "", 160, 72);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo} />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: strobeColor,
+          opacity: flashOpacity,
+          zIndex: 2,
+          pointerEvents: "none",
+        }}
+      />
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", zIndex: 1 }}>
+        <div
+          style={{
+            fontSize,
+            fontWeight: 800,
+            fontFamily: FONT,
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+            color: mainTextColor(scene, bg),
+            textShadow: mainTextShadow(bg),
+            opacity: textOpacity,
+            transform: `scale(${textScale})`,
+            ...MAIN_TEXT_WRAP,
+          }}
+        >
+          {scene.text}
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// ─── REPEAT CUT — jump cuts rythmés ───────────────────
+export const RepeatCutScene: React.FC<{ scene: SceneData }> = ({ scene }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const bg = scene.bg || "#000000";
+  const cuts = 10;
+  const cutLen = Math.max(1, Math.floor(durationInFrames / cuts));
+  const cutIndex = Math.min(cuts - 1, Math.floor(frame / cutLen));
+  const scales = [1.22, 0.88, 1.14, 0.92, 1.18, 0.9, 1.1, 1.25, 0.95, 1.15];
+  const offsetsX = [-28, 22, -14, 30, -20, 18, -8, 26, -16, 12];
+  const offsetsY = [12, -18, 8, -10, 16, -12, 6, -14, 10, -8];
+  const scale = scales[cutIndex % scales.length];
+  const tx = offsetsX[cutIndex % offsetsX.length];
+  const ty = offsetsY[cutIndex % offsetsY.length];
+  const invertFlash = cutIndex % 2 === 1 ? 0.35 : 0;
+  const fontSize = autoFontSize(scene.text || "", 180, 80);
+  const fadeOut = safeFadeOut(frame, durationInFrames, 10);
+
+  return (
+    <AbsoluteFill style={{ background: bg, overflow: "hidden" }}>
+      <GeoBackground bg={bg} geo={scene.geo} />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: scene.accentColor || "#ffffff",
+          opacity: invertFlash,
+          zIndex: 1,
+        }}
+      />
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", zIndex: 2 }}>
+        <div
+          style={{
+            fontSize,
+            fontWeight: 900,
+            fontFamily: FONT,
+            letterSpacing: "-0.05em",
+            lineHeight: 1,
+            color: mainTextColor(scene, bg),
+            textShadow: mainTextShadow(bg),
+            opacity: fadeOut,
+            transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
+            ...MAIN_TEXT_WRAP,
           }}
         >
           {scene.text}
