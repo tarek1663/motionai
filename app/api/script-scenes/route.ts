@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { buildCinemaSystemPrompt } from "@/lib/prompts/cinema-scenes-system";
+import { buildContextualScenePrompt } from "@/lib/prompts/cinema-scenes-system";
 import { getErrorMessage } from "@/lib/utils";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { script, duration, quality, accentColor, answers } = await req.json();
+    const { script, duration, quality, accentColor, answers, prompt } = await req.json();
 
     void quality;
     void answers;
@@ -37,22 +37,14 @@ export async function POST(req: NextRequest) {
         ? accentColor
         : "#10B981");
 
-    const scriptContext = `
-SCRIPT EXACT DE L'UTILISATEUR (ne jamais modifier ce texte dans la voix) :
-${script}
+    const subject = String(prompt || script || "").trim();
+    const voiceScript = String(script || "").trim();
 
-RÈGLE SCRIPT :
-- Illustrer le script — ne pas le sous-titrer mot pour mot
-- Le champ "text" des scènes texte = extraits courts (1-4 mots max) inspirés du script, jamais des phrases complètes
-- Respecter le ton et les mots-clés du script original
-`;
-
-    const systemPrompt = buildCinemaSystemPrompt(
-      script,
+    const systemPrompt = buildContextualScenePrompt(
+      subject,
+      voiceScript,
       durationSeconds,
       accent,
-      { keyStats: [], keyFacts: [], tagline: "" },
-      scriptContext,
     );
 
     const response = await client.messages.create({

@@ -1028,12 +1028,22 @@ export async function generateScenesFromWordTimestamps(params: {
   totalFrames: number;
   accentColor: string;
   wordTimestamps: WordTimestampScene[];
+  systemPrompt?: string;
 }): Promise<{ scenes: MotionScene[]; sceneDurations: number[] }> {
-  const { prompt, script, totalFrames, accentColor, wordTimestamps } = params;
+  const { prompt, script, totalFrames, accentColor, wordTimestamps, systemPrompt } =
+    params;
 
   const timestampLine = wordTimestamps
     .map((w) => `"${w.word}" [${w.startFrame}-${w.endFrame}]`)
     .join(", ");
+
+  const syncRules = `SYNCHRONISATION MOTS (obligatoire) :
+- Chaque scène couvre un groupe de mots prononcés ensemble
+- startFrame = premier mot du groupe, durationFrames = dernier mot - premier mot
+- Minimum 3 mots par scène, maximum 6 mots par scène
+- Couvrir TOUTE la durée audio sans trous
+TIMESTAMPS : ${timestampLine}
+DURÉE TOTALE : ${totalFrames} frames à 60fps`;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-5",
@@ -1041,7 +1051,9 @@ export async function generateScenesFromWordTimestamps(params: {
     messages: [
       {
         role: "user",
-        content: `Tu es le meilleur directeur artistique motion design au monde.
+        content: systemPrompt
+          ? `${systemPrompt}\n\n${syncRules}\n\nRéponds avec startFrame et durationFrames sur chaque scène, alignés aux timestamps.`
+          : `Tu es le meilleur directeur artistique motion design au monde.
 
 SCRIPT COMPLET : "${script}"
 DURÉE TOTALE : ${totalFrames} frames à 60fps (${Math.round(totalFrames / 60)}s)

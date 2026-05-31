@@ -248,6 +248,7 @@ export async function POST(req: NextRequest) {
             durationSec * 60,
           accentColor: accent,
           wordTimestamps,
+          systemPrompt,
         })
       : await generateScenesFromVoice({
           prompt,
